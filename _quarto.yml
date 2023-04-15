@@ -7,6 +7,7 @@ project:
 website:
   title: "Homophony"
   google-analytics: G-C5FTH8QPGW
+  site-url: "https://homophony.quest"
   navbar:
     left:
       - href: index.qmd
