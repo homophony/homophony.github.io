@@ -6,6 +6,7 @@ project:
 
 website:
   title: "Homophony"
+  google-analytics: G-C5FTH8QPGW
   navbar:
     left:
       - href: index.qmd
