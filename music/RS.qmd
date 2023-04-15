@@ -10,14 +10,15 @@ about:
       text: Where to stream
       href: https://distrokid.com/hyperfollow/homophony/rs
 
-order: 1
+order: 2
 ---
 
-RS is an album ...
 
 ## Concept
 
-
+RS is an album of music. Inspired by synthpop. With much less vocoder, and mostly instrumental.
 
 ## Production Notes
+
+I promise to say more about this, maybe, at some point.
 

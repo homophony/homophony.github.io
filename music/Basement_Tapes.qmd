@@ -1,0 +1,25 @@
+---
+title: "Basement Tapes"
+image: imgs/Tape_2_midjourney.jpg
+description: "Newer Tracks"
+about:
+  template: trestles
+  image: imgs/Tape_2_midjourney.jpg
+  links:
+    - icon: globe
+      text: Tracks streaming on soundcloud
+      href: https://soundcloud.com/matt-crump-913298049?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
+
+order: 1
+---
+
+
+
+## Concept
+
+Some newer tracks, sharing them on soundcloud.
+
+## Production Notes
+
+I promise to say more about this, maybe, at some point.
+

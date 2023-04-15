@@ -1,0 +1,32 @@
+---
+title: "About"
+image: imgs/homophony.png
+description: "Matt Crump"
+about:
+  template: trestles
+  image: imgs/homophony.png
+  links:
+    - icon: globe
+      text: lab website
+      href: https://crumplab.com
+    - icon: twitter
+      text: twitter
+      href: https://twitter.com/MattCrumpLab
+    - icon: github
+      text: Github
+      href: https://github.com/CrumpLab
+    - icon: mastodon
+      text: mastodon
+      href: https://fosstodon.org/@MattCrumpLab
+    - icon: youtube
+      text: youtube
+      href: https://www.youtube.com/channel/UCmzAb7gmWJBQ0zX3spqxrNQ
+order: 1
+---
+
+Matt Crump is a cognitive psychologist with research interests in learning, memory, attention, skill learning, semantics, and computational modeling. He runs the computational cognition lab at Brooklyn College of CUNY. He also plays music.
+
+Homophony is a word created by Richard Semon as a part of his theory of memory processes. It refers to the concept that experiences in memory may resonate with one another, like notes on a piano.
+
+
+

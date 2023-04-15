@@ -11,3 +11,7 @@ main {
 #quarto-content > *  {
   padding-top: 0;
 }
+
+#quarto-margin-sidebar {
+  display: none;
+}

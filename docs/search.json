@@ -1,51 +1,79 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Homophony",
-    "section": "",
-    "text": "RS\n\n\n2nd album, Fall 2020. Tasting notes: Synthpop, less vocoder\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nVO\n\n\n1st album, Fall 2020. Tasting notes: Synthpop, lots of vocoder\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "music/VO.html",
-    "href": "music/VO.html",
-    "title": "VO",
-    "section": "",
-    "text": "VO is an album …"
-  },
-  {
-    "objectID": "music/VO.html#concept",
-    "href": "music/VO.html#concept",
-    "title": "VO",
-    "section": "Concept",
-    "text": "Concept"
-  },
-  {
-    "objectID": "music/VO.html#production-notes",
-    "href": "music/VO.html#production-notes",
-    "title": "VO",
-    "section": "Production Notes",
-    "text": "Production Notes"
-  },
-  {
     "objectID": "music/RS.html",
     "href": "music/RS.html",
     "title": "RS",
     "section": "",
-    "text": "RS is an album …"
+    "text": "RS is an album of music. Inspired by synthpop. With much less vocoder, and mostly instrumental."
   },
   {
     "objectID": "music/RS.html#concept",
     "href": "music/RS.html#concept",
     "title": "RS",
-    "section": "Concept",
-    "text": "Concept"
+    "section": "",
+    "text": "RS is an album of music. Inspired by synthpop. With much less vocoder, and mostly instrumental."
   },
   {
     "objectID": "music/RS.html#production-notes",
     "href": "music/RS.html#production-notes",
     "title": "RS",
     "section": "Production Notes",
-    "text": "Production Notes"
+    "text": "Production Notes\nI promise to say more about this, maybe, at some point."
+  },
+  {
+    "objectID": "music/VO.html",
+    "href": "music/VO.html",
+    "title": "VO",
+    "section": "",
+    "text": "VO is an album of music. Inspired by synthpop. Occasionally heavy use of vocoder."
+  },
+  {
+    "objectID": "music/VO.html#concept",
+    "href": "music/VO.html#concept",
+    "title": "VO",
+    "section": "",
+    "text": "VO is an album of music. Inspired by synthpop. Occasionally heavy use of vocoder."
+  },
+  {
+    "objectID": "music/VO.html#production-notes",
+    "href": "music/VO.html#production-notes",
+    "title": "VO",
+    "section": "Production Notes",
+    "text": "Production Notes\nI promise to say more about this, maybe, at some point."
+  },
+  {
+    "objectID": "music/Basement_Tapes.html",
+    "href": "music/Basement_Tapes.html",
+    "title": "Basement Tapes",
+    "section": "",
+    "text": "Some newer tracks, sharing them on soundcloud."
+  },
+  {
+    "objectID": "music/Basement_Tapes.html#concept",
+    "href": "music/Basement_Tapes.html#concept",
+    "title": "Basement Tapes",
+    "section": "",
+    "text": "Some newer tracks, sharing them on soundcloud."
+  },
+  {
+    "objectID": "music/Basement_Tapes.html#production-notes",
+    "href": "music/Basement_Tapes.html#production-notes",
+    "title": "Basement Tapes",
+    "section": "Production Notes",
+    "text": "Production Notes\nI promise to say more about this, maybe, at some point."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Homophony",
+    "section": "",
+    "text": "Basement Tapes\n\n\nNewer Tracks\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nRS\n\n\n2nd album, Fall 2020. Tasting notes: Synthpop, less vocoder\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nVO\n\n\n1st album, Fall 2020. Tasting notes: Synthpop, lots of vocoder\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "Matt Crump is a cognitive psychologist with research interests in learning, memory, attention, skill learning, semantics, and computational modeling. He runs the computational cognition lab at Brooklyn College of CUNY. He also plays music.\nHomophony is a word created by Richard Semon as a part of his theory of memory processes. It refers to the concept that experiences in memory may resonate with one another, like notes on a piano."
   }
 ]

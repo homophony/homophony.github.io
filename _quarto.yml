@@ -10,6 +10,19 @@ website:
     left:
       - href: index.qmd
         text: Home
+      - about.qmd
+    right:
+      - icon: mastodon
+        href: https://fosstodon.org/@MattCrumpLab
+      - icon: youtube
+        href: https://www.youtube.com/channel/UCmzAb7gmWJBQ0zX3spqxrNQ
+        aria-label: Youtube
+  page-footer:
+    center:
+      - text: "Brought to you by Homophony, 2023"
+        href: about.qmd
+      - text: "Published with Quarto"
+        href: https://quarto.org
 format:
   html:
     theme: quartz

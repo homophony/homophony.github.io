@@ -10,6 +10,7 @@ listing:
   image-height: '100%'
 format:
   html: 
+    toc: true
     theme: quartz
     css: css/home.css
     page-layout: full
@@ -18,9 +19,11 @@ format:
 ```{r}
 #| column: screen
 #| echo: false
+#| out.width: 100%
 knitr::include_graphics('imgs/homophony_banner_short.jpg')
 ```
 
+{{< video https://www.youtube.com/watch?v=qzE-E7dHNSI >}}
 
 ::: {#music_list}
 :::

@@ -10,14 +10,16 @@ about:
       text: Where to stream
       href: https://distrokid.com/hyperfollow/homophony/vo
 
-order: 1
+order: 3
 ---
 
-VO is an album ...
+
 
 ## Concept
 
-
+VO is an album of music. Inspired by synthpop. Occasionally heavy use of vocoder.
 
 ## Production Notes
+
+I promise to say more about this, maybe, at some point.
 
