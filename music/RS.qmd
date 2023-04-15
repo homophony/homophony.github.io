@@ -1,0 +1,23 @@
+---
+title: "RS"
+image: imgs/RS.jpg
+description: "2nd album, Fall 2020. Tasting notes: Synthpop, less vocoder"
+about:
+  template: trestles
+  image: imgs/RS.jpg
+  links:
+    - icon: globe
+      text: Where to stream
+      href: https://distrokid.com/hyperfollow/homophony/rs
+
+order: 1
+---
+
+RS is an album ...
+
+## Concept
+
+
+
+## Production Notes
+

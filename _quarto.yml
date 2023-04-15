@@ -1,0 +1,17 @@
+project:
+  type: website
+  output-dir: docs
+  preview:
+    port: 4200
+
+website:
+  title: "Homophony"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+format:
+  html:
+    theme: quartz
+    css: css/styles.css
+    toc: true

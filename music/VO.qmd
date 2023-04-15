@@ -1,0 +1,23 @@
+---
+title: "VO"
+image: imgs/VO.jpg
+description: "1st album, Fall 2020. Tasting notes: Synthpop, lots of vocoder"
+about:
+  template: trestles
+  image: imgs/VO.jpg
+  links:
+    - icon: globe
+      text: Where to stream
+      href: https://distrokid.com/hyperfollow/homophony/vo
+
+order: 1
+---
+
+VO is an album ...
+
+## Concept
+
+
+
+## Production Notes
+

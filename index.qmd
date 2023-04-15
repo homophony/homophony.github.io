@@ -1,0 +1,26 @@
+---
+title: " "
+listing:
+  contents: music
+  id: music_list
+  sort: "order"
+  type: grid
+  categories: false
+  image-align: 'right'
+  image-height: '100%'
+format:
+  html: 
+    theme: quartz
+    css: css/home.css
+    page-layout: full
+---
+
+```{r}
+#| column: screen
+#| echo: false
+knitr::include_graphics('imgs/homophony_banner_short.jpg')
+```
+
+
+::: {#music_list}
+:::
