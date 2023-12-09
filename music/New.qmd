@@ -1,0 +1,30 @@
+---
+title: "New stuff"
+image: imgs/Untitled Generative 1.jpeg
+description: "Some newer tracks"
+about:
+  template: trestles
+  image: imgs/Untitled Generative 1.jpeg
+order: 1
+---
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+
+
+| title | track |
+|------|------|
+|   231209 - Ambient droney drums reverb crush   |    `r html_tag_audio("music/new/231209_0001_2-MIX_01_01.mp3", type = "wav")`  |

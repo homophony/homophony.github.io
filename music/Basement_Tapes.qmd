@@ -1,7 +1,7 @@
 ---
 title: "Basement Tapes"
 image: imgs/Tape_2_midjourney.jpg
-description: "Newer Tracks"
+description: "synth explorations"
 about:
   template: trestles
   image: imgs/Tape_2_midjourney.jpg
@@ -10,7 +10,7 @@ about:
       text: Tracks streaming on soundcloud
       href: https://soundcloud.com/matt-crump-913298049?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
 
-order: 1
+order: 2
 ---
 
 

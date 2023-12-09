@@ -1,24 +1,17 @@
 [
   {
-    "objectID": "music/RS.html",
-    "href": "music/RS.html",
-    "title": "RS",
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
     "section": "",
-    "text": "RS is an album of music. Inspired by synthpop. With much less vocoder, and mostly instrumental."
+    "text": "Matt Crump is a cognitive psychologist with research interests in learning, memory, attention, skill learning, semantics, and computational modeling. He runs the computational cognition lab at Brooklyn College of CUNY. He also plays music.\nHomophony is a word created by Richard Semon as a part of his theory of memory processes. It refers to the concept that experiences in memory may resonate with one another, like notes on a piano."
   },
   {
-    "objectID": "music/RS.html#concept",
-    "href": "music/RS.html#concept",
-    "title": "RS",
+    "objectID": "music/New.html",
+    "href": "music/New.html",
+    "title": "New stuff",
     "section": "",
-    "text": "RS is an album of music. Inspired by synthpop. With much less vocoder, and mostly instrumental."
-  },
-  {
-    "objectID": "music/RS.html#production-notes",
-    "href": "music/RS.html#production-notes",
-    "title": "RS",
-    "section": "Production Notes",
-    "text": "Production Notes\nI promise to say more about this, maybe, at some point."
+    "text": "title\ntrack\n\n\n\n\n231209 - Ambient droney drums reverb crush"
   },
   {
     "objectID": "music/VO.html",
@@ -38,6 +31,27 @@
     "objectID": "music/VO.html#production-notes",
     "href": "music/VO.html#production-notes",
     "title": "VO",
+    "section": "Production Notes",
+    "text": "Production Notes\nI promise to say more about this, maybe, at some point."
+  },
+  {
+    "objectID": "music/RS.html",
+    "href": "music/RS.html",
+    "title": "RS",
+    "section": "",
+    "text": "RS is an album of music. Inspired by synthpop. With much less vocoder, and mostly instrumental."
+  },
+  {
+    "objectID": "music/RS.html#concept",
+    "href": "music/RS.html#concept",
+    "title": "RS",
+    "section": "",
+    "text": "RS is an album of music. Inspired by synthpop. With much less vocoder, and mostly instrumental."
+  },
+  {
+    "objectID": "music/RS.html#production-notes",
+    "href": "music/RS.html#production-notes",
+    "title": "RS",
     "section": "Production Notes",
     "text": "Production Notes\nI promise to say more about this, maybe, at some point."
   },
@@ -67,13 +81,6 @@
     "href": "index.html",
     "title": "Homophony",
     "section": "",
-    "text": "Basement Tapes\n\n\nNewer Tracks\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nRS\n\n\n2nd album, Fall 2020. Tasting notes: Synthpop, less vocoder\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nVO\n\n\n1st album, Fall 2020. Tasting notes: Synthpop, lots of vocoder\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "Matt Crump is a cognitive psychologist with research interests in learning, memory, attention, skill learning, semantics, and computational modeling. He runs the computational cognition lab at Brooklyn College of CUNY. He also plays music.\nHomophony is a word created by Richard Semon as a part of his theory of memory processes. It refers to the concept that experiences in memory may resonate with one another, like notes on a piano."
+    "text": "New stuff\n\n\nSome newer tracks\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBasement Tapes\n\n\nsynth explorations\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nRS\n\n\n2nd album, Fall 2020. Tasting notes: Synthpop, less vocoder\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nVO\n\n\n1st album, Fall 2020. Tasting notes: Synthpop, lots of vocoder\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
   }
 ]
