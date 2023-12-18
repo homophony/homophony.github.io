@@ -25,9 +25,7 @@ html_tag_audio <- function(file, type = c("wav")) {
 
 ```
 
-
-
-| title | track |
-|------|------|
-|   231809 - Dolphin Dance   |    `r html_tag_audio("../music/new/DolphinDanceFull_render 2_01.mp3", type = "wav")`  |
-|   231209 - Ambient droney drums reverb crush   |    `r html_tag_audio("../music/new/231209_0001_2-MIX_01_01.mp3", type = "wav")`  |
+| title                  | track                                                                             |
+|------------------------------------|------------------------------------|
+| 231809 - [Dolphin Dance](../notes.html#dolphin-dance) | `r html_tag_audio("../music/new/DolphinDanceFull_render 2_01.mp3", type = "wav")` |
+| 231209 - Ambient droney drums reverb crush | `r html_tag_audio("../music/new/231209_0001_2-MIX_01_01.mp3", type = "wav")` |

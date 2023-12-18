@@ -7,30 +7,30 @@
     "text": "Matt Crump is a cognitive psychologist with research interests in learning, memory, attention, skill learning, semantics, and computational modeling. He runs the computational cognition lab at Brooklyn College of CUNY. He also plays music.\nHomophony is a word created by Richard Semon as a part of his theory of memory processes. It refers to the concept that experiences in memory may resonate with one another, like notes on a piano."
   },
   {
-    "objectID": "music/New.html",
-    "href": "music/New.html",
-    "title": "New stuff",
+    "objectID": "notes.html",
+    "href": "notes.html",
+    "title": "Wall of Notes?",
     "section": "",
-    "text": "title\ntrack\n\n\n\n\n231809 - Dolphin Dance\n  \n\n\n231209 - Ambient droney drums reverb crush"
+    "text": "This could be a place where I make notes about music things. Not sure yet. We’ll see.\n\nGeneral set-up issues\n\nso many\nCan’t get a really good sync with Ableton. Don’t bother with any live processing from Ableton, unless it is playback only. Fiddle with the error compensation until the lag is gone.\n\n256 bits\n28 ms error compensation\n\nStill getting some audio dropout sometimes, not sure why.\n\n\n\nDolphin Dance\n  \nHave been messing about with Herbie Hancock’s “Dolphin Dance” on the piano for a while.\nHad a clear day to try some mixer mimicking. Plan was to develop my own voicings for everything, but mix them similar to the Maiden Voyage recording…and then jam it.\nWhat happened:\n\nRecorded the Hancock version into Ableton\nLocated BPM\nVoices\n\nRhodes\nMoog matriarch bass lines\nMPC drums\nOB-6 horns\n\nFor each voice, play with the original record. Keep recording in a loop using Ableton comping lanes\nFix messes by sampling in comping lanes/ explore have fun with fixing the mess\nDuplicate the head, then solo overtop for a bit\nMix it down.\nTry some final mixing touches."
   },
   {
-    "objectID": "music/VO.html",
-    "href": "music/VO.html",
-    "title": "VO",
+    "objectID": "music/Basement_Tapes.html",
+    "href": "music/Basement_Tapes.html",
+    "title": "Basement Tapes",
     "section": "",
-    "text": "VO is an album of music. Inspired by synthpop. Occasionally heavy use of vocoder."
+    "text": "Some newer tracks, sharing them on soundcloud."
   },
   {
-    "objectID": "music/VO.html#concept",
-    "href": "music/VO.html#concept",
-    "title": "VO",
+    "objectID": "music/Basement_Tapes.html#concept",
+    "href": "music/Basement_Tapes.html#concept",
+    "title": "Basement Tapes",
     "section": "",
-    "text": "VO is an album of music. Inspired by synthpop. Occasionally heavy use of vocoder."
+    "text": "Some newer tracks, sharing them on soundcloud."
   },
   {
-    "objectID": "music/VO.html#production-notes",
-    "href": "music/VO.html#production-notes",
-    "title": "VO",
+    "objectID": "music/Basement_Tapes.html#production-notes",
+    "href": "music/Basement_Tapes.html#production-notes",
+    "title": "Basement Tapes",
     "section": "Production Notes",
     "text": "Production Notes\nI promise to say more about this, maybe, at some point."
   },
@@ -56,25 +56,32 @@
     "text": "Production Notes\nI promise to say more about this, maybe, at some point."
   },
   {
-    "objectID": "music/Basement_Tapes.html",
-    "href": "music/Basement_Tapes.html",
-    "title": "Basement Tapes",
+    "objectID": "music/VO.html",
+    "href": "music/VO.html",
+    "title": "VO",
     "section": "",
-    "text": "Some newer tracks, sharing them on soundcloud."
+    "text": "VO is an album of music. Inspired by synthpop. Occasionally heavy use of vocoder."
   },
   {
-    "objectID": "music/Basement_Tapes.html#concept",
-    "href": "music/Basement_Tapes.html#concept",
-    "title": "Basement Tapes",
+    "objectID": "music/VO.html#concept",
+    "href": "music/VO.html#concept",
+    "title": "VO",
     "section": "",
-    "text": "Some newer tracks, sharing them on soundcloud."
+    "text": "VO is an album of music. Inspired by synthpop. Occasionally heavy use of vocoder."
   },
   {
-    "objectID": "music/Basement_Tapes.html#production-notes",
-    "href": "music/Basement_Tapes.html#production-notes",
-    "title": "Basement Tapes",
+    "objectID": "music/VO.html#production-notes",
+    "href": "music/VO.html#production-notes",
+    "title": "VO",
     "section": "Production Notes",
     "text": "Production Notes\nI promise to say more about this, maybe, at some point."
+  },
+  {
+    "objectID": "music/New.html",
+    "href": "music/New.html",
+    "title": "New stuff",
+    "section": "",
+    "text": "title\ntrack\n\n\n\n\n231809 - Dolphin Dance\n  \n\n\n231209 - Ambient droney drums reverb crush"
   },
   {
     "objectID": "index.html",
