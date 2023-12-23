@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.523">
+<meta name="generator" content="quarto-1.4.533">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -121,6 +121,16 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </i> 
 <span class="menu-text"></span></a>
   </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://open.spotify.com/artist/21uZHA1jqXKOdkQmxR7ZcE?si=M2xiVdJpQG6OXuPW7URveg"> <i class="bi bi-spotify" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://music.apple.com/us/artist/homophony/1531902633"> <i class="bi bi-apple" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
           <div class="quarto-navbar-tools">
@@ -155,9 +165,9 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
     <i class="bi bi-globe"></i>
      <span class="about-link-text">lab website</span>
   </a>
-  <a href="https://twitter.com/MattCrumpLab" class="about-link" rel="" target="">
-    <i class="bi bi-twitter"></i>
-     <span class="about-link-text">twitter</span>
+  <a href="https://bsky.app/profile/mattcrumplab.bsky.social" class="about-link" rel="" target="">
+    <i class="bi bi-butterfly"></i>
+     <span class="about-link-text">bluesky</span>
   </a>
   <a href="https://github.com/CrumpLab" class="about-link" rel="" target="">
     <i class="bi bi-github"></i>
@@ -170,6 +180,14 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
   <a href="https://www.youtube.com/channel/UCmzAb7gmWJBQ0zX3spqxrNQ" class="about-link" rel="" target="">
     <i class="bi bi-youtube"></i>
      <span class="about-link-text">youtube</span>
+  </a>
+  <a href="https://music.apple.com/us/artist/homophony/1531902633" class="about-link" rel="" target="">
+    <i class="bi bi-apple"></i>
+     <span class="about-link-text">apple music</span>
+  </a>
+  <a href="https://open.spotify.com/artist/21uZHA1jqXKOdkQmxR7ZcE?si=6Dx13juWQougFPwtQ3z_NQ" class="about-link" rel="" target="">
+    <i class="bi bi-spotify"></i>
+     <span class="about-link-text">spotify</span>
   </a>
 </div>
   </div>
@@ -302,27 +320,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
     stripColumnClz(note)
-    const typesetMath = (el) => {
-      if (window.MathJax) {
-        // MathJax Typeset
-        window.MathJax.typeset([el]);
-      } else if (window.katex) {
-        // KaTeX Render
-        var mathElements = el.getElementsByClassName("math");
-        var macros = [];
-        for (var i = 0; i < mathElements.length; i++) {
-          var texText = mathElements[i].firstChild;
-          if (mathElements[i].tagName == "SPAN") {
-            window.katex.render(texText.data, mathElements[i], {
-              displayMode: mathElements[i].classList.contains('display'),
-              throwOnError: false,
-              macros: macros,
-              fleqn: false
-            });
-          }
-        }
-      }
-    }
     if (id === null || id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
@@ -337,10 +334,14 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             break;
           }
         }
-        typesetMath(container);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
         return container.innerHTML
       } else {
-        typesetMath(note);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
         return note.innerHTML;
       }
     } else {
@@ -349,7 +350,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (anchorLink) {
         anchorLink.remove();
       }
-      typesetMath(note);
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
       return note.innerHTML;
     }
   }

@@ -20,6 +20,10 @@ website:
       - icon: youtube
         href: https://www.youtube.com/channel/UCmzAb7gmWJBQ0zX3spqxrNQ
         aria-label: Youtube
+      - icon: spotify
+        href: https://open.spotify.com/artist/21uZHA1jqXKOdkQmxR7ZcE?si=M2xiVdJpQG6OXuPW7URveg
+      - icon: apple
+        href: https://music.apple.com/us/artist/homophony/1531902633
   page-footer:
     center:
       - text: "Brought to you by Homophony, 2023"
@@ -28,6 +32,6 @@ website:
         href: https://quarto.org
 format:
   html:
-    theme: quartz
+    theme: cosmo
     css: css/styles.css
     toc: true

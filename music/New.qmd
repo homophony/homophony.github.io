@@ -5,8 +5,6 @@ description: "Some newer tracks"
 about:
   template: trestles
   image: imgs/Untitled Generative 1.jpeg
-resources:
-  - music/new/231209_0001_2-MIX_01_01.mp3
 order: 1
 ---
 

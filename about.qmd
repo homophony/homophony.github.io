@@ -9,9 +9,9 @@ about:
     - icon: globe
       text: lab website
       href: https://crumplab.com
-    - icon: twitter
-      text: twitter
-      href: https://twitter.com/MattCrumpLab
+    - icon: butterfly
+      text: bluesky
+      href: https://bsky.app/profile/mattcrumplab.bsky.social
     - icon: github
       text: Github
       href: https://github.com/CrumpLab
@@ -21,6 +21,12 @@ about:
     - icon: youtube
       text: youtube
       href: https://www.youtube.com/channel/UCmzAb7gmWJBQ0zX3spqxrNQ
+    - icon: apple
+      text: apple music
+      href: https://music.apple.com/us/artist/homophony/1531902633
+    - icon: spotify
+      text: spotify
+      href: https://open.spotify.com/artist/21uZHA1jqXKOdkQmxR7ZcE?si=6Dx13juWQougFPwtQ3z_NQ
 order: 1
 ---
 

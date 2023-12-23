@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.523">
+<meta name="generator" content="quarto-1.4.533">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -121,6 +121,16 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </i> 
 <span class="menu-text"></span></a>
   </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://open.spotify.com/artist/21uZHA1jqXKOdkQmxR7ZcE?si=M2xiVdJpQG6OXuPW7URveg"> <i class="bi bi-spotify" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://music.apple.com/us/artist/homophony/1531902633"> <i class="bi bi-apple" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
           <div class="quarto-navbar-tools">
@@ -137,7 +147,8 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#general-set-up-issues" id="toc-general-set-up-issues" class="nav-link active" data-scroll-target="#general-set-up-issues">General set-up issues</a></li>
+  <li><a href="#practice" id="toc-practice" class="nav-link active" data-scroll-target="#practice">12/23/23 Practice</a></li>
+  <li><a href="#general-set-up-issues" id="toc-general-set-up-issues" class="nav-link" data-scroll-target="#general-set-up-issues">General set-up issues</a></li>
   <li><a href="#dolphin-dance" id="toc-dolphin-dance" class="nav-link" data-scroll-target="#dolphin-dance">Dolphin Dance</a></li>
   </ul>
 </nav>
@@ -165,6 +176,19 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 
 
 <p>This could be a place where I make notes about music things. Not sure yet. We’ll see.</p>
+<section id="practice" class="level1">
+<h1>12/23/23 Practice</h1>
+<p>Back into practicing the piano and working on my chops. It’s been a little bit painful because I am so out of practice. Perhaps there is a new year’s resolution here to practice more. But, what to practice?</p>
+<p>My recent routine is working through the circle of fifths and reclaiming some basics.</p>
+<ol type="1">
+<li>Playing Maj7 chords anti-clockwise and then clockwise through the circle of fifths</li>
+<li>Playing II-V-I through the circle of fifths</li>
+<li>Playing V7-V7 through the circle of fifths</li>
+<li>Playing I-VI-II-V through the circle of fifths. This is the same progression as in “Heart and Soul”, a duet we’d play as kids. Currently, I’m asking the question whether I can play this song effortlessly (chords in the left hand, melody in the right) in a key as I go around the circle, and if the answer is yes, I shouldn’t practice this key, and if the answer is no, then I should.</li>
+</ol>
+<p>Starting to get some fluency back. I was never that diligent at practicing through all of the keys, and some of them need a lot of work.</p>
+<p>Ideally, I’d like to keep a little journal here of practice strategies, reporting on: what I’m doing, what I’m hoping to get out of it (or did get out of it), and other observations that could relate to musical connections and/or connections to the cognitive science of skill learning.</p>
+</section>
 <section id="general-set-up-issues" class="level1">
 <h1>General set-up issues</h1>
 <ul>
@@ -332,27 +356,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       }
     }
     stripColumnClz(note)
-    const typesetMath = (el) => {
-      if (window.MathJax) {
-        // MathJax Typeset
-        window.MathJax.typeset([el]);
-      } else if (window.katex) {
-        // KaTeX Render
-        var mathElements = el.getElementsByClassName("math");
-        var macros = [];
-        for (var i = 0; i < mathElements.length; i++) {
-          var texText = mathElements[i].firstChild;
-          if (mathElements[i].tagName == "SPAN") {
-            window.katex.render(texText.data, mathElements[i], {
-              displayMode: mathElements[i].classList.contains('display'),
-              throwOnError: false,
-              macros: macros,
-              fleqn: false
-            });
-          }
-        }
-      }
-    }
     if (id === null || id.startsWith('sec-')) {
       // Special case sections, only their first couple elements
       const container = document.createElement("div");
@@ -367,10 +370,14 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             break;
           }
         }
-        typesetMath(container);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
         return container.innerHTML
       } else {
-        typesetMath(note);
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
         return note.innerHTML;
       }
     } else {
@@ -379,7 +386,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (anchorLink) {
         anchorLink.remove();
       }
-      typesetMath(note);
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
       return note.innerHTML;
     }
   }
