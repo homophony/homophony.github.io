@@ -20,26 +20,39 @@ html_tag_audio <- function(file, type = c("wav")) {
 
 This could be a place where I make notes about music things. Not sure yet. We'll see.
 
+# 12/24/23 Scales in 7th chords
+
+`r html_tag_audio("music/practice/scale_maj7ths.mp3", type = "wav")`
+
+This exercise has two parts. Practice around the circle of fifths.
+
+1.  Play the major scale up and down using 7th chords.
+
+I^∆7^ II^-7^ III^-7^ IV^∆7^ V^7^ VI^-7^ VII^-Dim7^
+
+2.  Play each chord as an arpeggio, but start on the 7th and play down to the root.
+
+Notes: very easy to burn through this in C without thinking. G and F are decent, everything else is slow. Need to keep practicing the hard ones.
+
 # 12/23/23 Cycling through Major 7ths
 
 `r html_tag_audio("music/practice/Maj7ths_01.mp3", type = "wav")`
 
 The basic task is to play Major 7th chords through the circle of fifths.
 
-::: {.column-margin}
+::: column-margin
 Circle of fifths
 
-Going clockwise the next note is a perfect fifth from the previous note. 
+Going clockwise the next note is a perfect fifth from the previous note.
 
 ![](images/Captura-de-Pantalla-2021-07-08-a-la-s--10.25.22-a.-m..png)
-
 :::
 
 Major 7th chords have a I-III-V-maj7 structure. These are the first, third, fifth, and major 7th notes in the major scale of the root key. For example, the key of C has 7 notes in the major scale: C D E F G A B
 
 The chord C Maj7 (also notated as C∆7) is C-E-G-B.
 
-Where C is the root or first note, E is the III, G is the V, and B is the major VII. The same pattern is applied to make Maj7 chords in all other keys. 
+Where C is the root or first note, E is the III, G is the V, and B is the major VII. The same pattern is applied to make Maj7 chords in all other keys.
 
 At the beginning of this practice track I play chords going anti-clockwise through the circle of fifths:
 
