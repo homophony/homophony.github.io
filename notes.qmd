@@ -20,6 +20,35 @@ html_tag_audio <- function(file, type = c("wav")) {
 
 This could be a place where I make notes about music things. Not sure yet. We'll see.
 
+# 12/25/23 7th first II-V-I
+
+I've been taking practice inspiration from Mark Levine's [Jazz Theory Book](https://www.amazon.com/Jazz-Theory-Book-Mark-Levine/dp/1883217040). This exercise wasn't in there specifically, but it's in the spirit of root-bias deprogramming.
+
+::: column-margin
+![](images/levine.png)
+:::
+
+Levine has these fun quips throughout that I'm trying to follow through on:
+
+> Remember, practice all scales and patterns both ascending and descending; on the major, melodic minor, diminished, and whole-tone scales and in all keys
+
+> You've now learned about all four of the scales you'll need under your fingers to play over chord changes. The next question is how to practice them. And you don't just want to practice them, but to internalize them to the point where they become an **available pool of notes**, on which to improvise.
+
+> ...the goal is to deprogram yourself from years of root-bias conditioning
+
+I learned piano in the classical music tradition and practiced all my scales and chords in a massively root-biased way when I was a kid. So, one of my goals right now is to think about chords from non-root perspectives.
+
+For example, in this exercise my goal is to practice leading with the 7th note. This is related to the exercise from yesterday, but I did few things differently. Here's the idea:
+
+![](images/7thfirst-01.jpg)
+
+1.  Play II-V-I chords through the circle of fifths
+2.  For each chord, lead with the 7th note, then bounce between the 7th note and each inversion of the 7th chord.
+
+In the first bar I have a D-7 chord in the key of C major. The minor 7th note is a C, and instead of thinking C = C major, I'm trying to also think C = D-7 . And, by doing this around the circle of fifths, you end up practicing every kind of 7th chord (maj, dom, min) for every key.
+
+This exercise implies some related ones that I'll get to some other day, such as leading with the 5th, or leading with the 3rd...and then leading with the weirder stuff (sus, b5, b9, #11).
+
 # 12/24/23 Scales in 7th chords
 
 `r html_tag_audio("music/practice/scale_maj7ths.mp3", type = "wav")`
