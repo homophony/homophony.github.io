@@ -1,0 +1,118 @@
+---
+title: "Rootless 9th chords"
+author: "Matt Crump"
+date: 12/26/23
+description: "Running I∆7add9 chords through the circle of fifths."
+image: "cover.jpg"
+aliases: 
+  - https://homophony.quest/notes.html#rootless-9th-chords
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - practice
+execute: 
+  echo: false
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "LCM_Dreamshaper_v7"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/LCM_Dreamshaper_v7/",custom_pipeline="latent_consistency_txt2img", custom_revision="main", revision="fb9c5d"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "An underground lair of piano playing rabbits. Above the rabbits are the roots of carrots that have been eaten by rabbits as they play piano."
+
+image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 4)
+
+image_save = image.images[0].save("cover_0.jpg")
+image_save = image.images[1].save("cover_1.jpg")
+image_save = image.images[2].save("cover_2.jpg")
+image_save = image.images[3].save("cover_3.jpg") 
+
+```
+
+
+![](cover.jpg){width=50% fig-align="left"}
+
+
+::: column-margin
+"An underground lair of piano playing rabbits. Above the rabbits are the roots of carrots that have been eaten by rabbits as they play piano." - LCM_Dreamshaper_v7
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+
+Today's exercise was running I∆7add9 chords through the circle of fifths.
+
+The first row shows the notes of the C major scale with corresponding numbers. The 9th note is the same as the second note in the scale.
+
+The second row shows the concept of constructing chords from thirds. From this perspective, you get all of the notes in the scale going up by thirds, but the 9th, 11th, and 13th note are out of their normal order.
+
+This exercise focuses on the "rootless" 9th chord on the bottom row. That one has a major 3rd, a perfect fifth, a major 7th, and a 9th.
+
+| 1     | 2   | 3     | 4   | 5     | 6   | 7     | 8   | 9     | 10  | 11  | 12  | 13  | 14  |
+|-------|-----|-------|-----|-------|-----|-------|-----|-------|-----|-----|-----|-----|-----|
+| **C** | D   | **E** | F   | **G** | A   | **B** | C   | **D** | E   | F   | G   | A   | B   |
+| C     |     | E     |     | G     |     | B     |     | D     |     | F   |     | A   |     |
+|       |     | E     |     | G     |     | B     |     | D     |     |     |     |     |     |
+
+In the exercise I played these chords clockwise and anti-clockwise through the circle of fifths. I usually used my left hand for the bass note and to remind myself where I was in the circle. Then I played versions of the 9th chord. They all have a smashing pumpkins kind of vibe.
+
+One reason I chose this exercise is to press harder on deprogramming my root conditioning. These chords don't have the root in them, so they must be good for that (e.g., thinking about doing something in C, but not playing C, or only playing around C).
+
+Another musical connection is that these 9th chords are the same as a III-7 chord. So, an E minor 7th is a C major 7th add 9.
+
+Cognitive science connections: As a sidenote, my day job is a cognitive psychology professor who studies skill-learning. I've been meaning to do some piano skill research and I even have the keyboards in my lab to do it. So, as I go through these exercises it's been fun thinking about issues like how does training on some musical ideas transfer to others.
+
+For example, I'm already fairly fluid at playing the circle of fifths in different ways. If I'm playing single notes, I can go through the circle very quickly. It's slower for chords, but still fairly quick. I've been practicing my 7th chords through the circle, so I can already go through the circle playing minor 7th chords fairly quickly. However, it turns out I can not do these 9th chords quickly. There should be pretty good transfer here because the 9th chords are exactly the same as the minor 7th chords that I have already practiced.
+
+In terms of minor 7th chords I had been practicing these chords, with the root in the bass.
+
+| 1   | 2   | 3    | 4    | 5    | 6    | 7    | 8   | 9   | 10  | 11  | 12  |
+|-----|-----|------|------|------|------|------|-----|-----|-----|-----|-----|
+| E-7 | B-7 | Gb-7 | Db-7 | Ab-7 | Eb-7 | Bb-7 | F-7 | C-7 | G-7 | D-7 | A-7 |
+| E   | B   | Gb   | Db   | Ab   | Eb   | Bb   | F   | C   | G   | D   | A   |
+
+But, I had not been practicing those chords with the following bass notes.
+
+| 1   | 2   | 3    | 4    | 5    | 6    | 7    | 8   | 9   | 10  | 11  | 12  |
+|-----|-----|------|------|------|------|------|-----|-----|-----|-----|-----|
+| E-7 | B-7 | Gb-7 | Db-7 | Ab-7 | Eb-7 | Bb-7 | F-7 | C-7 | G-7 | D-7 | A-7 |
+| C   | G   | D    | A    | E    | B    | Gb   | Db  | Ab  | Eb  | Bb  | F   |
+
+Generalization is so fickle sometimes.
+
+Also, I have some super-biased thirds. What's the third of C -\> E. No problem, that's fast. A -\> C, G -\> B. But, B ---------\> Eb. That one hurts. Eb seems too far away to be a third. In any case. I need to flatten out this distribution at some point.
+
+

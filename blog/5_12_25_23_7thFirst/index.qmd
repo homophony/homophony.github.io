@@ -1,0 +1,97 @@
+---
+title: "7th first II-V-I"
+author: "Matt Crump"
+date: 12/25/23
+description: "A piano exercise"
+image: "levine.png"
+aliases: 
+  - https://homophony.quest/notes.html#th-first-ii-v-i
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - practice
+execute: 
+  echo: false
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "LCM_Dreamshaper_v7"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/LCM_Dreamshaper_v7/",custom_pipeline="latent_consistency_txt2img", custom_revision="main", revision="fb9c5d"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "An armadillo piano player practicing playing piano in the middle of a desert with a bright blue sky"
+
+image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 4)
+
+image_save = image.images[0].save("cover_0.jpg")
+image_save = image.images[1].save("cover_1.jpg")
+image_save = image.images[2].save("cover_2.jpg")
+image_save = image.images[3].save("cover_3.jpg") 
+
+```
+
+
+![](cover.jpg){width=50% fig-align="left"}
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+
+I've been taking practice inspiration from Mark Levine's [Jazz Theory Book](https://www.amazon.com/Jazz-Theory-Book-Mark-Levine/dp/1883217040). This exercise wasn't in there specifically, but it's in the spirit of root-bias deprogramming.
+
+::: column-margin
+![](levine.png)
+:::
+
+Levine has these fun quips throughout that I'm trying to follow through on:
+
+> Remember, practice all scales and patterns both ascending and descending; on the major, melodic minor, diminished, and whole-tone scales and in all keys
+
+> You've now learned about all four of the scales you'll need under your fingers to play over chord changes. The next question is how to practice them. And you don't just want to practice them, but to internalize them to the point where they become an **available pool of notes**, on which to improvise.
+
+> ...the goal is to deprogram yourself from years of root-bias conditioning
+
+I learned piano in the classical music tradition and practiced all my scales and chords in a massively root-biased way when I was a kid. So, one of my goals right now is to think about chords from non-root perspectives.
+
+For example, in this exercise my goal is to practice leading with the 7th note. This is related to the exercise from yesterday, but I did few things differently. Here's the idea:
+
+![](7thfirst-01.jpg)
+
+1.  Play II-V-I chords through the circle of fifths
+2.  For each chord, lead with the 7th note, then bounce between the 7th note and each inversion of the 7th chord.
+
+In the first bar I have a D-7 chord in the key of C major. The minor 7th note is a C, and instead of thinking C = C major, I'm trying to also think C = D-7 . And, by doing this around the circle of fifths, you end up practicing every kind of 7th chord (maj, dom, min) for every key.
+
+This exercise implies some related ones that I'll get to some other day, such as leading with the 5th, or leading with the 3rd...and then leading with the weirder stuff (sus, b5, b9, #11).
+

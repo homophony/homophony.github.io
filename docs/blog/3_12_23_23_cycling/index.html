@@ -7,9 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Matt Crump">
-<meta name="description" content="Music blog for motivation to play more music">
+<meta name="dcterms.date" content="2023-12-23">
+<meta name="description" content="Notes on a piano exercise.">
 
-<title>Homophony - Wall of Notes</title>
+<title>Homophony - Cycling through Major 7ths</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -25,24 +26,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -70,35 +69,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-blog_list .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-blog_list'] = new List('listing-blog_list', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-C5FTH8QPGW"></script>
 
 <script type="text/javascript">
@@ -109,44 +79,19 @@ gtag('js', new Date());
 gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="css/styles.css">
-<link rel="alternate" type="application/rss+xml" title="Homophony" href="notes.xml" data-external="1"><meta property="og:title" content="Homophony - Wall of Notes">
-<meta property="og:description" content="Music blog for motivation to play more music">
-<meta property="og:image" content="https://homophony.quest/images/notesE_0.jpg">
+<link rel="stylesheet" href="../../css/styles.css">
+<meta property="og:title" content="Homophony - Cycling through Major 7ths">
+<meta property="og:description" content="Notes on a piano exercise.">
+<meta property="og:image" content="https://homophony.quest/blog/3_12_23_23_cycling/circle.png">
 <meta property="og:site_name" content="Homophony">
-<meta name="twitter:title" content="Homophony - Wall of Notes">
-<meta name="twitter:description" content="Music blog for motivation to play more music">
-<meta name="twitter:image" content="https://homophony.quest/images/notesE_0.jpg">
+<meta property="og:image:height" content="576">
+<meta property="og:image:width" content="614">
+<meta name="twitter:title" content="Homophony - Cycling through Major 7ths">
+<meta name="twitter:description" content="Notes on a piano exercise.">
+<meta name="twitter:image" content="https://homophony.quest/blog/3_12_23_23_cycling/circle.png">
+<meta name="twitter:image-height" content="576">
+<meta name="twitter:image-width" content="614">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -157,7 +102,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Homophony</span>
     </a>
   </div>
@@ -168,21 +113,21 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./notes.html" aria-current="page"> 
+    <a class="nav-link" href="../../notes.html"> 
 <span class="menu-text">Wall of Notes</span></a>
   </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="./notes.xml"> <i class="bi bi-rss" role="img">
+    <a class="nav-link" href="../../notes.xml"> <i class="bi bi-rss" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -219,18 +164,22 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(9)</span></div><div class="category" data-category="circle of fifths">circle of fifths <span class="quarto-category-count">(2)</span></div><div class="category" data-category="motivation">motivation <span class="quarto-category-count">(1)</span></div><div class="category" data-category="practice">practice <span class="quarto-category-count">(5)</span></div><div class="category" data-category="practice exercise">practice exercise <span class="quarto-category-count">(1)</span></div><div class="category" data-category="quarto">quarto <span class="quarto-category-count">(2)</span></div></div></div>
+    </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Wall of Notes</h1>
-</div>
+<h1 class="title">Cycling through Major 7ths</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">practice exercise</div>
+    <div class="quarto-category">circle of fifths</div>
+  </div>
+  </div>
 
 <div>
   <div class="description">
-    Music blog for motivation to play more music
+    Notes on a piano exercise.
   </div>
 </div>
 
@@ -244,6 +193,12 @@ window.Quarto = {
           </div>
   </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 23, 2023</p>
+    </div>
+  </div>
   
     
   </div>
@@ -253,317 +208,23 @@ window.Quarto = {
 </header>
 
 
-<div id="listing-blog_list" class="quarto-listing quarto-listing-container-default">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="quarto" data-listing-date-sort="1703653200000" data-listing-file-modified-sort="1703688899753" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="88">
-<div class="thumbnail">
-<p><a href="./blog/1_12_27_23_blog/index.html" class="no-external"></a></p><a href="./blog/1_12_27_23_blog/index.html" class="no-external">
-<p><img src="./blog/1_12_27_23_blog/cover.jpg" class="thumbnail-image" style="height: 100%;"></p>
-</a><p><a href="./blog/1_12_27_23_blog/index.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./blog/1_12_27_23_blog/index.html" class="no-external">Blogging for music motivation</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./blog/1_12_27_23_blog/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('quarto'); return false;">
-quarto
-</div>
-</div>
-<div class="listing-description">
-<a href="./blog/1_12_27_23_blog/index.html" class="no-external">Setting up a quarto blog for taking music notes.</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./blog/1_12_27_23_blog/index.html" class="no-external">
-<div class="listing-date">
-Dec 27, 2023
-</div>
-<div class="listing-author">
-Matt Crump
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-categories="practice" data-listing-date-sort="1703653200000" data-listing-file-modified-sort="1703695909058" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="558">
-<div class="thumbnail">
-<p><a href="./blog/7_12_27_23_freddie/index.html" class="no-external"></a></p><a href="./blog/7_12_27_23_freddie/index.html" class="no-external">
-<p><img src="./blog/7_12_27_23_freddie/cover.jpg" class="thumbnail-image" style="height: 100%;"></p>
-</a><p><a href="./blog/7_12_27_23_freddie/index.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./blog/7_12_27_23_freddie/index.html" class="no-external">Freddie Freeloader Wynton Kelly solo</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./blog/7_12_27_23_freddie/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('practice'); return false;">
-practice
-</div>
-</div>
-<div class="listing-description">
-<a href="./blog/7_12_27_23_freddie/index.html" class="no-external">Notes on learning phrasing from the solo</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./blog/7_12_27_23_freddie/index.html" class="no-external">
-<div class="listing-date">
-Dec 27, 2023
-</div>
-<div class="listing-author">
-Matt Crump
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-categories="practice" data-listing-date-sort="1703566800000" data-listing-file-modified-sort="1703695379583" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6" data-listing-word-count-sort="1115">
-<div class="thumbnail">
-<p><a href="./blog/6_12_26_23_rootless9th/index.html" class="no-external"></a></p><a href="./blog/6_12_26_23_rootless9th/index.html" class="no-external">
-<p><img src="./blog/6_12_26_23_rootless9th/cover.jpg" class="thumbnail-image" style="height: 100%;"></p>
-</a><p><a href="./blog/6_12_26_23_rootless9th/index.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./blog/6_12_26_23_rootless9th/index.html" class="no-external">Rootless 9th chords</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./blog/6_12_26_23_rootless9th/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('practice'); return false;">
-practice
-</div>
-</div>
-<div class="listing-description">
-<a href="./blog/6_12_26_23_rootless9th/index.html" class="no-external">Running I∆7add9 chords through the circle of fifths.</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./blog/6_12_26_23_rootless9th/index.html" class="no-external">
-<div class="listing-date">
-Dec 26, 2023
-</div>
-<div class="listing-author">
-Matt Crump
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-categories="practice" data-listing-date-sort="1703480400000" data-listing-file-modified-sort="1703694834784" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="439">
-<div class="thumbnail">
-<p><a href="./blog/5_12_25_23_7thFirst/index.html" class="no-external"></a></p><a href="./blog/5_12_25_23_7thFirst/index.html" class="no-external">
-<p><img src="./blog/5_12_25_23_7thFirst/levine.png" class="thumbnail-image" style="height: 100%;"></p>
-</a><p><a href="./blog/5_12_25_23_7thFirst/index.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./blog/5_12_25_23_7thFirst/index.html" class="no-external">7th first II-V-I</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./blog/5_12_25_23_7thFirst/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('practice'); return false;">
-practice
-</div>
-</div>
-<div class="listing-description">
-<a href="./blog/5_12_25_23_7thFirst/index.html" class="no-external">A piano exercise</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./blog/5_12_25_23_7thFirst/index.html" class="no-external">
-<div class="listing-date">
-Dec 25, 2023
-</div>
-<div class="listing-author">
-Matt Crump
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="4" data-categories="practice" data-listing-date-sort="1703394000000" data-listing-file-modified-sort="1703694514044" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="213">
-<div class="thumbnail">
-<p><a href="./blog/4_12_24_23_scales_7ths/index.html" class="no-external"></a></p><a href="./blog/4_12_24_23_scales_7ths/index.html" class="no-external">
-<p><img src="./blog/4_12_24_23_scales_7ths/cover.jpg" class="thumbnail-image" style="height: 100%;"></p>
-</a><p><a href="./blog/4_12_24_23_scales_7ths/index.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./blog/4_12_24_23_scales_7ths/index.html" class="no-external">Scales in 7th chords</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./blog/4_12_24_23_scales_7ths/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('practice'); return false;">
-practice
-</div>
-</div>
-<div class="listing-description">
-<a href="./blog/4_12_24_23_scales_7ths/index.html" class="no-external">A piano exercise</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./blog/4_12_24_23_scales_7ths/index.html" class="no-external">
-<div class="listing-date">
-Dec 24, 2023
-</div>
-<div class="listing-author">
-Matt Crump
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="5" data-categories="practice exercise,circle of fifths" data-listing-date-sort="1703307600000" data-listing-file-modified-sort="1703692526246" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="522">
-<div class="thumbnail">
-<p><a href="./blog/3_12_23_23_cycling/index.html" class="no-external"></a></p><a href="./blog/3_12_23_23_cycling/index.html" class="no-external">
-<p><img src="./blog/3_12_23_23_cycling/circle.png" class="thumbnail-image" style="height: 100%;"></p>
-</a><p><a href="./blog/3_12_23_23_cycling/index.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./blog/3_12_23_23_cycling/index.html" class="no-external">Cycling through Major 7ths</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./blog/3_12_23_23_cycling/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('practice exercise'); return false;">
-practice exercise
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('circle of fifths'); return false;">
-circle of fifths
-</div>
-</div>
-<div class="listing-description">
-<a href="./blog/3_12_23_23_cycling/index.html" class="no-external">Notes on a piano exercise.</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./blog/3_12_23_23_cycling/index.html" class="no-external">
-<div class="listing-date">
-Dec 23, 2023
-</div>
-<div class="listing-author">
-Matt Crump
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="6" data-categories="motivation,circle of fifths" data-listing-date-sort="1703307600000" data-listing-file-modified-sort="1703691903931" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="297">
-<div class="thumbnail">
-<p><a href="./blog/2_12_23_23_practice/index.html" class="no-external"></a></p><a href="./blog/2_12_23_23_practice/index.html" class="no-external">
-<p><img src="./blog/2_12_23_23_practice/cover.jpg" class="thumbnail-image" style="height: 100%;"></p>
-</a><p><a href="./blog/2_12_23_23_practice/index.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./blog/2_12_23_23_practice/index.html" class="no-external">Practice</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./blog/2_12_23_23_practice/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('motivation'); return false;">
-motivation
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('circle of fifths'); return false;">
-circle of fifths
-</div>
-</div>
-<div class="listing-description">
-<a href="./blog/2_12_23_23_practice/index.html" class="no-external">Starting up a blog about practicing and trying to practice more piano.</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./blog/2_12_23_23_practice/index.html" class="no-external">
-<div class="listing-date">
-Dec 23, 2023
-</div>
-<div class="listing-author">
-Matt Crump
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="7" data-categories="quarto" data-listing-date-sort="1703048400000" data-listing-file-modified-sort="1703691079137" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2" data-listing-word-count-sort="218">
-<div class="thumbnail">
-<p><a href="./blog/1_12_20_23_dolphin_dance/index.html" class="no-external"></a></p><a href="./blog/1_12_20_23_dolphin_dance/index.html" class="no-external">
-<p><img src="./blog/1_12_20_23_dolphin_dance/cover.jpg" class="thumbnail-image" style="height: 100%;"></p>
-</a><p><a href="./blog/1_12_20_23_dolphin_dance/index.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./blog/1_12_20_23_dolphin_dance/index.html" class="no-external">Dolphin Dance</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./blog/1_12_20_23_dolphin_dance/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('quarto'); return false;">
-quarto
-</div>
-</div>
-<div class="listing-description">
-<a href="./blog/1_12_20_23_dolphin_dance/index.html" class="no-external">A synthesized version of Herbie Hancock’s Dolphin Dance.</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./blog/1_12_20_23_dolphin_dance/index.html" class="no-external">
-<div class="listing-date">
-Dec 20, 2023
-</div>
-<div class="listing-author">
-Matt Crump
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="8" data-categories="practice" data-listing-date-sort="1702962000000" data-listing-file-modified-sort="1703693955104" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="151">
-<div class="thumbnail">
-<p><a href="./blog/template/index.html" class="no-external"></a></p><a href="./blog/template/index.html" class="no-external">
-<p><img src="./blog/template/cover.jpg" class="thumbnail-image" style="height: 100%;"></p>
-</a><p><a href="./blog/template/index.html" class="no-external"></a></p>
-</div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./blog/template/index.html" class="no-external">blog template</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./blog/template/index.html" class="no-external"></a>
-</div>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('practice'); return false;">
-practice
-</div>
-</div>
-<div class="listing-description">
-<a href="./blog/template/index.html" class="no-external">template files</a>
-</div>
-</div>
-<div class="metadata">
-<a href="./blog/template/index.html" class="no-external">
-<div class="listing-date">
-Dec 19, 2023
-</div>
-<div class="listing-author">
-Matt Crump
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div>
+<p><audio controls=""> <source src="Maj7ths_01.mp3" type="audio/wav"> </audio></p>
+<p>The basic task is to play Major 7th chords through the circle of fifths.</p>
 
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Circle of fifths</p>
+<p>Going clockwise the next note is a perfect fifth from the previous note.</p>
+<p><img src="circle.png" class="img-fluid"></p>
+</div></div><p>Major 7th chords have a I-III-V-maj7 structure. These are the first, third, fifth, and major 7th notes in the major scale of the root key. For example, the key of C has 7 notes in the major scale: C D E F G A B</p>
+<p>The chord C Maj7 (also notated as C∆7) is C-E-G-B.</p>
+<p>Where C is the root or first note, E is the III, G is the V, and B is the major VII. The same pattern is applied to make Maj7 chords in all other keys.</p>
+<p>At the beginning of this practice track I play chords going anti-clockwise through the circle of fifths:</p>
+<p>C∆7 - F∆7 - Bb∆7 - Eb∆7 - Ab∆7 - Db∆7 - Gb∆7 - B∆7 - E∆7 - A∆7 - D∆7 - G∆7 - C∆7</p>
+<p>I can probably play through this a bit faster, but not without making mistakes. One goal is to get the speed up both in both directions (anti-clockwise and clockwise).</p>
+<p>Next, there is a short riff that I got from <a href="https://www.youtube.com/watch?v=CML0EgoqpxU">Nahre Sol’s youtube channel</a>, who has some other great recommendations for playing through maj7th chords.</p>
+<p>Then, I end with playing ∆7th chords in my left hand and messing around with playing through major scales in the right hand. For example, if I’m playing a C∆7th, then I’m playing through the C major scale and so on. I thought I would have a better grasp on all of the major scales, but some of them are way out of practice. Yeesh. Baby steps.</p>
+<p>A random observation about musical relationships that this exercise drew out. When playing anti-clockwise, the next chord remains ambiguous with respect to the tonal center: it could indicate a switch of the root, but maybe not. There isn’t enough evidence to go on based on the notes in the major 7th chords.</p>
+<p>For example, going from C∆7 to F∆7 involves CEGB and FACE, all of these notes are in the C Major scale. So, the F∆7 chord doesn’t add any new notes, which in my mind allows some ambiguity about whether we are in C major still or have switched to F major. The F major scale has a Bb, which is the one note that makes F major different from C major, but this note is not voiced in the F∆7 chord. However, this “new note”, which would provide evidence that the root had switched from C to F is voiced by the next chord in the circle of fifths, Bb. So, in some sense moving anti-clockwise by one chord sets up a question—has the root changed?—and moving one more chord answers the question—yes—, but also asks the same question again, in a circle of fifths.</p>
 
 
 
@@ -950,6 +611,10 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
+<script src="https://giscus.app/client.js" data-repo="CrumpLab/crumplab_comments" data-repo-id="R_kgDOJ0QrEQ" data-category="General" data-category-id="DIC_kwDOJ0QrEc4CXety" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark">
 </div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
@@ -959,7 +624,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <div class="nav-footer-center">
       <ul class="footer-items list-unstyled">
     <li class="nav-item">
-    <a class="nav-link" href="./about.html">
+    <a class="nav-link" href="../../about.html">
 <p>Brought to you by Homophony, 2023</p>
 </a>
   </li>  
