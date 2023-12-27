@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>Homophony</title>
+<link>https://homophony.quest/notes.html</link>
+<atom:link href="https://homophony.quest/notes.xml" rel="self" type="application/rss+xml"/>
+<description>Music blog for motivation to play more music</description>
+<image>
+<url>https://homophony.quest/images/notesE_0.jpg</url>
+<title>Homophony</title>
+<link>https://homophony.quest/notes.html</link>
+</image>
+<generator>quarto-1.4.533</generator>
+<lastBuildDate>Wed, 27 Dec 2023 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>Blogging for music motivation</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/1_12_27_23_blog/</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>I had some time at the end of my semester to play piano more than usual. This semester that meant I actually played the piano, instead of not playing the piano.</p>
+<p>Clearly I need to make time for more piano. I’m hoping this blog will keep me somewhat organized and motivated to stay on target.</p>
+<p>The blog is built with <a href="https://quarto.org">quarto</a>, and this post is just changing the structure a little bit so that each post is it’s own post, rather than a bunch of posts on a single page.</p>
+
+
+
+ ]]></description>
+  <category>quarto</category>
+  <guid>https://homophony.quest/blog/1_12_27_23_blog/</guid>
+  <pubDate>Wed, 27 Dec 2023 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/1_12_27_23_blog/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>Dolphin Dance</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/1_12_20_23_dolphin_dance/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/1_12_20_23_dolphin_dance/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>” Herbie Hancock’s dolphin dance with a bunch of synthesizers” - LCM_Dreamshaper_v7</p>
+</div></div><p><audio controls=""> <source src="DolphinDanceFull_render 2_01.mp3" type="audio/wav"> </audio></p>
+<p>Have been messing about with Herbie Hancock’s “Dolphin Dance” on the piano for a while.</p>
+<p>Had a clear day to try some mixer mimicking. Plan was to develop my own voicings for everything, but mix them similar to the Maiden Voyage recording…and then jam it.</p>
+<p>What happened:</p>
+<ul>
+<li>Recorded the Hancock version into Ableton</li>
+<li>Located BPM</li>
+<li>Voices
+<ul>
+<li>Rhodes</li>
+<li>Moog matriarch bass lines</li>
+<li>MPC drums</li>
+<li>OB-6 horns</li>
+</ul></li>
+<li>For each voice, play with the original record. Keep recording in a loop using Ableton comping lanes</li>
+<li>Fix messes by sampling in comping lanes/ explore have fun with fixing the mess</li>
+<li>Duplicate the head, then solo overtop for a bit</li>
+<li>Mix it down.</li>
+<li>Try some final mixing touches.</li>
+</ul>
+
+
+
+ ]]></description>
+  <category>quarto</category>
+  <guid>https://homophony.quest/blog/1_12_20_23_dolphin_dance/</guid>
+  <pubDate>Wed, 20 Dec 2023 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/1_12_20_23_dolphin_dance/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
+</channel>
+</rss>

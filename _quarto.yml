@@ -10,6 +10,7 @@ website:
   twitter-card: true
   open-graph: true
   site-url: "https://homophony.quest"
+  description: "Music and notes by Homophony"
   navbar:
     left:
       - href: index.qmd
@@ -17,6 +18,8 @@ website:
       - about.qmd
       - notes.qmd
     right:
+      - icon: rss
+        href: notes.xml
       - icon: mastodon
         href: https://fosstodon.org/@MattCrumpLab
       - icon: youtube

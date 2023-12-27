@@ -1,0 +1,20 @@
+---
+title: "Blogging for music motivation"
+author: "Matt Crump"
+date: 12/27/23
+description: "Setting up a quarto blog for taking music notes."
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - quarto
+execute: 
+  echo: false
+---
+
+I had some time at the end of my semester to play piano more than usual. This semester that meant I actually played the piano, instead of not playing the piano.
+
+Clearly I need to make time for more piano. I'm hoping this blog will keep me somewhat organized and motivated to stay on target.
+
+The blog is built with [quarto](https://quarto.org), and this post is just changing the structure a little bit so that each post is it's own post, rather than a bunch of posts on a single page.

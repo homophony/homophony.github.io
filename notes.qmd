@@ -1,10 +1,23 @@
 ---
-title: "Wall of Notes?"
+title: "Wall of Notes"
 author: Matt Crump
 description: Music blog for motivation to play more music
 image: images/notesE_0.jpg
 editor: visual
+listing:
+  contents: blog
+  id: blog_list
+  sort: "order"
+  type: default
+  categories: true
+  image-align: 'right'
+  image-height: '100%'
+  feed: true
 ---
+
+
+::: {#blog_list}
+:::
 
 ```{r}
 #| echo: false
@@ -202,6 +215,8 @@ Ideally, I'd like to keep a little journal here of practice strategies, reportin
 
 -   Still getting some audio dropout sometimes, not sure why.
 
+
+<!--
 # Dolphin Dance
 
 `r html_tag_audio("../music/new/DolphinDanceFull_render 2_01.mp3", type = "wav")`
@@ -224,3 +239,5 @@ What happened:
 -   Duplicate the head, then solo overtop for a bit
 -   Mix it down.
 -   Try some final mixing touches.
+
+-->

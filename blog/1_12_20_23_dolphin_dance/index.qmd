@@ -1,0 +1,58 @@
+---
+title: "Dolphin Dance"
+author: "Matt Crump"
+date: 12/20/23
+description: "A synthesized version of Herbie Hancock's Dolphin Dance."
+image: "cover.jpg"
+aliases: 
+  - https://homophony.quest/notes.html#dolphin-dance
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - quarto
+execute: 
+  echo: false
+---
+
+![](cover.jpg){width=50% fig-align="left"}
+
+::: column-margin
+" Herbie Hancock's dolphin dance with a bunch of synthesizers" - LCM_Dreamshaper_v7
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+`r html_tag_audio("DolphinDanceFull_render 2_01.mp3", type = "wav")`
+
+Have been messing about with Herbie Hancock's "Dolphin Dance" on the piano for a while.
+
+Had a clear day to try some mixer mimicking. Plan was to develop my own voicings for everything, but mix them similar to the Maiden Voyage recording...and then jam it.
+
+What happened:
+
+-   Recorded the Hancock version into Ableton
+-   Located BPM
+-   Voices
+    -   Rhodes
+    -   Moog matriarch bass lines
+    -   MPC drums
+    -   OB-6 horns
+-   For each voice, play with the original record. Keep recording in a loop using Ableton comping lanes
+-   Fix messes by sampling in comping lanes/ explore have fun with fixing the mess
+-   Duplicate the head, then solo overtop for a bit
+-   Mix it down.
+-   Try some final mixing touches.
