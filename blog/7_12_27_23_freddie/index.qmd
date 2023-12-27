@@ -94,4 +94,10 @@ I didn't have time to get through the whole solo, just the first 12 bars, and it
 
 `r html_tag_audio("Freddie_solo.mp3", type = "wav")`
 
+Practice notes: I ended up practicing the first phrase through the circle of fifths this morning.
+
+`r html_tag_audio("freddie_phrase.mp3", type = "wav")`
+
+
+
 
