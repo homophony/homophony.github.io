@@ -1,16 +1,8 @@
 [
   {
-    "listing": "/index.html",
-    "items": [
-      "/music/New.html",
-      "/music/Basement_Tapes.html",
-      "/music/RS.html",
-      "/music/VO.html"
-    ]
-  },
-  {
     "listing": "/notes.html",
     "items": [
+      "/blog/8_12_27_23_quantic_rain/index.html",
       "/blog/1_12_27_23_blog/index.html",
       "/blog/7_12_27_23_freddie/index.html",
       "/blog/6_12_26_23_rootless9th/index.html",
@@ -20,6 +12,15 @@
       "/blog/2_12_23_23_practice/index.html",
       "/blog/1_12_20_23_dolphin_dance/index.html",
       "/blog/template/index.html"
+    ]
+  },
+  {
+    "listing": "/index.html",
+    "items": [
+      "/music/New.html",
+      "/music/Basement_Tapes.html",
+      "/music/RS.html",
+      "/music/VO.html"
     ]
   }
 ]

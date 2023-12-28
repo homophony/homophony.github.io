@@ -15,7 +15,64 @@
 <link>https://homophony.quest/notes.html</link>
 </image>
 <generator>quarto-1.4.533</generator>
-<lastBuildDate>Wed, 27 Dec 2023 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 28 Dec 2023 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>Recreating a beat from Quantic’s Life in the Rain</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/8_12_27_23_quantic_rain/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/8_12_27_23_quantic_rain/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Album cover - The 5th Exotic by Quantic</p>
+</div></div><ol type="1">
+<li>Record this thing into Ableton and grab the beat.</li>
+</ol>
+<p>Sidenote. Attempting this on a new mac. I was going to record from Apple Music into Ableton, but I wasn’t setup for that. I used to use soundflower to route audio, and now I’m going to try <a href="https://rogueamoeba.com/loopback/">loopback</a>.</p>
+<p>Really annoying to install on my new mac because of the process of allowing kernel extensions. ugh. Will it work? OK, it worked.</p>
+<ol start="2" type="1">
+<li>Here’s 8 bars from Quantic. The first 4 are a bit of cymabals, and the beat comes in on the last 4. It’s the last 4 that I’m interested.</li>
+</ol>
+<p><audio controls=""> <source src="main_beat.mp3" type="audio/wav"> </audio></p>
+<ol start="3" type="1">
+<li>Set up some drums in Ableton and MIDIfy this beat.</li>
+</ol>
+<ul>
+<li>This took a little while. Not a huge fan of penciling in midi markers on my computer to make beats.</li>
+<li>Set up a basic drum rack, found some close enough sounds</li>
+<li>Used the EP-133 as a midi controller to pound in the beats, that was more fun</li>
+<li>Nudged things around etc.</li>
+<li>got close</li>
+</ul>
+<p>I ended up with this version of the main beat:</p>
+<p><audio controls=""> <source src="midi_100.mp3" type="audio/wav"> </audio></p>
+<p>Then, what’s fun with having everything as a midi note is to play around with note probability, and with adding hits that weren’t there, but now have a small probability of being there. Here’s an example of setting most of the sounds to a 50% probability.</p>
+<p><audio controls=""> <source src="midi_50.mp3" type="audio/wav"> </audio></p>
+<p>It’s more airy, but still carries the groove.</p>
+<p>Practice notes: More or less accomplished the goal for this drum recreation exercise. Did not mix the drum voices to taste.</p>
+<p>To Do:</p>
+<ul>
+<li>[] Use this somehow.</li>
+<li>[] Learn a little bit more about saving midi clips/audio etc. in ableton so that it is easy for me to re-use this later.</li>
+<li>[] See about programming this beat into the Varigate 8+, and or Hermod, so I have a modular version</li>
+</ul>
+
+
+
+ ]]></description>
+  <category>practice</category>
+  <guid>https://homophony.quest/blog/8_12_27_23_quantic_rain/</guid>
+  <pubDate>Thu, 28 Dec 2023 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/8_12_27_23_quantic_rain/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Blogging for music motivation</title>
   <dc:creator>Matt Crump</dc:creator>

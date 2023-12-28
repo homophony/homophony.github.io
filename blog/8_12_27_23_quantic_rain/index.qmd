@@ -1,0 +1,111 @@
+---
+title: "Recreating a beat from Quantic's Life in the Rain"
+author: "Matt Crump"
+date: 12/28/23
+description: "An exercise in beat recreation."
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - practice
+execute: 
+  echo: false
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "LCM_Dreamshaper_v7"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/LCM_Dreamshaper_v7/",custom_pipeline="latent_consistency_txt2img", custom_revision="main", revision="fb9c5d"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "fragments of a dream woven together with little puzzle pieces showing a universe of possibility"
+
+image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 4)
+
+image_save = image.images[0].save("cover_0.jpg")
+image_save = image.images[1].save("cover_1.jpg")
+image_save = image.images[2].save("cover_2.jpg")
+image_save = image.images[3].save("cover_3.jpg") 
+
+```
+
+
+![](cover.jpg){width=50% fig-align="left"}
+
+
+::: column-margin
+Album cover - The 5th Exotic by Quantic
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+1. Record this thing into Ableton and grab the beat.
+
+Sidenote. Attempting this on a new mac. I was going to record from Apple Music into Ableton, but I wasn't setup for that. I used to use soundflower to route audio, and now I'm going to try [loopback](https://rogueamoeba.com/loopback/).
+
+Really annoying to install on my new mac because of the process of allowing kernel extensions. ugh. Will it work? OK, it worked. 
+
+2. Here's 8 bars from Quantic. The first 4 are a bit of cymabals, and the beat comes in on the last 4. It's the last 4 that I'm interested. 
+
+`r html_tag_audio("main_beat.mp3", type = "wav")`
+
+3. Set up some drums in Ableton and MIDIfy this beat.
+  - This took a little while. Not a huge fan of penciling in midi markers on my computer to make beats.
+  - Set up a basic drum rack, found some close enough sounds
+  - Used the EP-133 as a midi controller to pound in the beats, that was more fun
+  - Nudged things around etc.
+  - got close
+  
+  
+I ended up with this version of the main beat:
+
+`r html_tag_audio("midi_100.mp3", type = "wav")`
+
+Then, what's fun with having everything as a midi note is to play around with note probability, and with adding hits that weren't there, but now have a small probability of being there. Here's an example of setting most of the sounds to a 50% probability.
+
+`r html_tag_audio("midi_50.mp3", type = "wav")`
+
+It's more airy, but still carries the groove.
+
+Practice notes: More or less accomplished the goal for this drum recreation exercise. Did not mix the drum voices to taste.
+
+To Do:
+
+- [] Use this somehow.
+- [] Learn a little bit more about saving midi clips/audio etc. in ableton so that it is easy for me to re-use this later.
+- [] See about programming this beat into the Varigate 8+, and or Hermod, so I have a modular version
+  
+
+
+
