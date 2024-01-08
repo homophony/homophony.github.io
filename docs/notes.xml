@@ -15,7 +15,38 @@
 <link>https://homophony.quest/notes.html</link>
 </image>
 <generator>quarto-1.4.533</generator>
-<lastBuildDate>Sat, 06 Jan 2024 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 08 Jan 2024 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>D major practice</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/12_1_8_24_Dmajor/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/12_1_8_24_Dmajor/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>“D major scale. Piano. Circle of fifths. D major 7th chords played on an infinite universe piano. synthesizer keyboard universe.” - dreamshaper-xl-turbo</p>
+</div></div><p>Continuing from yesterday’s G major practice I moved onto D major.</p>
+<p>Played the D major scale up and down using 7th chords. Did this multiple times with each inversion.</p>
+<p>Noted that I liked the sound of the 3rd inversion the best. Ran up and down enough times that I could play fairly fluently, almost into melody territory. Will likely continue this sort of practice across other keys.</p>
+<hr>
+<p>Aside…I’ve been messing around with huggingface models as a possible way to generate visual stimuli for some experiments this semester. The class of latent consistency models can generate decent images fairly quickly. This morning I downloaded the “dreamshaper-xl-turbo” model to test it out. Today’s blog picture was generated from this model.</p>
+
+
+
+ ]]></description>
+  <category>practice</category>
+  <guid>https://homophony.quest/blog/12_1_8_24_Dmajor/</guid>
+  <pubDate>Mon, 08 Jan 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/12_1_8_24_Dmajor/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Back in the saddle</title>
   <dc:creator>Matt Crump</dc:creator>
