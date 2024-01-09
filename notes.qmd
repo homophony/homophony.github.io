@@ -17,4 +17,3 @@ listing:
 
 ::: {#blog_list}
 :::
-
