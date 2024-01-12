@@ -35,16 +35,68 @@
 <p>“synthesizer dreamland. explosions of joyful expression. expressive happiness. dancing music. colorful. neon. modular synth. eurorack. cartoon, woodcut, linocut.” - dreamshaper-xl-turbo</p>
 </div></div><p>I’ve been really curious about the <a href="https://www.expressivee.com/2-osmose">Expressive Osmose</a> keyboard for a while now. So, I picked one up yesterday.</p>
 <p>Basically all I have to say is: HOLY WOW.</p>
-<p>I might have more to say later, and I may add notes to this post about the osmose as I go through the <a href="https://www.youtube.com/watch?v=Y02SCLQSnzw">7 stages of osmose ownerhsip</a>.</p>
+<p>I might have more to say later, and I may add notes to this post about the osmose as I go through the <a href="https://www.youtube.com/watch?v=Y02SCLQSnzw">7 stages of osmose ownership</a>.</p>
 <p>For, now I need to get back to pitch bending every note into a tornado of meowing cats.</p>
 <blockquote class="blockquote">
 <p>Actually, this was the expressive controller/synthesizer I was looking for – reply to Obi-Wan Kenobi</p>
 </blockquote>
+<p>Early afternoon update. I have been noodling away roughly alphabetically through the 500 presets. I’m just starting the ones that begin with C. It’s easy to get lost in fun for hours doing this. Not that I want to take the fun away, but I should start integrating this a little bit more into my setup. Probably the next step will be recording the noodles.</p>
+<p>Here are some notes so far on playing the osmose. These are notes to self to help me progress through this thing.</p>
+<section id="velocity-and-pressure" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="velocity-and-pressure">Velocity and pressure</h2>
+<p>The osmose has several dimensions of expressive control. Like most standard midi keyboards it has note velocity, but it also has pressure, aftertouch, and pitch bend for each key independently, with 24 voice polyphony!</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p><img src="https://product.hstatic.net/1000342432/product/1-roland-hp-5600.jpg" class="img-fluid"></p>
+</div></div><p>A digression into my past life of utterly not liking midi keyboards. I grew up playing a Roland 5600 with a MC-300 (or 500?) and MT-32 (where much was had with the orchestra hit sound). I would go to my piano teacher’s houses for lessons on a real piano, and practice on the midi piano at home. It was fun to make different sounds on the roland, but I always wanted a real piano as a kid.</p>
+<p>I still love the action of a real piano. It turns out I also love the action of my rhodes 88 key electric piano. But, I have never loved the action of any midi keyboard that I have ever owned or played. Not the hammer action ones. Not any of them.</p>
+<p>In 2019 I got to play a CS-80 one time in Melbourne and I could not believe how much a difference polyphonic aftertouch made. It’s so sad that midi keyboards suck so much for so long.</p>
+<p>Maybe I didn’t spend enough time with the other midi keyboards that I didn’t like. Most recently I brought home a Nord 88 key stage piano to use a controller, and it was just ok…one key broke, and there is an uncurable noisy power supply. Plus, these things never feel like an instrument to me, so they just constantly suck joy.</p>
+<p>I have tried to adjust velocity curves and find something that seems better, but never got there. It’s possible I just don’t like how velocity is usually implemented, or that velocity is missing something for me. In any case, when I play on my acoustic or electric piano, even though both keyboards have very different action, they are both very playable and immediately expressive. I don’t have think about it, the expression is just there.</p>
+<p>This is what I now adore about the osmose. The expression is right there at my finger tips.</p>
+<p>I really like that they have pressure per key too.</p>
+</section>
+<section id="squishy-goodness" class="level2">
+<h2 class="anchored" data-anchor-id="squishy-goodness">Squishy goodness</h2>
+<p>It’s hard to describe what the action feels like. There is some initial resistance to the keys, but not too much. This is great for light and/or bouncy tapping and slowly applying pressure to the keys. Many of the presets make sound from pressure alone, and sometimes different sounds from pressure or velocity.</p>
+<p>The aftertouch is the best feeling aftertouch I’ve ever played. There is a slight difference in resistance when you get to aftertouch land, and way more travel down into the aftertouch than on typical midi keyboards. It feels like the key keeps going down into it’s aftertouch home, where it belongs sometimes.</p>
+<p>Similarly, the key’s pick up side-to-side wiggling throughout the travel of the key and into aftertouch range. This parameter is usually applied to pitch bend. It get’s a bit easier to wiggle when the key is pressed down a bit, but over all it’s very natural.</p>
+</section>
+<section id="presets" class="level2">
+<h2 class="anchored" data-anchor-id="presets">Presets</h2>
+<p>Lots of juicy stuff in the presets, all powered by <a href="https://www.hakenaudio.com/sound-engine">EaganMatrix</a>. It’ll be a while before I go into that thing.</p>
+<p>There are a few onboard effects like a reverb and delays. The reverb can sound pretty good, especially with extend “on”.</p>
+<p>I don’t like menu diving, and it’s pretty fast to make changes to sounds and to sensitivity parameters of the controller. Very happy with that.</p>
+<p>Need to go play it some more.</p>
+</section>
+<section id="mpe-controller" class="level2">
+<h2 class="anchored" data-anchor-id="mpe-controller">MPE controller</h2>
+<p>I’ve got it hooked up to the OB-6 and it works very well. Whenever I need the sound to go to 11, I just back it up with some OB-6. The more the scarier.</p>
+<!--
+
+Velocity and pressure
+
+- i'm a piano player and love the action of some pianos...
+- not liking most/if any midi keyboards that I've used in the past.
+- is this to do with how velocity is implemented?
+
+Loving the pressure sensitivity along with velocity implementation.
+
+Really fun icons for the macros and other controls
+
+Fairly quick to access aspects of sound control...sensitivity adjustments are great, feels like I'm tweaking an instrument.
+- a little awkward getting around...matrix
 
 
+-->
+
+
+</section>
 
  ]]></description>
-  <category>track</category>
+  <category>gear</category>
+  <category>osmose</category>
+  <category>MPE</category>
   <guid>https://homophony.quest/blog/14_1_12_24_osmose/</guid>
   <pubDate>Fri, 12 Jan 2024 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/14_1_12_24_osmose/cover.jpg" medium="image" type="image/jpeg"/>
