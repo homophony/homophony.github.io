@@ -133,6 +133,13 @@ Need to go play it some more.
 
 I've got it hooked up to the OB-6 and it works very well. Whenever I need the sound to go to 11, I just back it up with some OB-6. The more the scarier.
 
+## Recording midi in ableton live
+
+I was recording for a bit with one midi track and one audio track. Things seemed to be going fine, but Ableton started freezing up once in a while, and the midi recordings were sometimes really off. The likely culprit is me trying to record MPE midi for the first time. 
+
+It seems there are some MPE midi settings that are important, like from this [video](https://www.youtube.com/watch?v=Xxtjvn5PrUo)
+
+Still crashing ableton a bunch. A problem for another day.
 
 ```{=html}
 <!--
