@@ -1,7 +1,17 @@
 [
   {
+    "listing": "/index.html",
+    "items": [
+      "/music/New.html",
+      "/music/Basement_Tapes.html",
+      "/music/RS.html",
+      "/music/VO.html"
+    ]
+  },
+  {
     "listing": "/notes.html",
     "items": [
+      "/blog/14_1_12_24_osmose/index.html",
       "/blog/13_1_9_24_turtle_ep133/index.html",
       "/blog/12_1_8_24_Dmajor/index.html",
       "/blog/12_1_8_24_screaming_modems/index.html",
@@ -18,15 +28,6 @@
       "/blog/2_12_23_23_practice/index.html",
       "/blog/1_12_20_23_dolphin_dance/index.html",
       "/blog/template/index.html"
-    ]
-  },
-  {
-    "listing": "/index.html",
-    "items": [
-      "/music/New.html",
-      "/music/Basement_Tapes.html",
-      "/music/RS.html",
-      "/music/VO.html"
     ]
   }
 ]
