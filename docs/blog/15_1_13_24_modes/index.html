@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.533">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Matt Crump">
+<meta name="dcterms.date" content="2024-01-13">
+<meta name="description" content="Working on modes…again">
+
+<title>Homophony - Modes…sigh</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-C5FTH8QPGW"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../../css/styles.css">
+<meta property="og:title" content="Homophony - Modes…sigh">
+<meta property="og:description" content="Working on modes…again">
+<meta property="og:image" content="https://homophony.quest/blog/15_1_13_24_modes/cover.jpg">
+<meta property="og:site_name" content="Homophony">
+<meta name="twitter:title" content="Homophony - Modes…sigh">
+<meta name="twitter:description" content="Working on modes…again">
+<meta name="twitter:image" content="https://homophony.quest/blog/15_1_13_24_modes/cover.jpg">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Homophony</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../notes.html"> 
+<span class="menu-text">Wall of Notes</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../notes.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://fosstodon.org/@MattCrumpLab"> <i class="bi bi-mastodon" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.youtube.com/channel/UCmzAb7gmWJBQ0zX3spqxrNQ"> <i class="bi bi-youtube" role="img" aria-label="Youtube">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://open.spotify.com/artist/21uZHA1jqXKOdkQmxR7ZcE?si=M2xiVdJpQG6OXuPW7URveg"> <i class="bi bi-spotify" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://music.apple.com/us/artist/homophony/1531902633"> <i class="bi bi-apple" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#modes-as-known-knowns" id="toc-modes-as-known-knowns" class="nav-link active" data-scroll-target="#modes-as-known-knowns">Modes as known knowns</a></li>
+  <li><a href="#modes-as-known-unknowns" id="toc-modes-as-known-unknowns" class="nav-link" data-scroll-target="#modes-as-known-unknowns">Modes as known unknowns</a></li>
+  <li><a href="#modes-and-unknown-unknowns" id="toc-modes-and-unknown-unknowns" class="nav-link" data-scroll-target="#modes-and-unknown-unknowns">Modes and unknown unknowns</a></li>
+  <li><a href="#modes-by-accident" id="toc-modes-by-accident" class="nav-link" data-scroll-target="#modes-by-accident">Modes by accident</a></li>
+  <li><a href="#playing-the-sound-of-the-modes" id="toc-playing-the-sound-of-the-modes" class="nav-link" data-scroll-target="#playing-the-sound-of-the-modes">Playing the sound of the modes</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Modes…sigh</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">modes</div>
+    <div class="quarto-category">scales</div>
+    <div class="quarto-category">music theory</div>
+    <div class="quarto-category">practice</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Working on modes…again
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Matt Crump </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 13, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>“musical modes. Ionian, Dorian, Phrygian, Lydian, Mixolydian, Aeolian and Locrian. piano. theory. music. colorful. lino cut. cartoon. illustration. thinking.” - dreamshaper-xl-turbo</p>
+</div></div><p>I’m not friends with modes yet. Barely an acquaintance, even after all these years.</p>
+<p>Today’s practice is focusing on modes, yet again. This morning I am thinking of modes like a Donald Rumsfeld quote. Modes for me are known knowns, known unknowns, and unknown unknowns.</p>
+<section id="modes-as-known-knowns" class="level2">
+<h2 class="anchored" data-anchor-id="modes-as-known-knowns">Modes as known knowns</h2>
+<p>I’m not sure when I first learned about modes, but probably some time in middle school. Since then I have– in a definitional sense– known what they were.</p>
+<p>The way I encoded them as a piano player was in terms of the C major scale. There are 7 modes of the major scale, corresponding to each key of the major scale. Each mode involves playing the major scale from a different root note. This got turned into a heuristic like, play all the white keys from C to C…then play them from D to D, E to E, and so on. Those are the modes. That’s it. Also, the major scale modes have these Greek names:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Mode Name</th>
+<th>Starting Note</th>
+<th>Notes in C Major</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ionian</td>
+<td>I</td>
+<td>CDEFGABC</td>
+</tr>
+<tr class="even">
+<td>Dorian</td>
+<td>II</td>
+<td>DEFGACBD</td>
+</tr>
+<tr class="odd">
+<td>Phrygian</td>
+<td>III</td>
+<td>EFGABCDE</td>
+</tr>
+<tr class="even">
+<td>Lydian</td>
+<td>IV</td>
+<td>FGABCDEF</td>
+</tr>
+<tr class="odd">
+<td>Mixolydian</td>
+<td>V</td>
+<td>GABCDEFG</td>
+</tr>
+<tr class="even">
+<td>Aeolian</td>
+<td>VI</td>
+<td>ABCDEFGA</td>
+</tr>
+<tr class="odd">
+<td>Locrian</td>
+<td>VII</td>
+<td>BCDEFGAB</td>
+</tr>
+</tbody>
+</table>
+<p>The mode concept is a descriptive one. Other scales have can be described as having modes using the same principles as above.</p>
+<p>That’s about as far the known knowns go for me. I don’t really think in terms of modes when I play. Also, that’s why I’m working on thinking in terms of modes again. For the extra flavor and different perspective that they bring.</p>
+</section>
+<section id="modes-as-known-unknowns" class="level2">
+<h2 class="anchored" data-anchor-id="modes-as-known-unknowns">Modes as known unknowns</h2>
+<p>There’s lots of other stuff that I in some sense “know” about modes. But, in practice, that conceptual knowledge is not well integrated into my playing.</p>
+<p>The best example is that I never really bothered to automatize the modes across all of the keys. Oops. Here again is a strange failure of generalization.</p>
+<p>On the one hand, I have practiced all of the modes across all of the keys. For example, over the past month I’ve been doing a lot of major scale work going up and down the major scale in every key, in every mode. I can play them all reasonably quickly now. So, that’s great. I must know my modes right? Not really.</p>
+<p>On the other hand, I wasn’t thinking about modes, mode names, or modal relationships as I was playing through those scales. So, for example, I knew it would be hard to play C scales in the different modes. Of course I know C ionian. But, what is C dorian? Mind goes blank. Then slowly, “yes, C is the II of Bb”, so then C dorian is, “play a Bb major scale starting from C.” Then, what is the third mode even? Can’t remember…oh yes, Phrygian. What is C Phrygian? ummm….blah.</p>
+<p>Of course, I can play an Ab major scale, but thinking of C Phygrian as Ab is one of those known unknowns. It’s the kind of missing connections I know are there, but haven’t bothered to glue together.</p>
+<p>More generally, I’m hoping that working through modes will help me firm up these kinds of relations between notes so that they are within striking distance of my finger tips. For example:</p>
+<ul>
+<li><p>C as a I (Ionian) in C</p></li>
+<li><p>C as a II (dorian) in Bb</p></li>
+<li><p>C as a III (phrygian) in Ab</p></li>
+<li><p>C as a IV (Lydian) in G</p></li>
+<li><p>C as a V (Mixolydian) in F</p></li>
+<li><p>C as a VI (Aeolian) in Eb</p></li>
+<li><p>C as a VII (Locrian) in Db</p></li>
+</ul>
+<p>And, then all of those same relationships for every note.</p>
+</section>
+<section id="modes-and-unknown-unknowns" class="level2">
+<h2 class="anchored" data-anchor-id="modes-and-unknown-unknowns">Modes and unknown unknowns</h2>
+<p>I suppose this is the stuff I’ll discover later on when I know my modes better.</p>
+<p>One example from this morning was noticing patterns of harmonic ambiguity that are mildly interesting. For example, let’s say you play a C and G, which could be described as a perfect fifth in the key of C. What else could it be? Those notes are in the C major scale, so they could imply C Ionian. Those notes are also in the Bb major scale (the II and VI), so they could imply Bb as the tonal center, and in that case playing notes from C dorian would help fill in that implication. The same goes for all of the other modes of C (except for locrian where the G is diminished). And this is a fun little toy to play with, like a jack-in-the-box. Playing Cs and Gs is like turning the gear of the box, building expectations about what kind of jack will pop up, and then OMG, it’s a locrian scale.</p>
+</section>
+<section id="modes-by-accident" class="level2">
+<h2 class="anchored" data-anchor-id="modes-by-accident">Modes by accident</h2>
+<p>I still can’t remember the names of modes. And, I haven’t encoded them in terms of their accidental values. So, that’s why I am making this table. These are the different modes of C.</p>
+<table class="table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 33%">
+<col style="width: 20%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mode Name</th>
+<th>Accidental</th>
+<th>Major scale</th>
+<th>C scale</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ionian I</td>
+<td>none</td>
+<td>C</td>
+<td>C D E F G A B C</td>
+</tr>
+<tr class="even">
+<td>Dorian II</td>
+<td>bIII, bVII</td>
+<td>Bb (C is -ii)</td>
+<td>C D Eb F G A Bb C</td>
+</tr>
+<tr class="odd">
+<td>Phrygian III</td>
+<td>bII, bIII, bVI, bVII</td>
+<td>Ab (C is -iii)</td>
+<td>C Db Eb F G Ab Bb C</td>
+</tr>
+<tr class="even">
+<td>Lydian IV</td>
+<td>#IV</td>
+<td>G (C is iv)</td>
+<td>C D E F# G A B C</td>
+</tr>
+<tr class="odd">
+<td>Mixolydian V</td>
+<td>bVII</td>
+<td>F (C is v)</td>
+<td>C D E F G A Bb C</td>
+</tr>
+<tr class="even">
+<td>Aeolian VI</td>
+<td>bIII, bVI, bVII</td>
+<td>Eb (C is -vi)</td>
+<td>C D Eb F G Ab Bb C</td>
+</tr>
+<tr class="odd">
+<td>Locrian VII</td>
+<td>bII, bIII, bV, bVI, bVII</td>
+<td>Db (C is vii)</td>
+<td>C Db Eb F Gb Ab Bb C</td>
+</tr>
+</tbody>
+</table>
+<p>So, a new goal will be to play the modes in each key from this point of view.</p>
+<p>The I (ionian), IV (lydian), and V (mixolydian) modes are “major” flavor, and the II (dorian), III (phrygian), IV (aeolian), and VII (locrian) modes are “minor” flavor.</p>
+<p>I’m going to re-order the modes in terms of the circle of fifths.</p>
+<table class="table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 33%">
+<col style="width: 20%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mode Name</th>
+<th>Accidental</th>
+<th>Major scale</th>
+<th>C scale</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Lydian IV</td>
+<td>#IV</td>
+<td>G (C is iv)</td>
+<td>C D E F# G A B C</td>
+</tr>
+<tr class="even">
+<td>Ionian I</td>
+<td>none</td>
+<td>C</td>
+<td>C D E F G A B C</td>
+</tr>
+<tr class="odd">
+<td>Mixolydian V</td>
+<td>bVII</td>
+<td>F (C is v)</td>
+<td>C D E F G A Bb C</td>
+</tr>
+<tr class="even">
+<td>Dorian II</td>
+<td>bIII, bVII</td>
+<td>Bb (C is -ii)</td>
+<td>C D Eb F G A Bb C</td>
+</tr>
+<tr class="odd">
+<td>Aeolian VI</td>
+<td>bIII, bVI, bVII</td>
+<td>Eb (C is -vi)</td>
+<td>C D Eb F G Ab Bb C</td>
+</tr>
+<tr class="even">
+<td>Phrygian III</td>
+<td>bII, bIII, bVI, bVII</td>
+<td>Ab (C is -iii)</td>
+<td>C Db Eb F G Ab Bb C</td>
+</tr>
+<tr class="odd">
+<td>Locrian VII</td>
+<td>bII, bIII, bV, bVI, bVII</td>
+<td>Db (C is vii)</td>
+<td>C Db Eb F Gb Ab Bb C</td>
+</tr>
+</tbody>
+</table>
+<p>From this point of view there are five increasingly “minor” modes, going from Mixolydian to Locrian. Thinking in terms of what spices are added to the C major, the mixolydian adds a Bb. If you play a C and the dominant 7th (Bb), then there is a kind of question…how many more minor spices are there going to be? When I’m cooking a minor chord, there’s lots of spices to be added. There’s less major spice options, but throw in the tri-tone once in a while I guess.</p>
+</section>
+<section id="playing-the-sound-of-the-modes" class="level2">
+<h2 class="anchored" data-anchor-id="playing-the-sound-of-the-modes">Playing the sound of the modes</h2>
+<p>Note to self to just get into it.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      return note.innerHTML;
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="CrumpLab/crumplab_comments" data-repo-id="R_kgDOJ0QrEQ" data-category="General" data-category-id="DIC_kwDOJ0QrEc4CXety" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark">
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+<p>Brought to you by Homophony, 2023</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://quarto.org">
+<p>Published with Quarto</p>
+</a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

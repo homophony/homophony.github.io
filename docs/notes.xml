@@ -15,7 +15,245 @@
 <link>https://homophony.quest/notes.html</link>
 </image>
 <generator>quarto-1.4.533</generator>
-<lastBuildDate>Fri, 12 Jan 2024 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sat, 13 Jan 2024 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>Modes…sigh</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/15_1_13_24_modes/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/15_1_13_24_modes/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>“musical modes. Ionian, Dorian, Phrygian, Lydian, Mixolydian, Aeolian and Locrian. piano. theory. music. colorful. lino cut. cartoon. illustration. thinking.” - dreamshaper-xl-turbo</p>
+</div></div><p>I’m not friends with modes yet. Barely an acquaintance, even after all these years.</p>
+<p>Today’s practice is focusing on modes, yet again. This morning I am thinking of modes like a Donald Rumsfeld quote. Modes for me are known known, known unknowns, and unknown unknowns.</p>
+<section id="modes-as-known-knowns" class="level2">
+<h2 class="anchored" data-anchor-id="modes-as-known-knowns">Modes as known knowns</h2>
+<p>I’m not sure when I first learned about modes, but probably some time in middle school. Since then I have, in some definitional sense, known what they were.</p>
+<p>The way I encoded them as a piano player was in terms of the C major scale. There are 7 modes of the major scale, corresponding to each key of the major scale. Each mode involves playing the major scale from a different root note. The major scale modes have these Greek names:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Mode Name</th>
+<th>Starting Note</th>
+<th>Notes in C Major</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ionian</td>
+<td>I</td>
+<td>CDEFGABC</td>
+</tr>
+<tr class="even">
+<td>Dorian</td>
+<td>II</td>
+<td>DEFGACBD</td>
+</tr>
+<tr class="odd">
+<td>Phrygian</td>
+<td>III</td>
+<td>EFGABCDE</td>
+</tr>
+<tr class="even">
+<td>Lydian</td>
+<td>IV</td>
+<td>FGABCDEF</td>
+</tr>
+<tr class="odd">
+<td>Mixolydian</td>
+<td>V</td>
+<td>GABCDEFG</td>
+</tr>
+<tr class="even">
+<td>Aeolian</td>
+<td>VI</td>
+<td>ABCDEFGA</td>
+</tr>
+<tr class="odd">
+<td>Locrian</td>
+<td>VII</td>
+<td>BCDEFGAB</td>
+</tr>
+</tbody>
+</table>
+<p>The mode concept is a descriptive one. Other scales have can be described as having modes using the same principles as above.</p>
+<p>That’s about as far the known knowns go for me. I don’t really think in terms of modes when I play. Also, that’s why I’m working on thinking in terms of modes again. For the extra flavor and different perspective that they bring.</p>
+</section>
+<section id="modes-as-known-unknowns" class="level2">
+<h2 class="anchored" data-anchor-id="modes-as-known-unknowns">Modes as known unknowns</h2>
+<p>There’s lots of other stuff that I in some sense “know” about modes. But, in practice, that conceptual knowledge is not well integrated into my playing.</p>
+<p>The best example is that I never really bothered to automatize the modes across all of the keys. Oops. Here again is a strange failure of generalization.</p>
+<p>On the one hand, I have practiced all of the modes across all of the keys. For example, over the past month I’ve been doing a lot of major scale work going up and down the major scale in every key, in every mode. I can play them all reasonably quickly now. So, that’s great. I must know my modes right? Not really.</p>
+<p>On the other hand, I wasn’t thinking about modes, mode names, or modal relationships as I was playing through those scales. So, for example, I knew it would be hard to play C scales in the different modes. Of course I known C ionian. But, what is C dorian? Mind goes blank. Then slowly, yes, C is the II of Bb, so then C dorian is play a Bb major scale starting from C. Then, what is the third mode even? Can’t remember…oh yes, Phrygian. What is C Phrygian? ummm….blah. Rinse and repeat. Of course, I can play an Ab major scale, but I know that thinking of C Phygrian as Ab is one of those known unknowns. I know I could know it, but I don’t know it yet.</p>
+<p>More generally, I’m hoping that working through will help me firm up the relations between notes so that they are within striking distance of my finger tips. For example:</p>
+<ul>
+<li><p>C as a I (Ionian) in C</p></li>
+<li><p>C as a II (dorian) in Bb</p></li>
+<li><p>C as a III (phrygian) in Ab</p></li>
+<li><p>C as a IV (Lydian) in G</p></li>
+<li><p>C as a V (Mixolydian) in F</p></li>
+<li><p>C as a VI (Aeolian) in Eb</p></li>
+<li><p>C as a VII (Locrian) in Db</p></li>
+</ul>
+<p>And, then all of those same relationships for every note.</p>
+</section>
+<section id="modes-and-unknown-unknowns" class="level2">
+<h2 class="anchored" data-anchor-id="modes-and-unknown-unknowns">Modes and unknown unknowns</h2>
+<p>I suppose this is the stuff I’ll discover later on when I know my modes better.</p>
+<p>One example from this morning was noticing patterns of harmonic ambiguity that are mildly interesting. For example, let’s say you play a C and G, which could be described as a perfect fifth in the key of C. What else could it be? Those notes are in the C major scale, so they could imply C Ionian. Those notes are also in the Bb major scale (the II and VI), so they could imply Bb as the tonal center, and in that case playing notes from C dorian would help fill in that implication. The same goes for all of the other modes of C (except for locrian where the G is diminished). And this is a fun little toy to play with, like a jack-in-the-box. Playing Cs and Gs is like turning the gear of the box, building expectations about what kind of jack will pop up, and then OMG, it’s a locrian scale.</p>
+</section>
+<section id="modes-by-accident" class="level2">
+<h2 class="anchored" data-anchor-id="modes-by-accident">Modes by accident</h2>
+<p>I still can’t remember the names of modes. And, I haven’t encoded them in terms of their accidental values. So, that’s why I am making this table. These are the different modes of C.</p>
+<table class="table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 33%">
+<col style="width: 20%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mode Name</th>
+<th>Accidental</th>
+<th>Major scale</th>
+<th>C scale</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ionian I</td>
+<td>none</td>
+<td>C</td>
+<td>C D E F G A B C</td>
+</tr>
+<tr class="even">
+<td>Dorian II</td>
+<td>bIII, bVII</td>
+<td>Bb (C is -ii)</td>
+<td>C D Eb F G A Bb C</td>
+</tr>
+<tr class="odd">
+<td>Phrygian III</td>
+<td>bII, bIII, bVI, bVII</td>
+<td>Ab (C is -iii)</td>
+<td>C Db Eb F G Ab Bb C</td>
+</tr>
+<tr class="even">
+<td>Lydian IV</td>
+<td>#IV</td>
+<td>G (C is iv)</td>
+<td>C D E F# G A B C</td>
+</tr>
+<tr class="odd">
+<td>Mixolydian V</td>
+<td>bVII</td>
+<td>F (C is v)</td>
+<td>C D E F G A Bb C</td>
+</tr>
+<tr class="even">
+<td>Aeolian VI</td>
+<td>bIII, bVI, bVII</td>
+<td>Eb (C is -vi)</td>
+<td>C D Eb F G Ab Bb C</td>
+</tr>
+<tr class="odd">
+<td>Locrian VII</td>
+<td>bII, bIII, bV, bVI, bVII</td>
+<td>Db (C is vii)</td>
+<td>C Db Eb F Gb Ab Bb C</td>
+</tr>
+</tbody>
+</table>
+<p>So, a new goal will be to play the modes in each key from this point of view.</p>
+<p>The I (ionian), IV (lydian), and V (mixolydian) modes are “major” flavor, and the II (dorian), III (phrygian), IV (aeolian), and VII (locrian) modes are “minor” flavor.</p>
+<p>I’m going to re-order the modes in terms of the circle of fifths.</p>
+<table class="table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 33%">
+<col style="width: 20%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mode Name</th>
+<th>Accidental</th>
+<th>Major scale</th>
+<th>C scale</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Lydian IV</td>
+<td>#IV</td>
+<td>G (C is iv)</td>
+<td>C D E F# G A B C</td>
+</tr>
+<tr class="even">
+<td>Ionian I</td>
+<td>none</td>
+<td>C</td>
+<td>C D E F G A B C</td>
+</tr>
+<tr class="odd">
+<td>Mixolydian V</td>
+<td>bVII</td>
+<td>F (C is v)</td>
+<td>C D E F G A Bb C</td>
+</tr>
+<tr class="even">
+<td>Dorian II</td>
+<td>bIII, bVII</td>
+<td>Bb (C is -ii)</td>
+<td>C D Eb F G A Bb C</td>
+</tr>
+<tr class="odd">
+<td>Aeolian VI</td>
+<td>bIII, bVI, bVII</td>
+<td>Eb (C is -vi)</td>
+<td>C D Eb F G Ab Bb C</td>
+</tr>
+<tr class="even">
+<td>Phrygian III</td>
+<td>bII, bIII, bVI, bVII</td>
+<td>Ab (C is -iii)</td>
+<td>C Db Eb F G Ab Bb C</td>
+</tr>
+<tr class="odd">
+<td>Locrian VII</td>
+<td>bII, bIII, bV, bVI, bVII</td>
+<td>Db (C is vii)</td>
+<td>C Db Eb F Gb Ab Bb C</td>
+</tr>
+</tbody>
+</table>
+<p>From this point of view there are five increasingly “minor” modes, going from Mixolydian to Locrian. Thinking in terms of what spices are added to the C major, the mixolydian adds a Bb. If you play a C and the dominant 7th (Bb), then there is a kind of question…how many more minor spices are there going to be? When I’m cooking a minor chord, there’s lots of spices to be added. There’s less major spice options, but through in the tri-tone once in a while I guess.</p>
+</section>
+<section id="playing-the-sound-of-the-modes" class="level2">
+<h2 class="anchored" data-anchor-id="playing-the-sound-of-the-modes">Playing the sound of the modes</h2>
+<p>Note to self to just get into it.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>gear</category>
+  <category>osmose</category>
+  <category>MPE</category>
+  <guid>https://homophony.quest/blog/15_1_13_24_modes/</guid>
+  <pubDate>Sat, 13 Jan 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/15_1_13_24_modes/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>The VERY Expressive Osmose</title>
   <dc:creator>Matt Crump</dc:creator>
