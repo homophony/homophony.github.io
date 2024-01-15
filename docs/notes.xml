@@ -34,11 +34,11 @@
 <div class="no-row-height column-margin column-container"><div class="">
 <p>“musical modes. Ionian, Dorian, Phrygian, Lydian, Mixolydian, Aeolian and Locrian. piano. theory. music. colorful. lino cut. cartoon. illustration. thinking.” - dreamshaper-xl-turbo</p>
 </div></div><p>I’m not friends with modes yet. Barely an acquaintance, even after all these years.</p>
-<p>Today’s practice is focusing on modes, yet again. This morning I am thinking of modes like a Donald Rumsfeld quote. Modes for me are known known, known unknowns, and unknown unknowns.</p>
+<p>Today’s practice is focusing on modes, yet again. This morning I am thinking of modes like a Donald Rumsfeld quote. Modes for me are known knowns, known unknowns, and unknown unknowns.</p>
 <section id="modes-as-known-knowns" class="level2">
 <h2 class="anchored" data-anchor-id="modes-as-known-knowns">Modes as known knowns</h2>
-<p>I’m not sure when I first learned about modes, but probably some time in middle school. Since then I have, in some definitional sense, known what they were.</p>
-<p>The way I encoded them as a piano player was in terms of the C major scale. There are 7 modes of the major scale, corresponding to each key of the major scale. Each mode involves playing the major scale from a different root note. The major scale modes have these Greek names:</p>
+<p>I’m not sure when I first learned about modes, but probably some time in middle school. Since then I have– in a definitional sense– known what they were.</p>
+<p>The way I encoded them as a piano player was in terms of the C major scale. There are 7 modes of the major scale, corresponding to each key of the major scale. Each mode involves playing the major scale from a different root note. This got turned into a heuristic like, play all the white keys from C to C…then play them from D to D, E to E, and so on. Those are the modes. That’s it. Also, the major scale modes have these Greek names:</p>
 <table class="table">
 <thead>
 <tr class="header">
@@ -93,8 +93,9 @@
 <p>There’s lots of other stuff that I in some sense “know” about modes. But, in practice, that conceptual knowledge is not well integrated into my playing.</p>
 <p>The best example is that I never really bothered to automatize the modes across all of the keys. Oops. Here again is a strange failure of generalization.</p>
 <p>On the one hand, I have practiced all of the modes across all of the keys. For example, over the past month I’ve been doing a lot of major scale work going up and down the major scale in every key, in every mode. I can play them all reasonably quickly now. So, that’s great. I must know my modes right? Not really.</p>
-<p>On the other hand, I wasn’t thinking about modes, mode names, or modal relationships as I was playing through those scales. So, for example, I knew it would be hard to play C scales in the different modes. Of course I known C ionian. But, what is C dorian? Mind goes blank. Then slowly, yes, C is the II of Bb, so then C dorian is play a Bb major scale starting from C. Then, what is the third mode even? Can’t remember…oh yes, Phrygian. What is C Phrygian? ummm….blah. Rinse and repeat. Of course, I can play an Ab major scale, but I know that thinking of C Phygrian as Ab is one of those known unknowns. I know I could know it, but I don’t know it yet.</p>
-<p>More generally, I’m hoping that working through will help me firm up the relations between notes so that they are within striking distance of my finger tips. For example:</p>
+<p>On the other hand, I wasn’t thinking about modes, mode names, or modal relationships as I was playing through those scales. So, for example, I knew it would be hard to play C scales in the different modes. Of course I know C ionian. But, what is C dorian? Mind goes blank. Then slowly, “yes, C is the II of Bb”, so then C dorian is, “play a Bb major scale starting from C.” Then, what is the third mode even? Can’t remember…oh yes, Phrygian. What is C Phrygian? ummm….blah.</p>
+<p>Of course, I can play an Ab major scale, but thinking of C Phygrian as Ab is one of those known unknowns. It’s the kind of missing connections I know are there, but haven’t bothered to glue together.</p>
+<p>More generally, I’m hoping that working through modes will help me firm up these kinds of relations between notes so that they are within striking distance of my finger tips. For example:</p>
 <ul>
 <li><p>C as a I (Ionian) in C</p></li>
 <li><p>C as a II (dorian) in Bb</p></li>
@@ -237,7 +238,234 @@
 </tr>
 </tbody>
 </table>
-<p>From this point of view there are five increasingly “minor” modes, going from Mixolydian to Locrian. Thinking in terms of what spices are added to the C major, the mixolydian adds a Bb. If you play a C and the dominant 7th (Bb), then there is a kind of question…how many more minor spices are there going to be? When I’m cooking a minor chord, there’s lots of spices to be added. There’s less major spice options, but through in the tri-tone once in a while I guess.</p>
+<p>From this point of view there are five increasingly “minor” modes, going from Mixolydian to Locrian. Thinking in terms of what spices are added to the C major, the mixolydian adds a Bb. If you play a C and the dominant 7th (Bb), then there is a kind of question…how many more minor spices are there going to be? When I’m cooking a minor chord, there’s lots of spices to be added. There’s less major spice options, but throw in the tri-tone once in a while I guess.</p>
+<p>More notes…The same table as above, using arabic numerals, and re-ordering in terms how the flats are added in the circle of fifths.</p>
+<table class="table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 33%">
+<col style="width: 20%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Mode Name</th>
+<th>Accidental</th>
+<th>Major scale</th>
+<th>C scale</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Lydian IV</td>
+<td>#4</td>
+<td>G (C is iv)</td>
+<td>C D E F# G A B C</td>
+</tr>
+<tr class="even">
+<td>Ionian I</td>
+<td>none</td>
+<td>C</td>
+<td>C D E F G A B C</td>
+</tr>
+<tr class="odd">
+<td>Mixolydian V</td>
+<td>b7</td>
+<td>F (C is v)</td>
+<td>C D E F G A Bb C</td>
+</tr>
+<tr class="even">
+<td>Dorian II</td>
+<td>b7, b3</td>
+<td>Bb (C is -ii)</td>
+<td>C D Eb F G A Bb C</td>
+</tr>
+<tr class="odd">
+<td>Aeolian VI</td>
+<td>b7, b3, b6</td>
+<td>Eb (C is -vi)</td>
+<td>C D Eb F G Ab Bb C</td>
+</tr>
+<tr class="even">
+<td>Phrygian III</td>
+<td>b7, b3, b6, b2</td>
+<td>Ab (C is -iii)</td>
+<td>C Db Eb F G Ab Bb C</td>
+</tr>
+<tr class="odd">
+<td>Locrian VII</td>
+<td>b7, b3, b6, b2, b5</td>
+<td>Db (C is vii)</td>
+<td>C Db Eb F Gb Ab Bb C</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="modes-as-slashpolychords" class="level2">
+<h2 class="anchored" data-anchor-id="modes-as-slashpolychords">Modes as slash/polychords</h2>
+<p>I’ve seen different definitions of slash and polychords. One definition of a slash chord (say D/F#) is to play the numerator triad (D) with the denominator bass note (F#). And, a polychord would be playing one triad with the right hand (D) and another with the left hand (F#).</p>
+<p>Another way to think of playing modes is in terms of slash chords or poly chords; or, I guess slash scales or poly scales. For example, consider a G/C. That could indicate a G major scale over a C bass note. Playing the G major scale starting and ending on C is the same as C lydian.</p>
+<p>In the next table the note in the denominator is the root. The note in the numerator is the major scale to be played over the root (starting and ending on the root). The roman numerals show interval relations between the root and scale. For example, in the lydian column, the root is the fourth note in the corresponding scale (C is the fourth of G, G is the fourth of C). Modifying the major scale in the denominator by the accidental yields the major scale in the numerator (For Bb/C, flattening the 37 in C is B-&gt; Bb and E -&gt; Eb, which then turns the C scale into a Bb scale). The table is arranged in terms of the circle of fifths.</p>
+<table class="table">
+<colgroup>
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 18%">
+<col style="width: 12%">
+<col style="width: 14%">
+<col style="width: 15%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Lydian</th>
+<th>Ionian</th>
+<th>Mixolydian</th>
+<th>Dorian</th>
+<th>Aeolian</th>
+<th>Phrygian</th>
+<th>Locrian</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Majory</td>
+<td>Major</td>
+<td>Majorish</td>
+<td>Minor</td>
+<td>even</td>
+<td>more</td>
+<td>MINOR</td>
+</tr>
+<tr class="even">
+<td>IV</td>
+<td>I</td>
+<td>V</td>
+<td>II</td>
+<td>VI</td>
+<td>III</td>
+<td>VII</td>
+</tr>
+<tr class="odd">
+<td>#4</td>
+<td>–</td>
+<td>b7</td>
+<td>b73</td>
+<td>b736</td>
+<td>b7362</td>
+<td>b73625</td>
+</tr>
+<tr class="even">
+<td>G/C</td>
+<td>C/C</td>
+<td>F/C</td>
+<td>Bb/C</td>
+<td>Eb/C</td>
+<td>Ab/C</td>
+<td>Db/C</td>
+</tr>
+<tr class="odd">
+<td>C/F</td>
+<td>F/F</td>
+<td>Bb/F</td>
+<td>Eb/F</td>
+<td>Ab/F</td>
+<td>Db/F</td>
+<td>Gb/F</td>
+</tr>
+<tr class="even">
+<td>F/Bb</td>
+<td>Bb/Bb</td>
+<td>Eb/Bb</td>
+<td>Ab/Bb</td>
+<td>Db/Bb</td>
+<td>Gb/Bb</td>
+<td>B/Bb</td>
+</tr>
+<tr class="odd">
+<td>Bb/Eb</td>
+<td>Eb/Eb</td>
+<td>Ab/Eb</td>
+<td>Db/Eb</td>
+<td>Gb/Eb</td>
+<td>B/Eb</td>
+<td>E/Eb</td>
+</tr>
+<tr class="even">
+<td>Eb/Ab</td>
+<td>Ab/Ab</td>
+<td>Db/Ab</td>
+<td>Gb/Ab</td>
+<td>B/Ab</td>
+<td>E/Ab</td>
+<td>A/Ab</td>
+</tr>
+<tr class="odd">
+<td>Ab/Db</td>
+<td>Db/Db</td>
+<td>Gb/Db</td>
+<td>B/Db</td>
+<td>E/Db</td>
+<td>A/Db</td>
+<td>D/Db</td>
+</tr>
+<tr class="even">
+<td>Db/Gb</td>
+<td>Gb/Gb</td>
+<td>B/Gb</td>
+<td>E/Gb</td>
+<td>A/Gb</td>
+<td>D/Gb</td>
+<td>G/Gb</td>
+</tr>
+<tr class="odd">
+<td>Gb/B</td>
+<td>B/B</td>
+<td>E/B</td>
+<td>A/B</td>
+<td>D/B</td>
+<td>G/B</td>
+<td>C/B</td>
+</tr>
+<tr class="even">
+<td>B/E</td>
+<td>E/E</td>
+<td>A/E</td>
+<td>D/E</td>
+<td>G/E</td>
+<td>C/E</td>
+<td>F/E</td>
+</tr>
+<tr class="odd">
+<td>E/A</td>
+<td>A/A</td>
+<td>D/A</td>
+<td>G/A</td>
+<td>C/A</td>
+<td>F/A</td>
+<td>Bb/A</td>
+</tr>
+<tr class="even">
+<td>A/D</td>
+<td>D/D</td>
+<td>G/D</td>
+<td>C/D</td>
+<td>F/D</td>
+<td>Bb/D</td>
+<td>Eb/D</td>
+</tr>
+<tr class="odd">
+<td>D/G</td>
+<td>G/G</td>
+<td>C/G</td>
+<td>F/G</td>
+<td>Bb/G</td>
+<td>Eb/G</td>
+<td>Ab/G</td>
+</tr>
+</tbody>
+</table>
+<p>Thinking in terms of the circle of fifths. Playing a slash scale one fifth above the root is Lydian. Playing a scale in the root is Ionian. Playing slash scales down the circle of fifths (anti-clockwise) is Mixolydian, Dorian, Aeolian, Phrygian, Locrian.</p>
 </section>
 <section id="playing-the-sound-of-the-modes" class="level2">
 <h2 class="anchored" data-anchor-id="playing-the-sound-of-the-modes">Playing the sound of the modes</h2>
@@ -247,9 +475,10 @@
 </section>
 
  ]]></description>
-  <category>gear</category>
-  <category>osmose</category>
-  <category>MPE</category>
+  <category>modes</category>
+  <category>scales</category>
+  <category>music theory</category>
+  <category>practice</category>
   <guid>https://homophony.quest/blog/15_1_13_24_modes/</guid>
   <pubDate>Sat, 13 Jan 2024 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/15_1_13_24_modes/cover.jpg" medium="image" type="image/jpeg"/>

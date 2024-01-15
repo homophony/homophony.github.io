@@ -168,6 +168,48 @@ I'm going to re-order the modes in terms of the circle of fifths.
 
 From this point of view there are five increasingly "minor" modes, going from Mixolydian to Locrian. Thinking in terms of what spices are added to the C major, the mixolydian adds a Bb. If you play a C and the dominant 7th (Bb), then there is a kind of question...how many more minor spices are there going to be? When I'm cooking a minor chord, there's lots of spices to be added. There's less major spice options, but throw in the tri-tone once in a while I guess.
 
+More notes...The same table as above, using arabic numerals, and re-ordering in terms how the flats are added in the circle of fifths. 
+
+| Mode Name    | Accidental               | Major scale    | C scale              |
+|--------------|--------------------------|----------------|----------------------|
+| Lydian IV    | #4                      | G (C is iv)    | C D E F# G A B C     |
+| Ionian I     | none                     | C              | C D E F G A B C      |
+| Mixolydian V | b7                     | F (C is v)     | C D E F G A Bb C     |
+| Dorian II    | b7, b3               | Bb (C is -ii)  | C D Eb F G A Bb C    |
+| Aeolian VI   | b7, b3, b6          | Eb (C is -vi)  | C D Eb F G Ab Bb C   |
+| Phrygian III | b7, b3, b6, b2     | Ab (C is -iii) | C Db Eb F G Ab Bb C  |
+| Locrian VII  | b7, b3, b6, b2, b5 | Db (C is vii)  | C Db Eb F Gb Ab Bb C |
+
+## Modes as slash/polychords
+
+I've seen different definitions of slash and polychords. One definition of a slash chord (say D/F#) is to play the numerator triad (D) with the denominator bass note (F#). And, a polychord would be playing one triad with the right hand (D) and another with the left hand (F#).
+
+Another way to think of playing modes is in terms of slash chords or poly chords; or, I guess slash scales or poly scales. For example, consider a G/C. That could indicate a G major scale over a C bass note. Playing the G major scale starting and ending on C is the same as C lydian.
+
+In the next table the note in the denominator is the root. The note in the numerator is the major scale to be played over the root (starting and ending on the root). The roman numerals show interval relations between the root and scale. For example, in the lydian column, the root is the fourth note in the corresponding scale (C is the fourth of G, G is the fourth of C). Modifying the major scale in the denominator by the accidental yields the major scale in the numerator (For Bb/C, flattening the 37 in C is B-> Bb and E -> Eb, which then turns the C scale into a Bb scale). The table is arranged in terms of the circle of fifths.
+
+| Lydian | Ionian | Mixolydian | Dorian | Aeolian | Phrygian | Locrian |
+|--------|--------|------------|--------|---------|----------|---------|
+|   Majory    |  Major  |    Majorish     |  Minor  |  even   |   more   |   MINOR  |
+|   IV    | I   |    V     |  II  |  VI   |   III   |   VII  |
+|   #4    | --   |    b7     |  b73  |  b736   |  b7362   |   b73625  |
+| G/C    | C/C    |    F/C     |  Bb/C  |  Eb/C   |   Ab/C   |   Db/C  |
+| C/F    | F/F    |  Bb/F  |  Eb/F   |   Ab/F   |   Db/F  | Gb/F |
+| F/Bb   |  Bb/Bb  |  Eb/Bb   |   Ab/Bb   |   Db/Bb  | Gb/Bb | B/Bb  |
+| Bb/Eb  |  Eb/Eb   |   Ab/Eb   |   Db/Eb  | Gb/Eb | B/Eb  |  E/Eb |
+| Eb/Ab   |   Ab/Ab   |   Db/Ab  | Gb/Ab | B/Ab  |  E/Ab | A/Ab|
+| Ab/Db   |   Db/Db  | Gb/Db | B/Db  |  E/Db | A/Db| D/Db |
+| Db/Gb  | Gb/Gb | B/Gb  |  E/Gb | A/Gb| D/Gb | G/Gb |
+| Gb/B | B/B  |  E/B | A/B| D/B | G/B | C/B |
+| B/E  |  E/E | A/E| D/E | G/E | C/E | F/E |
+| E/A | A/A| D/A | G/A | C/A | F/A | Bb/A |
+| A/D| D/D | G/D | C/D | F/D | Bb/D | Eb/D |
+| D/G | G/G | C/G | F/G | Bb/G | Eb/G | Ab/G |
+
+Thinking in terms of the circle of fifths. Playing a slash scale one fifth above the root is Lydian. Playing a scale in the root is Ionian. Playing slash scales down the circle of fifths (anti-clockwise) is Mixolydian, Dorian, Aeolian, Phrygian, Locrian.
+
+
+
 ## Playing the sound of the modes
 
 Note to self to just get into it.
