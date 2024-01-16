@@ -146,7 +146,60 @@ I'm not sure how organized the next stuff will be. Mostly a scratch pad.
 
 I feel confident that I learned important things about fully diminished 7th chords when I was younger. But, I completely forget about them until yesterday when I started watching Shan Verma discussing [Alice in Wonderland on youtube](https://www.youtube.com/watch?v=kbvxlzGReVA).
 
-This quickly lead to a series of rabbit holes about fully diminished 7th chords, [Barry Harris](https://barryharrisinstituteofjazz.org) and his system, and the major 6th diminished scale. 
+This quickly led to a series of rabbit holes about fully diminished 7th chords, [Barry Harris](https://barryharrisinstituteofjazz.org) and his system, and the major 6th diminished scale. 
 
 But, before I get to that. I need to go make lunch.
+
+---------------
+
+Lunch break is over. Now, my goal is to put down some breadcrumbs and then get back to the piano.
+
+### Breadcrumb 1 - Fully Diminished 7th chords
+
+These are composed of entirely of minor 3rds. So, a fully diminished Cbb7 is CEbGbA.
+
+Randomly came across this [series of observations about using these chords for transitions](https://vi-control.net/community/threads/dim7-chord-modulation-map-doorways-to-anywhere.99826/)
+
+There are only three different versions of this chord--C, Db and D--as the inversions cover all of the roots.
+
+They are very useful for transitions.
+
+Moving any note down a semitone turns the chord into a dominant 7th chord. Very useful for modulation.
+
+### Breadcrumb 2 - major 6th diminished scale
+
+This scale has 8 notes, adding a flat 6 to the major scale
+
+C D E F G A Ab B 
+
+### Breadcrumb 3 - Barry Harris's system
+
+I haven't had enough to time to learn what this whole system is. So far, I have just watched one youtube [video from Shan Verma](https://www.youtube.com/watch?v=Q41nPrt0Ji0&t=726s) on this.
+
+The trail of breadcrumbs started at the beginning of his [Alice in Wonderland analysis video](https://www.youtube.com/watch?v=kbvxlzGReVA). In that video he played alternating inversions of maj6 and fully diminished chords, and that immediately clicked something for me. 
+
+There are four inversions of Cmaj6 (CEGA), starting on each note in chord. These are also four of the notes in the major 6th diminished scale. 
+
+There are four inversions of Ddim7 (DFAbB), starting on each note in the chord. These are also the four remaining notes in the major 6th diminished scale.
+
+It is possible to play each note of that scale as a series of maj6 and dim7 chords.
+
+|C| D| E| F| G| A |Ab| B|
+|--|--|--|--|--|--|--|--|
+|1st|1st|2nd|2nd|3rd|3rd|4th|4th|
+|CMaj6| Ddim7 |CMaj6| Ddim7 |CMaj6| Ddim7 |CMaj6| Ddim7 |
+|CEGA| DFAbB | EGAC | FAbBD | GACE |ACEG | AbBDF| BDFAb|
+
+This is basically where I am at right. I spent the morning locking my fingers into these inversions so I could play through the scale in chords. Loving the sound and the possibilities. Giving me lots to think about. 
+
+Next up is to practice through the other diminished chords.
+
+
+
+
+
+
+
+
+
 
