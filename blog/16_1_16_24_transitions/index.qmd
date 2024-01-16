@@ -194,6 +194,47 @@ This is basically where I am at right. I spent the morning locking my fingers in
 
 Next up is to practice through the other diminished chords.
 
+Did a bit of that. Got through C, F, and Bb. Time to make another table for my reference.
+
+This shows the notes in every the major 6th diminished scale. I think I fixed all the typos. The scales are ordered in terms of the circle of fifths, going anti-clockwise. The bolded notes are fully diminished 7ths.
+
+## Tables: Major 6th diminished scale
+
+|i |ii| iii| iv| v| vi |vii| viii|
+|--|--|--|--|--|--|--|--|
+|C| **D**| E| **F**| G| **Ab** |A | **B** |
+|F| **G**| A| **Bb**| C| **Db** |D | **E** |
+|Bb| **C**| D| **Eb**| F| **Gb** |G | **A** |
+|Eb| **F**| G| **Ab**| Bb| **B** |C | **D** |
+|Ab| **Bb**| C| **Db**| Eb| **E** |F | **G** |
+|Db| **Eb**| F| **Gb**| Ab| **A** |Bb | **C** |
+|Gb| **Ab**| Bb| **B**| Db| **D** |Eb | **F** |
+|B| **Db**| Eb| **E**| Gb| **G** |Ab | **Bb** |
+|E| **Gb**| Ab| **A**| B| **C** |Db | **Eb** |
+|A| **B**| Db| **D**| E| **F** |Gb | **Ab** |
+|D| **E**| Gb| **G**| A| **Bb** |B | **Db** |
+|G| **A**| B| **C**| D| **Eb** |E | **Gb** |
+
+This is the same table, but the scales are grouped in terms whether they share the same diminished chord.
+
+|i |ii| iii| iv| v| vi |vii| viii|
+|--|--|--|--|--|--|--|--|
+|C| **D**| E| **F**| G| **Ab** |A | **B** |
+|Eb| **F**| G| **Ab**| Bb| **B** |C | **D** |
+|Gb| **Ab**| Bb| **B**| Db| **D** |Eb | **F** |
+|A| **B**| Db| **D**| E| **F** |Gb | **Ab** |
+|--|--|--|--|--|--|--|--|
+|F| **G**| A| **Bb**| C| **Db** |D | **E** |
+|Ab| **Bb**| C| **Db**| Eb| **E** |F | **G** |
+|B| **Db**| Eb| **E**| Gb| **G** |Ab | **Bb** |
+|D| **E**| Gb| **G**| A| **Bb** |B | **Db** |
+|--|--|--|--|--|--|--|--|
+|Bb| **C**| D| **Eb**| F| **Gb** |G | **A** |
+|Db| **Eb**| F| **Gb**| Ab| **A** |Bb | **C** |
+|E| **Gb**| Ab| **A**| B| **C** |Db | **Eb** |
+|G| **A**| B| **C**| D| **Eb** |E | **Gb** |
+
+
 
 
 
