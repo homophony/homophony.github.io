@@ -146,11 +146,11 @@ I'm not sure how organized the next stuff will be. Mostly a scratch pad.
 
 I feel confident that I learned important things about fully diminished 7th chords when I was younger. But, I completely forget about them until yesterday when I started watching Shan Verma discussing [Alice in Wonderland on youtube](https://www.youtube.com/watch?v=kbvxlzGReVA).
 
-This quickly led to a series of rabbit holes about fully diminished 7th chords, [Barry Harris](https://barryharrisinstituteofjazz.org) and his system, and the major 6th diminished scale. 
+This quickly led to a series of rabbit holes about fully diminished 7th chords, [Barry Harris](https://barryharrisinstituteofjazz.org) and his system, and the major 6th diminished scale.
 
 But, before I get to that. I need to go make lunch.
 
----------------
+------------------------------------------------------------------------
 
 Lunch break is over. Now, my goal is to put down some breadcrumbs and then get back to the piano.
 
@@ -170,27 +170,27 @@ Moving any note down a semitone turns the chord into a dominant 7th chord. Very 
 
 This scale has 8 notes, adding a flat 6 to the major scale
 
-C D E F G A Ab B 
+C D E F G A Ab B
 
 ### Breadcrumb 3 - Barry Harris's system
 
 I haven't had enough to time to learn what this whole system is. So far, I have just watched one youtube [video from Shan Verma](https://www.youtube.com/watch?v=Q41nPrt0Ji0&t=726s) on this.
 
-The trail of breadcrumbs started at the beginning of his [Alice in Wonderland analysis video](https://www.youtube.com/watch?v=kbvxlzGReVA). In that video he played alternating inversions of maj6 and fully diminished chords, and that immediately clicked something for me. 
+The trail of breadcrumbs started at the beginning of his [Alice in Wonderland analysis video](https://www.youtube.com/watch?v=kbvxlzGReVA). In that video he played alternating inversions of maj6 and fully diminished chords, and that immediately clicked something for me.
 
-There are four inversions of Cmaj6 (CEGA), starting on each note in chord. These are also four of the notes in the major 6th diminished scale. 
+There are four inversions of Cmaj6 (CEGA), starting on each note in chord. These are also four of the notes in the major 6th diminished scale.
 
 There are four inversions of Ddim7 (DFAbB), starting on each note in the chord. These are also the four remaining notes in the major 6th diminished scale.
 
 It is possible to play each note of that scale as a series of maj6 and dim7 chords.
 
-|C| D| E| F| G| A |Ab| B|
-|--|--|--|--|--|--|--|--|
-|1st|1st|2nd|2nd|3rd|3rd|4th|4th|
-|CMaj6| Ddim7 |CMaj6| Ddim7 |CMaj6| Ddim7 |CMaj6| Ddim7 |
-|CEGA| DFAbB | EGAC | FAbBD | GACE |ACEG | AbBDF| BDFAb|
+| C     | D     | E     | F     | G     | A     | Ab    | B     |
+|-------|-------|-------|-------|-------|-------|-------|-------|
+| 1st   | 1st   | 2nd   | 2nd   | 3rd   | 3rd   | 4th   | 4th   |
+| CMaj6 | Ddim7 | CMaj6 | Ddim7 | CMaj6 | Ddim7 | CMaj6 | Ddim7 |
+| CEGA  | DFAbB | EGAC  | FAbBD | GACE  | ACEG  | AbBDF | BDFAb |
 
-This is basically where I am at right. I spent the morning locking my fingers into these inversions so I could play through the scale in chords. Loving the sound and the possibilities. Giving me lots to think about. 
+This is basically where I am at right. I spent the morning locking my fingers into these inversions so I could play through the scale in chords. Loving the sound and the possibilities. Giving me lots to think about.
 
 Next up is to practice through the other diminished chords.
 
@@ -200,47 +200,59 @@ This shows the notes in every the major 6th diminished scale. I think I fixed al
 
 ## Tables: Major 6th diminished scale
 
-|i |ii| iii| iv| v| vi |vii| viii|
-|--|--|--|--|--|--|--|--|
-|C| **D**| E| **F**| G| **Ab** |A | **B** |
-|F| **G**| A| **Bb**| C| **Db** |D | **E** |
-|Bb| **C**| D| **Eb**| F| **Gb** |G | **A** |
-|Eb| **F**| G| **Ab**| Bb| **B** |C | **D** |
-|Ab| **Bb**| C| **Db**| Eb| **E** |F | **G** |
-|Db| **Eb**| F| **Gb**| Ab| **A** |Bb | **C** |
-|Gb| **Ab**| Bb| **B**| Db| **D** |Eb | **F** |
-|B| **Db**| Eb| **E**| Gb| **G** |Ab | **Bb** |
-|E| **Gb**| Ab| **A**| B| **C** |Db | **Eb** |
-|A| **B**| Db| **D**| E| **F** |Gb | **Ab** |
-|D| **E**| Gb| **G**| A| **Bb** |B | **Db** |
-|G| **A**| B| **C**| D| **Eb** |E | **Gb** |
+| i   | ii     | iii | iv     | v   | vi     | vii | viii   |
+|-----|--------|-----|--------|-----|--------|-----|--------|
+| C   | **D**  | E   | **F**  | G   | **Ab** | A   | **B**  |
+| F   | **G**  | A   | **Bb** | C   | **Db** | D   | **E**  |
+| Bb  | **C**  | D   | **Eb** | F   | **Gb** | G   | **A**  |
+| Eb  | **F**  | G   | **Ab** | Bb  | **B**  | C   | **D**  |
+| Ab  | **Bb** | C   | **Db** | Eb  | **E**  | F   | **G**  |
+| Db  | **Eb** | F   | **Gb** | Ab  | **A**  | Bb  | **C**  |
+| Gb  | **Ab** | Bb  | **B**  | Db  | **D**  | Eb  | **F**  |
+| B   | **Db** | Eb  | **E**  | Gb  | **G**  | Ab  | **Bb** |
+| E   | **Gb** | Ab  | **A**  | B   | **C**  | Db  | **Eb** |
+| A   | **B**  | Db  | **D**  | E   | **F**  | Gb  | **Ab** |
+| D   | **E**  | Gb  | **G**  | A   | **Bb** | B   | **Db** |
+| G   | **A**  | B   | **C**  | D   | **Eb** | E   | **Gb** |
 
 This is the same table, but the scales are grouped in terms whether they share the same diminished chord.
 
-|i |ii| iii| iv| v| vi |vii| viii|
-|--|--|--|--|--|--|--|--|
-|C| **D**| E| **F**| G| **Ab** |A | **B** |
-|Eb| **F**| G| **Ab**| Bb| **B** |C | **D** |
-|Gb| **Ab**| Bb| **B**| Db| **D** |Eb | **F** |
-|A| **B**| Db| **D**| E| **F** |Gb | **Ab** |
-|--|--|--|--|--|--|--|--|
-|F| **G**| A| **Bb**| C| **Db** |D | **E** |
-|Ab| **Bb**| C| **Db**| Eb| **E** |F | **G** |
-|B| **Db**| Eb| **E**| Gb| **G** |Ab | **Bb** |
-|D| **E**| Gb| **G**| A| **Bb** |B | **Db** |
-|--|--|--|--|--|--|--|--|
-|Bb| **C**| D| **Eb**| F| **Gb** |G | **A** |
-|Db| **Eb**| F| **Gb**| Ab| **A** |Bb | **C** |
-|E| **Gb**| Ab| **A**| B| **C** |Db | **Eb** |
-|G| **A**| B| **C**| D| **Eb** |E | **Gb** |
+| i   | ii     | iii | iv     | v   | vi     | vii | viii   |
+|-----|--------|-----|--------|-----|--------|-----|--------|
+| C   | **D**  | E   | **F**  | G   | **Ab** | A   | **B**  |
+| Eb  | **F**  | G   | **Ab** | Bb  | **B**  | C   | **D**  |
+| Gb  | **Ab** | Bb  | **B**  | Db  | **D**  | Eb  | **F**  |
+| A   | **B**  | Db  | **D**  | E   | **F**  | Gb  | **Ab** |
+| --  | --     | --  | --     | --  | --     | --  | --     |
+| F   | **G**  | A   | **Bb** | C   | **Db** | D   | **E**  |
+| Ab  | **Bb** | C   | **Db** | Eb  | **E**  | F   | **G**  |
+| B   | **Db** | Eb  | **E**  | Gb  | **G**  | Ab  | **Bb** |
+| D   | **E**  | Gb  | **G**  | A   | **Bb** | B   | **Db** |
+| --  | --     | --  | --     | --  | --     | --  | --     |
+| Bb  | **C**  | D   | **Eb** | F   | **Gb** | G   | **A**  |
+| Db  | **Eb** | F   | **Gb** | Ab  | **A**  | Bb  | **C**  |
+| E   | **Gb** | Ab  | **A**  | B   | **C**  | Db  | **Eb** |
+| G   | **A**  | B   | **C**  | D   | **Eb** | E   | **Gb** |
 
+Same table again with some extra stuff. I started playing through these scales and was trying to figure out what aspects would be new to me. For each grouping of four, it is nice that that the diminished chord is the same, it is just expressed as a different inversion. Within each scale, the major chord is also the same, just expressed as a different inversion.
 
+The new column simply points out the maj6/min7 relations.
 
+| maj6 = -7  | i   | ii     | iii | iv     | v   | vi     | vii | viii   |
+|------------|-----|--------|-----|--------|-----|--------|-----|--------|
+| C6 = A-7   | C   | **D**  | E   | **F**  | G   | **Ab** | A   | **B**  |
+| Eb6 = C-7  | Eb  | **F**  | G   | **Ab** | Bb  | **B**  | C   | **D**  |
+| Gb6 = Eb-7 | Gb  | **Ab** | Bb  | **B**  | Db  | **D**  | Eb  | **F**  |
+| A6 = Gb-7  | A   | **B**  | Db  | **D**  | E   | **F**  | Gb  | **Ab** |
+|            | --  | --     | --  | --     | --  | --     | --  | --     |
+| F6 = D-7   | F   | **G**  | A   | **Bb** | C   | **Db** | D   | **E**  |
+| Ab6 = F-7  | Ab  | **Bb** | C   | **Db** | Eb  | **E**  | F   | **G**  |
+| B6 = Ab-7  | B   | **Db** | Eb  | **E**  | Gb  | **G**  | Ab  | **Bb** |
+| D6 = B-7   | D   | **E**  | Gb  | **G**  | A   | **Bb** | B   | **Db** |
+|            | --  | --     | --  | --     | --  | --     | --  | --     |
+| Bb6 = G-7  | Bb  | **C**  | D   | **Eb** | F   | **Gb** | G   | **A**  |
+| Db6 = Bb-7 | Db  | **Eb** | F   | **Gb** | Ab  | **A**  | Bb  | **C**  |
+| E6 = Db-7  | E   | **Gb** | Ab  | **A**  | B   | **C**  | Db  | **Eb** |
+| G6 = E-7   | G   | **A**  | B   | **C**  | D   | **Eb** | E   | **Gb** |
 
-
-
-
-
-
-
-
+This table could be useful for tapping into things I already know. I can play 6th chords fairly well, but I already know my min7 chords very well. Sometimes thinking about a chord in terms of another helps me play it, and it encourages shifting perspectives on the same thing. The Eb scale got easier to play once I realized the Eb6 was just a 1st inversion C-7 chord waiting to happen...and then I'm like, OMG C-7 is an Eb major 6th 🤯.
