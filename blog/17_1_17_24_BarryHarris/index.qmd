@@ -1,0 +1,170 @@
+---
+title: "Practicing some Barry Harris methods"
+author: "Matt Crump"
+date: 1/17/24
+description: "Just learning about Barry Harris' system ideas and making notes about what I'm practicing."
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - Barry Harris
+  - practice
+execute: 
+  echo: false
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "piano chords arrows. Moving from one chord to another. Transitioning. morphing. colorful jazz piano. cartoon. graffiti. retro 80s."
+
+for s in range(30):
+  for n in [4,5,6,7]:
+    seed = s+1
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+Barry Harris - courtesy wikipedia
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+A couple of days ago I stumbled across the Barry Harris system as taught by one of his students Shan Verma, who also runs <https://www.jazzskills.com>.
+
+I've been randomly watching a few videos from his [youtube channel](https://www.youtube.com/@JazzSkills) and trying a few things out.
+
+All of the practice is around learning the major 6th diminished scale, which has some very interesting properties, and sounds great.
+
+These two videos show the two primary ideas for today's practice.
+
+-   [basics of the major 6th diminished scale](https://www.youtube.com/watch?v=oALZ7xcEdJY&list=PL2GT-F7_oAbkEGy3Sm5jjoowPJLGs6Zzd&index=1).
+-   [building up notes, contrary motion movement exercise](https://www.youtube.com/watch?v=b_Th3Z6csbg&list=PL2GT-F7_oAbkEGy3Sm5jjoowPJLGs6Zzd&index=4)
+
+## What I did so far
+
+Woke up and played the scale using alternating maj6 and dim7 chords. Played through C, F, and Bb. Also, ran through the building up notes exercise in each key, starting from each note in the scale for each key.
+
+## Practice notes
+
+**C scale notes**. I was playing through this one last night as well. In particular, I was attempting to get the 'building up notes' exercise fluid. If I played each step like a new chord it felt chunky. If I played each step like an ascending run in the right hand, and simultaneous descending run in the left hand it was fast. However, when I did those runs I was only playing single notes, and leaving out the internal notes that form the maj6 or dim7 chords. Then, I got into the swing of alternating my fingers properly.
+
+The table shows the fingering for thumb to pinky (1-5), for the left and right hands. Start with both thumbs on the same note. Then, the index to pinky (2345) go on every note ascending on the right, and every note descending on the left.
+
+|     |     |     |     |     |     |     |     |     |     |     |
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+|     |     |     |     | 1   |     | 1   |     |     |     |     |
+|     |     |     | 2   |     |     |     | 2   |     |     |     |
+|     |     | 3   |     | 1   |     | 1   |     | 3   |     |     |
+|     | 4   |     | 2   |     |     |     | 2   |     | 4   |     |
+| 5   |     | 3   |     | 1   |     | 1   |     | 3   |     | 5   |
+
+Took a little while, but once the symmetry hits the fingering locked in pretty easily.
+
+In C, starting from the Ab has a particularly nice symmetrical viewpoint.
+
+**F scale notes**. Practice went pretty well. This scale uses a different dim7 chord (GBbDdE). Felt like a little bit of interference from C. The Fmaj6 chord has the same shape and fingering as Cmaj6.
+
+As I was playing the building up notes exercise through every note, I started to think more about how I could use the exercise. I started asking questions like, where does this movement want to go? For example, starting on the root, and "building up notes" seems to want to resolve on the V.
+
+**Bb scale notes**. These observations would apply to any of the other scales, but I roughly had these thoughts around this time in practice. So, I'm going to stop organizing notes by scale.
+
+## Scale practice checkbox
+
+| C   | F   | Bb  | Eb  | Ab  | Db  | Gb  | B   | E   | A   | D   | G   |
+|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
+| x   | x   | x   | x   |     |     |     |     |     |     |     |     |
+
+## More practice notes
+
+### When/Where to start building up?
+
+Noodling around in CMaj6...lots of CEGA. I started building up on C.
+
+-   step 1, playing a C is kind of redundant with the chord, but it sets the location
+
+-   step 2. playing a BD is nice. It's not part of CEGA, but it adds the maj7 and 9th. Easy to sprinkle in whenever, even if staying on CMaj6. sprinkles of possible movement.
+
+-   step 3. ACE, restating the center, with minor vii feels
+
+-   step 4. AbBDF, dominant chord, lots of possibilities, wants to go G
+
+Still playing over a Cmaj6, I did a little bit of starting the building up notes on different notes, but not too much. Need to do that more, to get a better sense of the directions.
+
+### What a step in the building up exercise provides
+
+The building up notes exercise starts by emphasizing some particular note in the scale. This could be where you are at, say in a melody. Then, it alternates between adding the next notes in a maj6 chord, or a dim7 chord. I should sit down and spell this out for myself at some point after I get the fingering down across keys.
+
+-   in general, the exercise provides a way to start on a note in the scale, transition between restating aspects of the root (through the maj6), or the diminshed 7th chord, with very harmonious sounding transitions. The transitions already have a bit of movement, and they set up off-ramps into other directions. Especially from a dim7th chord, which can easily end up as four different 7th chords.
+
+### Cognitive science notes: proactive interference
+
+Proactive interference is a well-known phenomena in the learning and memory literature. The classic finding is from studies of free recall. Participants are given lists of items to study, like words, and then after a delay they are asked to recall as many as possible from the list. Pro-active interference occurs when your memory for items in the list is impaired by previous exposure and/or learning attempts to memorize other lists.
+
+![](images/Screenshot 2024-01-17 at 9.44.43 AM.png)
+
+The figure shows some recall data from Underwood (1957). The x-axis is number of previous lists. Some subjects were new to these kinds of studies, and they had not tried to memorize lists of items before. Their recall was pretty high. Other subjects had participated in these kinds of studies before, and had tried to memorize many different lists (up to 20 different lists). The more lists one had previously tried to learn, the worse participants did when trying to learn and recall a new list.
+
+As I try to learn the maj6th diminished scale across all of the keys I'm wondering about the role of pre-active interference, as well as other kinds of interference. If learning scales was like learning random lists of words, then it is possible that every time I learn one scale, the next scale becomes harder to learn because of this so-called pro-active interference. My general sense is that this isn't how learning scales works in practice, and that prior experience generally helps with learning new things. Not to say that there isn't sometimes interference.
+
+Eb practice...got through it, thought a little more about pro-active interference, and "task-switching" or key-switching.
+
+It's not clear to me that findings showing pro-active interference in free recall should neatly generalize to learning scales. One reason is that the free-recall studies usually used arbitrary lists of items with no particular relationships to one another. Part of the pro-active interference is that one accidentally recalls words from a previous list, and those get counted as errors. Also, learning additional lists of random items is like trying to grow a vocabulary of random words with no particular meaning.
+
+In contrast to random lists of words, musical scales have many shared elements across keys. There is lots of opportunity for facilitation and interference. For example, learning to play the dim7 in the C major 6th diminished scale could facilitate learning the Eb, Gb, and A versions of that scale, because they use the same dim7 chord. At the same time, there could be associative interference at play based on prior learning attempts. For example, learning to interleave CEGA with DFAbB(dim7) could reinforce those interchord assocations, such as C6-Ddim7-E6. Then, consider moving to learn Eb major 6th diminshed. There is a C6-Ddim7-Eb6, and perhaps here the E6 will interfere with the Eb6? I wonder what a MINERVA process would do here...
+
+### Cogsci notes: Key-switching costs
+
+Another classic finding in cognition is called the task-switching cost. This has been demonstrated in diverse task situations. The basic finding is that there are usually costs, in terms of time and accuracy, when switching from one task to another.
+
+I've been practicing the build up exercise in C, F, Bb, and Eb. The fingerings are all different, but similar enough that my fluency is getting better, even as I switch to new keys.
+
+These four keys share some notes. For example, C appears in all of C, F, Bb, and Eb scales. I did practice the build up for all four, across all notes of the scale, which means that I did start on C and do the build up for each key. However, I practiced the build up ascending and descending within each scale.
+
+I am 100% experiencing pretty strong key-switching costs if I start on C alone, and try to then produce a build in the key of F, Bb, or Eb. It's much easier to start on C major. Need to break out of the switch cost by practicing these more.
+
+A musical benefit is that a build-up exercise starting say on C, can take you in lots of places, by building up into different keys from that one note. Opening so much opportunity for movement. Wow.
