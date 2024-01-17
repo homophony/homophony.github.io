@@ -186,3 +186,35 @@ The general outcome is that measures of fluency, like scale speed, increase with
 A related concept with repetitive practice is the idea of diminished returns. Repetitive practice will increase fluency for sure, but at some point in practice one becomes fluent enough, and further practice isn't going to do much. So, the question becomes when to stop repeating and move onto something else? Which leads back to the spacing of repetitions question.
 
 Let's say you are trying to practice major scales in all of the keys. What kind of practice schedule should one adopt? There are lots of options, and depending on how you arrange things, the repeated attempts can be massed together or spread out. I've got more to say about this kind of stuff, but will get back to practicing Gb. Although, it would be possible to get fancy and use concepts from cognition, I'm just going through the circle of fifths. This has musical benefits, and moving in that direction involves going from one key to another that share many notes. As a result, I think I get a little bit of facilitation from learning one scale to another, and also a little of bit of a discriminative challenge to make sure I'm not playing the previous one. Seems like a productive level of difficulty.
+
+Lunch break
+
+### Turning up the interference 
+
+All the above being said, over lunch I was wondering about maximum interference practice schedules. For example, consider this build-up note exercise. I could write a computer program to tell me what note to start on, and what key to build on, and have this be totally random. That would be a great little practice tool (note to self to make some midi javascript stuff later). But, it would be hard. Especially for me right now because I don't know the build-up patterns in most keys yet.
+
+Something more approachable, but still hard, would be for me to do much less repetition as I practice the remaining keys (I think I have about 8 left). Up until this point, I have been doing a lot of varied practice within each key. Something like this for each key:
+
+-   play the all the notes of the scale up and down, and all around
+
+-   play them all at the same time to "see the notes all together"
+
+-   play them in sets of 4 or 5, starting on different notes
+
+-   play them up and down starting on different notes
+
+-   play the maj6 inversions as chords, then as arpeggios
+
+-   play the dim7 inversions as chords, then as arpeggios
+
+-   put the alternating chords together, play through the scale up and down in chords
+
+-   play through the scale up an down in arpeggios
+
+-   Start playing the build-up exercise on each note of the scale. Do this up and down and all around
+
+That's a lot of different kinds of repetition, and it seems to work pretty well. My fingers get used to the pattern of notes in the key, and then I'm on my way. Still, playing the scale in terms of chords is slow at first, and I'm not getting very fast, but it does become comfortably slow fairly quickly.
+
+A different sort of practice schedule would be more painful. For example, I could go immediately to playing the chords of the maj6 diminished scaled in Db, which is the next key I need to practice. This will be new for me, and I know it will take sometimes a few seconds or more of staring and thinking, and getting a bit lost, to press the first chord, and then the second and so on. I will be working it out on the fly. After going up the scale one time, I could decide to stop Db, and switch to Gb (the next one in my anti-clockwise circle of fifths practice cycle). That would be new and somewhat painful too. In other words, the harder, less repetitive, more spaced out practice schedule could be: once up then switch to new key.
+
+Maybe I will try this next I'm not sure if I have the patience for it...as I like to feel the progress. However, I can imagine some potentially interesting side effects (benefits? or at least potential consequences) of this switchy schedule. One possibility is that this schedule may increase associative linkages between a current musical goal and an intended outcome. One reason this might happen is that when attempting new patterns, the goal may be clear (e.g., play the third chord of the maj6 dim scale in Gb), but the action and corresponding pattern may not be clear. So, one is keeping the goal in mind as an instruction, and trying to work out the pattern, and then execute. As a result, this constitutes a processing episode where the goal was in mind at the same time as a puzzling out process, as well as an action being executed. According some theories of learning and memory the things that happen during an episode of learning are preserved in memory, and later retrieved when similar circumstance are re-encountered. Not sure what the practical consequences would be for learning scales in this manner...maybe I should go try this.
