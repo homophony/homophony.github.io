@@ -1,0 +1,149 @@
+---
+title: "Savings in relearning"
+author: "Matt Crump"
+date: 1/18/24
+description: "Tracking performance improvements over time in learning the maj6 dimished scale"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - relearning
+  - practice
+  - scales
+execute: 
+  echo: false
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "retro 80s computer with cartoon hands playing a synthesizer. computer with hands playing piano."
+
+for s in range(30):
+  for n in [4,5,6,7]:
+    seed = s+1
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+retro 80s computer with cartoon hands playing a synthesizer. computer with hands playing piano. - dreamshaper
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+Yesterday I spent some time practicing the maj6 diminished scale across all keys. I also posted about practice ideas in relation to cognitive psychology phenomena. 
+
+For reference, I can play a C major scale in 7th chords in just under 3 seconds without any warm-up. I've had a couple days to put some practice into the C major 6th diminished scale, and I times myself at 12 seconds to play through the chords there. 
+
+I timed myself going through several keys for the first time, and B was the slowest at 104 seconds. Then, just for B maj 6 diminished, I did a focused spurt of practice for 10 minutes on that scale. This involved playing the scale ascending in chords over and over again, and not doing anything else. If I made a mistake I would correct it, and if I couldn't correct it I would start again. I used a stopwatch on my phone for the timer, and pressed the lap button every time I finished the scale. 
+
+I was interested in measuring a learning curve to track my progress with this scale. The data looked like this:
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+
+finishing_times <- c(104,57,56,45,52,55,57,59,35,33,31,25,29,18,27,21)
+sets <- 1:length(finishing_times)
+df <- tibble(finishing_times,sets)
+
+ggplot(df, aes(x=sets,y=finishing_times))+
+  geom_point()+
+  geom_line()+
+  coord_cartesian(ylim=c(0,110))+
+  ylab("Scale finishing time (seconds)")+
+  xlab("Practice Attempts")
+
+```
+
+The graph shows that I reduced my time to complete the scale by quite a bit in just 10 minutes of practice, from 104 seconds to 21 seconds. 
+
+That was yesterday.
+
+## Retention...Savings in re-learning?
+
+My question this morning is how much did I retain? I haven't practiced the B maj6 diminished scaled since yesterday. My plan is to go sit down and play it ascending for the next 10 minutes, record my playing times, and then come back here and graph it. 
+
+One possibility is that I'll start off around 21 seconds where I left off, and then maybe get a faster. That would indicate I retained almost all of whatever I learned yesterday. Another possibility is that I start back at the beginning, perhaps having retained not very much at all. Still, if that happened, it's possible that I would re-learn faster the second time through.
+
+Let's find out.
+
+I just put in 10 minutes of repetitive practice, and here are the results.
+
+```{r}
+
+finishing_times_1 <- c(104,57,56,45,52,55,57,59,35,33,31,25,29,18,27,21)
+sets_1 <- 1:length(finishing_times_1)
+
+finishing_times_2 <- c(56,43,46,31,31,23,36,19,17,21,17,17,20,18,14,14,14,12,13,13,20,14,12,14,13,12,12,9,8)
+sets_2 <- 1:length(finishing_times_2)
+
+day <- c(rep("day_1", length(finishing_times_1)),
+         rep("day_2", length(finishing_times_2)))
+
+df <- tibble(day,
+              finishing_times = c(finishing_times_1,
+                                  finishing_times_2),
+              sets = c(sets_1,
+                       sets_2))
+
+ggplot(df, aes(x=sets,y=finishing_times, color=day))+
+  geom_point()+
+  geom_line()+
+  coord_cartesian(ylim=c(0,105))+
+  ylab("Scale finishing time (seconds)")+
+  xlab("Practice Attempts")
+```
+
+What happened? I ended up at about 20 seconds per run at the end of yesterday (last red dot), and today I started way back at about 60 seconds per run. That might look like almost no retention of whatever I "learned" yesterday. Yes, my first data point today was almost twice as fast as the first one from yesterday, but that could be an outlier. I remember making loads of mistakes the first time yesterday and restarting the scale several times. 
+
+Although my starting points are similar, it appears there was a decent amount of savings in relearning. Savings in relearning is a concept from [Hermann Ebbinghaus](https://www.crumplab.com/cognition/textbook/C8_Memory_I.html#ebbinghauss-forgetting) and his research on forgetting. Ebbinghaus spent time learning lists of random syllables until he could recite them, and then he waited different amounts of time before trying to recall them from memory. Not surprisingly, he forgot items over time. However, he would also relearn lists a second time, after the delay, and often found savings in his relearning attempt. Even though he had forgotten items from the list, when he tried to relearn the list, it took less time (than the initial learning attempt) before he could recite it perfectly again.
+
+Something similar is going on here. One possibility is that I forgot everything I learned since yesterday, and that's why I was back at the beginning. However, even though the data show I was basically back at the beginning, it seems my practice from yesterday helped me relearn faster than before. The green dots go down faster over practice attempts than the red dots. Yesterday I only got 15 scales completed in 10 minutes, but this time I got through 30 attempts. I also got my time down to 8 or 9 seconds by the end. 
+
+
+
+
