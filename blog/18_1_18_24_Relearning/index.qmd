@@ -2,7 +2,7 @@
 title: "Savings in relearning"
 author: "Matt Crump"
 date: 1/18/24
-description: "Tracking performance improvements over time in learning the maj6 dimished scale"
+description: "Tracking performance improvements over time in learning the maj6 diminished scale"
 image: "cover.jpg"
 comments:
   giscus: 

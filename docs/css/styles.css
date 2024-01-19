@@ -4,3 +4,6 @@
 }
 
 
+p,li,h1, .description {
+    max-width: 70ch;
+}
