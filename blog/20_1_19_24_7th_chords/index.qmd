@@ -2,7 +2,7 @@
 title: "Assessing my 7th chords with a reaction time test"
 author: "Matt Crump"
 date: 1/19/24
-description: "I made a jspsych plugin to test how fast I can play 7th chords."
+description: "I made a jspsych task to test how fast I can play 7th chords."
 image: "cover.jpg"
 comments:
   giscus: 
