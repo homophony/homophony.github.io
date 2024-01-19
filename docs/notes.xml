@@ -15,7 +15,119 @@
 <link>https://homophony.quest/notes.html</link>
 </image>
 <generator>quarto-1.4.533</generator>
-<lastBuildDate>Thu, 18 Jan 2024 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 19 Jan 2024 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>Estimating practice time needed, and a bit on contextual interference</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/19_1_19_24_Contextual_Interference/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/19_1_19_24_Contextual_Interference/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Repeating practice in a key vs.&nbsp;alternating practice across keys</p>
+</div></div><p>I’ve been having so much fun making time for more music. I so needed this.</p>
+<p>As my next semester at Brooklyn College is about to begin next week, I’m hoping I can keep up some of this momentum. Coincidentally, this semester I am planning to turn some of my research program in cognitive psychology towards aspects of music cognition, and I ended up <a href="https://www.crumplab.com/blog/660_music_cognition/">posting about that a little bit on my main research blog yesterday</a>. The research won’t necessarily mean playing more music, but it should at least keep me on my fingers, so to speak.</p>
+<p>Today’s post continues in the spirit of intermingling my interests in cognition and piano practice.</p>
+<section id="recap" class="level2">
+<h2 class="anchored" data-anchor-id="recap">Recap</h2>
+<p>Over the past few posts I’ve been focusing on getting command of the maj6 diminished scale in the key of B. <a href="https://homophony.quest/blog/18_1_18_24_Relearning/">I measured my improvement with practice</a> and found a few things were happening. When I sit down to play the scale (I’m playing it as a series of chords ascending), there is a big start-up cost. On the first go round it took me 104 seconds to play the scale. Then a day later only about 60 seconds. Last night I started up at about 20 seconds. For each practice set, I also continued to produce the scale for 10 minutes, by playing it over and over, in what I might term massed repetitive practice. Within each practice set, my scale completion times decreased with each attempt. I usually got down to about 10 seconds to complete the scale. Still pretty slow, but making progress.</p>
+<p>I can play the 7th chords of a regular major scale in C in about 3 seconds, from a cold start. So, I’m using 3 seconds as a rough achievement criterion. If I can get my B maj6 diminished scale to 3 seconds, then I’ll have achieved that somewhat arbitrary criterion. And, then I would literally be confident that I could play it in my sleep. I was trying to play it going to sleep in my head last night, and it is still slow to visualize.</p>
+<p>I am definitely hitting a floor right now at about 10 seconds, and there could be several problems that I need to sort out. I don’t often play in B, and it might be one of my weakest keys over all. Sometimes I get confused about whether I should be playing an E or F (yikes). The maj6 diminished scales adds a b6, and sometimes I get confused about that note (G). I don’t know why I sometimes want to play A. I conceptually know the correct chords and fingerings, but can’t execute everytime, especially with speed. So, in cognitive psychology terms, I am running up against the speed-accuracy tradeoff. I can go slow and accurate, but errors creep in approaching 10 seconds, and then they really popoff if I push past faster.</p>
+<p>If I limit my musical goals to getting this one scale down, then I have so many questions about how to go about doing that. Overall, it is clear that I need to practice, practice, practice, and I will meet my fluency criterion eventually. But, there are lots of things to practice. I could practice the chords ascending only, which is how I’m measuring my performance. I could practice up and down, or arpeggios, and all sorts of other stuff. I could practice other scales. I could practice in lentghy repetitive sessions, or takes lots of breaks and practice every other day, or longer. Infinite practice variations here.</p>
+<p>Almost done with the recap. All of the above is about to connect to a phenomena in cognitive psychology called contextual interference. This phenomena shows that repeatedly practicing a motor sequence versus alternating practice between different motor sequences, can have notable consequences for learning, performance, and retention. And, I’d like to explore that with my own practice this morning.</p>
+<p>But, because I am full of tangents, I need to attempt an answer to a burning question first.</p>
+<p>How many practice attempts do I need to get my B maj6 diminished scale under 3 seconds?</p>
+</section>
+<section id="estimating-how-much-practice-i-need-with-my-own-practice-curve" class="level2">
+<h2 class="anchored" data-anchor-id="estimating-how-much-practice-i-need-with-my-own-practice-curve">Estimating how much practice I need with my own practice curve</h2>
+<p>This graph shows my learning curves for three different sets of practice attempts. I start producing the scale slowly, and then as I repeatedly attempt the scale, I pick up speed until I get down to about 10 seconds.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/19_1_19_24_Contextual_Interference/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>What I can do next is take an average of these three learning curves, which looks like this:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/19_1_19_24_Contextual_Interference/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>There is debate in the cognitive science literature about the functional form of this curve. Maybe it’s a power function, maybe it’s an exponential function. They are both pretty similar looking. Here’s what a power function fit looks like:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = log(mean_ft) ~ log(sets), data = df_avg)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.46986 -0.09867  0.01724  0.16628  0.31374 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  4.49031    0.10817   41.51   &lt;2e-16 ***
+log(sets)   -0.63201    0.03874  -16.32   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.1983 on 34 degrees of freedom
+Multiple R-squared:  0.8867,    Adjusted R-squared:  0.8834 
+F-statistic: 266.2 on 1 and 34 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/19_1_19_24_Contextual_Interference/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Looks pretty good to me, the line is going right through dots. So, the line can represent a kind of average practice curve. The neat thing is that I can keep drawing the line out following the power function. This allows me to use my existing data to make a prediction about how many practice attempts I need to get down to 3 seconds.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/19_1_19_24_Contextual_Interference/index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>So, according to the limited data that I collected, I should be able to get down to 3 seconds in 219 practice attempts. If I add up all of the scale completion times from 1 to 219 (that are implied by this curve), then it will take 1568 seconds to get there, or 26 minutes of repeated practice.</p>
+<p>Wow, that surprises me actually, I thought it would take longer. And, this is only an estimate, it could be way off in either direction. For example, I’ve already practiced a total of 30 minutes, over 3 sets of 10 minutes. Maybe I should have tried 26 minutes the first time and just got it over with!</p>
+<p>TBH I kind of want to go try this for 26 minutes as see what happens. Maybe I will set that aside as something I do later and report back. Instead, I will continue with the goal of this post.</p>
+</section>
+<section id="contextual-interference-and-mixed-vs-random-practice" class="level2">
+<h2 class="anchored" data-anchor-id="contextual-interference-and-mixed-vs-random-practice">Contextual interference and mixed vs random practice</h2>
+
+
+</section>
+
+ ]]></description>
+  <category>practice</category>
+  <category>cogsci</category>
+  <category>contextual interference</category>
+  <category>estimating practice time</category>
+  <category>practice schedules</category>
+  <guid>https://homophony.quest/blog/19_1_19_24_Contextual_Interference/</guid>
+  <pubDate>Fri, 19 Jan 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/19_1_19_24_Contextual_Interference/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Savings in relearning</title>
   <dc:creator>Matt Crump</dc:creator>
@@ -2313,52 +2425,6 @@ Fairly quick to access aspects of sound control...sensitivity adjustments are gr
   <guid>https://homophony.quest/blog/2_12_23_23_practice/</guid>
   <pubDate>Sat, 23 Dec 2023 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/2_12_23_23_practice/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Dolphin Dance</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/1_12_20_23_dolphin_dance/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/1_12_20_23_dolphin_dance/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>” Herbie Hancock’s dolphin dance with a bunch of synthesizers” - LCM_Dreamshaper_v7</p>
-</div></div><p><audio controls=""> <source src="DolphinDanceFull_render 2_01.mp3" type="audio/wav"> </audio></p>
-<p>Have been messing about with Herbie Hancock’s “Dolphin Dance” on the piano for a while.</p>
-<p>Had a clear day to try some mixer mimicking. Plan was to develop my own voicings for everything, but mix them similar to the Maiden Voyage recording…and then jam it.</p>
-<p>What happened:</p>
-<ul>
-<li>Recorded the Hancock version into Ableton</li>
-<li>Located BPM</li>
-<li>Voices
-<ul>
-<li>Rhodes</li>
-<li>Moog matriarch bass lines</li>
-<li>MPC drums</li>
-<li>OB-6 horns</li>
-</ul></li>
-<li>For each voice, play with the original record. Keep recording in a loop using Ableton comping lanes</li>
-<li>Fix messes by sampling in comping lanes/ explore have fun with fixing the mess</li>
-<li>Duplicate the head, then solo overtop for a bit</li>
-<li>Mix it down.</li>
-<li>Try some final mixing touches.</li>
-</ul>
-
-
-
- ]]></description>
-  <category>quarto</category>
-  <guid>https://homophony.quest/blog/1_12_20_23_dolphin_dance/</guid>
-  <pubDate>Wed, 20 Dec 2023 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/1_12_20_23_dolphin_dance/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>

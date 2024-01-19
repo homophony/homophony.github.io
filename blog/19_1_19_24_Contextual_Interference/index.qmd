@@ -1,0 +1,236 @@
+---
+title: "Estimating practice time needed, and a bit on contextual interference"
+author: "Matt Crump"
+date: 1/19/24
+description: "Estimating how long I need to practice a scale with my own learning curve, and questioning how much to mix up practice."
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - practice
+  - cogsci
+  - contextual interference
+  - estimating practice time
+  - practice schedules
+execute: 
+  echo: false
+  message: false
+  warning: false
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "top of the picture, Repeated shapes in a row. Bottom, random shapes everywhere"
+
+for s in range(30):
+  for n in [4,5,6,7]:
+    seed = s+1
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+Repeating practice in a key vs. alternating practice across keys
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+I've been having so much fun making time for more music. I so needed this.
+
+As my next semester at Brooklyn College is about to begin next week, I'm hoping I can keep up some of this momentum. Coincidentally, this semester I am planning to turn some of my research program in cognitive psychology towards aspects of music cognition, and I ended up [posting about that a little bit on my main research blog yesterday](https://www.crumplab.com/blog/660_music_cognition/). The research won't necessarily mean playing more music, but it should at least keep me on my fingers, so to speak. 
+
+Today's post continues in the spirit of intermingling my interests in cognition and piano practice. 
+
+## Recap
+
+Over the past few posts I've been focusing on getting command of the maj6 diminished scale in the key of B. [I measured my improvement with practice](https://homophony.quest/blog/18_1_18_24_Relearning/) and found a few things were happening. When I sit down to play the scale (I'm playing it as a series of chords ascending), there is a big start-up cost. On the first go round it took me 104 seconds to play the scale. Then a day later only about 60 seconds. Last night I started up at about 20 seconds. For each practice set, I also continued to produce the scale for 10 minutes, by playing it over and over, in what I might term massed repetitive practice. Within each practice set, my scale completion times decreased with each attempt. I usually got down to about 10 seconds to complete the scale. Still pretty slow, but making progress. 
+
+I can play the 7th chords of a regular major scale in C in about 3 seconds, from a cold start. So, I'm using 3 seconds as a rough achievement criterion. If I can get my B maj6 diminished scale to 3 seconds, then I'll have achieved that somewhat arbitrary criterion. And, then I would literally be confident that I could play it in my sleep. I was trying to play it going to sleep in my head last night, and it is still slow to visualize.
+
+I am definitely hitting a floor right now at about 10 seconds, and there could be several problems that I need to sort out. I don't often play in B, and it might be one of my weakest keys over all. Sometimes I get confused about whether I should be playing an E or F (yikes). The maj6 diminished scales adds a b6, and sometimes I get confused about that note (G). I don't know why I sometimes want to play A. I conceptually know the correct chords and fingerings, but can't execute everytime, especially with speed. So, in cognitive psychology terms, I am running up against the speed-accuracy tradeoff. I can go slow and accurate, but errors creep in approaching 10 seconds, and then they really popoff if I push past faster.
+
+If I limit my musical goals to getting this one scale down, then I have so many questions about how to go about doing that. Overall, it is clear that I need to practice, practice, practice, and I will meet my fluency criterion eventually. But, there are lots of things to practice. I could practice the chords ascending only, which is how I'm measuring my performance. I could practice up and down, or arpeggios, and all sorts of other stuff. I could practice other scales. I could practice in lentghy repetitive sessions, or takes lots of breaks and practice every other day, or longer. Infinite practice variations here. 
+
+Almost done with the recap. All of the above is about to connect to a phenomena in cognitive psychology called contextual interference. This phenomena shows that repeatedly practicing a motor sequence versus alternating practice between different motor sequences, can have notable consequences for learning, performance, and retention. And, I'd like to explore that with my own practice this morning. 
+
+But, because I am full of tangents, I need to attempt an answer to a burning question first. 
+
+How many practice attempts do I need to get my B maj6 diminished scale under 3 seconds?
+
+## Estimating how much practice I need with my own practice curve
+
+This graph shows my learning curves for three different sets of practice attempts. I start producing the scale slowly, and then as I repeatedly attempt the scale, I pick up speed until I get down to about 10 seconds. 
+
+```{r}
+library(tidyverse)
+finishing_times_1 <- c(104,57,56,45,52,55,57,59,35,33,31,25,29,18,27,21)
+sets_1 <- 1:length(finishing_times_1)
+
+finishing_times_2 <- c(56,43,46,31,31,23,36,19,17,21,17,17,20,18,14,14,14,12,13,13,20,14,12,14,13,12,12,9,8)
+sets_2 <- 1:length(finishing_times_2)
+
+finishing_times_3 <- c(24,47,35,22,28,21,14,15,11,20,12,16,14,13,20,12,13,11,12,16,11,13,11,15,11,17,16,13,10,10,12,10,9,6,6,7)
+sets_3 <- 1:length(finishing_times_3)
+
+day <- c(rep("day_1", length(finishing_times_1)),
+         rep("day_2", length(finishing_times_2)),
+         rep("attempt_3", length(finishing_times_3))
+         )
+
+df <- tibble(day,
+              finishing_times = c(finishing_times_1,
+                                  finishing_times_2,
+                                  finishing_times_3),
+              sets = c(sets_1,
+                       sets_2,
+                       sets_3))
+
+ggplot(df, aes(x=sets,y=finishing_times, color=day))+
+  geom_point()+
+  geom_line()+
+  coord_cartesian(ylim=c(0,105))+
+  scale_y_continuous(breaks=seq(0,110,10))+
+  ylab("Scale finishing time (seconds)")+
+  xlab("Practice Attempts")
+```
+
+What I can do next is take an average of these three learning curves, which looks like this:
+
+```{r}
+
+df_avg <- df %>%
+  group_by(sets) %>%
+  summarize(mean_ft = mean(finishing_times))
+
+ggplot(df_avg, aes(x=sets,y=mean_ft))+
+  geom_point()+
+  geom_line()+
+  coord_cartesian(ylim=c(0,70))+
+  scale_y_continuous(breaks=seq(0,110,10))+
+  ylab("Scale finishing time (seconds)")+
+  xlab("Practice Attempts")
+
+```
+
+There is debate in the cognitive science literature about the functional form of this curve. Maybe it's a power function, maybe it's an exponential function. They are both pretty similar looking. Here's what a power function fit looks like:
+
+
+```{r}
+library(tidyverse)
+finishing_times_1 <- c(104,57,56,45,52,55,57,59,35,33,31,25,29,18,27,21)
+sets_1 <- 1:length(finishing_times_1)
+
+finishing_times_2 <- c(56,43,46,31,31,23,36,19,17,21,17,17,20,18,14,14,14,12,13,13,20,14,12,14,13,12,12,9,8)
+sets_2 <- 1:length(finishing_times_2)
+
+finishing_times_3 <- c(24,47,35,22,28,21,14,15,11,20,12,16,14,13,20,12,13,11,12,16,11,13,11,15,11,17,16,13,10,10,12,10,9,6,6,7)
+sets_3 <- 1:length(finishing_times_3)
+
+day <- c(rep("day_1", length(finishing_times_1)),
+         rep("day_2", length(finishing_times_2)),
+         rep("attempt_3", length(finishing_times_3))
+         )
+
+df <- tibble(day,
+              finishing_times = c(finishing_times_1,
+                                  finishing_times_2,
+                                  finishing_times_3),
+              sets = c(sets_1,
+                       sets_2,
+                       sets_3))
+
+df_avg <- df %>%
+  group_by(sets) %>%
+  summarize(mean_ft = mean(finishing_times))
+
+model <- lm(log(mean_ft) ~ log(sets), data = df_avg)
+summary(model)
+fitted_values <- predict(model, newdata = data.frame(sets = 1:500),
+                        interval = "prediction",
+                        level = 0.95)
+
+
+model_fits <- tibble(mean_ft = exp(fitted_values[,1]),
+                     sets = 1:500)
+
+
+ggplot(model_fits, aes(x=sets,y=mean_ft))+
+  geom_line()+
+  coord_cartesian(ylim=c(0,70))+
+  scale_y_continuous(breaks=seq(0,110,10))+
+  scale_x_continuous(limits = c(0,36))+
+  ylab("Scale finishing time (seconds)")+
+  xlab("Practice Attempts") +
+  geom_vline(xintercept = 213)+
+  geom_point(aes(x=df_avg$sets[1:500], y = df_avg$mean_ft[1:500]))
+```
+
+Looks pretty good to me, the line is going right through dots. So, the line can represent a kind of average practice curve. The neat thing is that I can keep drawing the line out following the power function. This allows me to use my existing data to make a prediction about how many practice attempts I need to get down to 3 seconds.
+
+```{r}
+ggplot(model_fits, aes(x=sets,y=mean_ft))+
+  geom_line()+
+  coord_cartesian(ylim=c(0,70))+
+  scale_y_continuous(breaks=seq(0,110,10))+
+  scale_x_continuous(limits = c(0,250))+
+  ylab("Scale finishing time (seconds)")+
+  xlab("Practice Attempts") +
+  geom_vline(xintercept = 213)+
+  geom_point(aes(x=df_avg$sets[1:500], y = df_avg$mean_ft[1:500]))
+```
+
+So, according to the limited data that I collected, I should be able to get down to 3 seconds in 219 practice attempts. If I add up all of the scale completion times from 1 to 219 (that are implied by this curve), then it will take 1568 seconds to get there, or 26 minutes of repeated practice. 
+
+Wow, that surprises me actually, I thought it would take longer. And, this is only an estimate, it could be way off in either direction. For example, I've already practiced a total of 30 minutes, over 3 sets of 10 minutes. Maybe I should have tried 26 minutes the first time and just got it over with!
+
+TBH I kind of want to go try this for 26 minutes as see what happens. Maybe I will set that aside as something I do later and report back. Instead, I will continue with the goal of this post. 
+
+## Contextual interference and mixed vs random practice
+
+
+
+
