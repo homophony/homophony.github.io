@@ -194,7 +194,7 @@ One detail is whether to do away with the delay between trials. Right now I play
 
 ----------------------
 
-I practiced all the chords in a random order for about 10 times each. This is a plot of all the learning chords for each key and chord type. A bit messy to look.
+I practiced all the chords in a random order for about 10 times each. This is a plot of my chord reaction time as a function of practice for all chords. A bit messy to look.
 
 
 ```{r}
@@ -222,7 +222,7 @@ ggplot(filtered_data, aes(x = repetition,
 
 ```
 
-If I average over keys, let's see I "learned" anything during this episode of practice.
+If I average over keys, did I get any better?
 
 There's a downward trend I guess.
 
@@ -242,7 +242,7 @@ ggplot(mean_data, aes(x = repetition,
   geom_point()
 ```
 
-Let's average over chords, and show the individual keys:
+Averaging over chords and showing the individual keys:
 
 ```{r}
 mean_data <- filtered_data %>%
