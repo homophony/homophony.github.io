@@ -223,21 +223,21 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>Testing myself on 7th chords using a choice-reaction time procedure</p>
-</div></div><p>This post is about collecting some performance data on my ability to play stuff. I have some longer term plans to improve on these methods for research purposes, but for now I’m just interested in roughly tracking my own abilities.</p>
+</div></div><p>This post is about collecting some performance data on my ability to play stuff. I have some longer term plans to improve on these methods for research purposes, but for now, I’m just interested in roughly tracking my own abilities.</p>
 <p>In my last post I was about try out some different practice schedules, one of which would require me to randomly pick which keys to practice. That kind of stuff is annoying to do without a computer. Plus, if I’m about to collect a bunch of data in a bunch of conditions, I’d rather not code things and do data entry by hand.</p>
 <p>So, I jumped ship and decided to start building little computerized measurement tools.</p>
-<p>I put together a really simple choice reaction test using <a href="https://www.jspsych.org/7.3/">jspsych</a>, the same javascript library I use for online cognition experiments.</p>
-<p>To start with I decided to test myself on basic 7th chords in all keys. There are 12 different keys, and for this test I used ∆7, 7, and -7 chords, for a total of 36 different chords.</p>
-<p>The choice-reaction time test is very simple. The program takes all of the possible chord names, randomly shuffles, then presents each name on the screen one at a time. I put my laptop ontop of my piano, waited for the chord name to come on, and then played the chord as fast as I could on the piano. At the same time, I had my left thumb on my spacebar, and I pressed the spacebar roughly at the same time that I played the chord. This allowed me to measure the chord reaction time for each chord. I also had the program repeat all the chords randomly twice, so that I get two reaction time measures per chord.</p>
+<p>I put together a really simple choice reaction test using <a href="https://www.jspsych.org/7.3/">jspsych</a>, the same JavaScript library that I use for online cognition experiments.</p>
+<p>To start, I decided to test myself on basic seventh chords in all keys. There are 12 different keys, and for this test, I used ∆7, 7, and -7 chords, for a total of 36 different chords.</p>
+<p>The choice reaction time test is very simple. The program takes all of the possible chord names, randomly shuffles them, and then presents each name on the screen one at a time. I put my laptop on top of my piano, waited for the chord name to appear, and then played the chord as fast as I could on the piano. At the same time, I had my left thumb on the spacebar, and I pressed the spacebar roughly at the same time that I played the chord. This allowed me to measure the reaction time for each chord. I also had the program repeat all the chords randomly twice, so that I got two reaction time measures per chord.</p>
 <p>I love jspsych. It took like 15 minutes to make this happen (granted, I have a bunch of prior experience using that library, and I was doing something very simple). Still, I already made the program and ran the test, and collected the data as a JSON variable. Woo hoo!</p>
-<p>And, of course, this is really messy data. Ideally I would have the reaction times for each note, say using MIDI or something. But, that’s for later.</p>
+<p>And, of course, this is really messy data. Ideally, I would have the reaction times for each note, say using MIDI or something. But, that’s for later.</p>
 <p>I’d really like to take a look at my own performance data. I know all of these chords pretty well, but I have never closely compared my ability to produce them on demand. I expect I’ll be pretty good in C, D, F, G, A, and worse in the other keys. But, I don’t really know what the pattern looks like.</p>
 <p>So, let’s get to the data analysis.</p>
 <p>I loaded in the data, computed the average chord-reaction time for each chord, and put them all in the following table and graph.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-9c86b2c950081864f811" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-9c86b2c950081864f811">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36"],["A-7","A7","Ab-7","Ab7","Ab∆7","A∆7","B-7","B7","Bb-7","Bb7","Bb∆7","B∆7","C-7","C7","C∆7","D-7","D7","Db-7","Db7","Db∆7","D∆7","E-7","E7","Eb-7","Eb7","Eb∆7","E∆7","F-7","F7","F∆7","G-7","G7","Gb-7","Gb7","Gb∆7","G∆7"],[901.5,1269.5,4730.5,2626.5,4038,1920.5,2974,2563.5,6454.5,3860.5,4595,3846,1414.5,1773.5,1231.5,1160.5,1206.5,3469,2383,3080.5,2951,1196.5,1698,4777.5,1878,2218,2951.5,1231.5,1478,1692,1508.5,1217.5,4033.5,4607,5124,2259]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>stimulus<\/th>\n      <th>mean_rt<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-22e9f78cf12893d5c48b" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-22e9f78cf12893d5c48b">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36"],["A-7","A7","Ab-7","Ab7","Ab∆7","A∆7","B-7","B7","Bb-7","Bb7","Bb∆7","B∆7","C-7","C7","C∆7","D-7","D7","Db-7","Db7","Db∆7","D∆7","E-7","E7","Eb-7","Eb7","Eb∆7","E∆7","F-7","F7","F∆7","G-7","G7","Gb-7","Gb7","Gb∆7","G∆7"],[901.5,1269.5,4730.5,2626.5,4038,1920.5,2974,2563.5,6454.5,3860.5,4595,3846,1414.5,1773.5,1231.5,1160.5,1206.5,3469,2383,3080.5,2951,1196.5,1698,4777.5,1878,2218,2951.5,1231.5,1478,1692,1508.5,1217.5,4033.5,4607,5124,2259]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>stimulus<\/th>\n      <th>mean_rt<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="cell">
@@ -251,10 +251,10 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </div>
 <p>Neat. Close to what I expected in terms of which chords I think I’m better at. All of em could do with some extra practice. I suppose I should do more practice on the slow ones, because the fast ones don’t really need it.</p>
 <hr>
-<p>I was too hasty with my jspsych programming and totally forget to add a few things that would make data-analysis much easier. I’d like to be able to easily replot the data in a few different ways. One is to group by maj7, min7, and dominant 7th. Another is to arrange the keys in ascending/descending order (rather than alphabetically), or in order of the circle of fifths. I could add the necessary factor levels to the data file by hand, but I think I’ll add this to jspsych program so that the data file includes this by default.</p>
+<p>I was too hasty with my jspsych programming and totally forgot to add a few things that would make data analysis much easier. I’d like to be able to easily replot the data in a few different ways. One way is to group by maj7, min7, and dominant 7th. Another is to arrange the keys in ascending/descending order (rather than alphabetically), or in the order of the circle of fifths. I could add the necessary factor levels to the data file by hand, but I think I’ll add this to the jspsych program so that the data file includes this by default.</p>
 <p>So, off to fixing the program, and then I’ll collect some more data and try a few different plots.</p>
 <p>And, I’m back. I ran through the practice one more time. Now my data file should be easier to plot in different ways.</p>
-<p>Here is the mean chord reaction time for each key, grouped separately for each 7th chord.</p>
+<p>Here is the mean chord reaction time for each key, grouped by 7th chords.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -264,15 +264,15 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
-<p>I wanted to be able to order the keys in terms of the circle of fifths, but there was another bug in the code, now fixed. But, I’ll need another round of data-collection to get that graph.</p>
-<p>In terms of piano practice, it looks like I need to get a bunch of these chord reaction times lower. Especially Gb, Ab, Bb, Eb, and Db, and B. I thought Bb would be better, but nope.</p>
-<p>The program I have written is not currently keeping track of practice attempts per chord, and I should add that in I think.</p>
+<p>I wanted to order the keys in terms of the circle of fifths, but there was another bug in the code, now fixed. I’ll need another round of data-collection to get that graph.</p>
+<p>In terms of piano practice, I should get a bunch of these chord reaction times lower. Especially Gb, Ab, Bb, Eb, and Db, and B. I thought Bb would be better, but nope.</p>
+<p>The program is not currently keeping track of practice attempts per chord, and I should add that.</p>
 <hr>
-<p>After some javascript nonsense, the program now runs in a loop. Each loop through a set of practice material it also records the practice attempt number.</p>
-<p>My loop of practice material is all the basic 7th chords. So, I’m about to practice them on loop for a while and then plot the data.</p>
-<p>One detail is whether to do away with the delay between trials. Right now I play the chord and there is a 2 second delay before the next chord. That’s nice and everything, but I feel like chomping through this, so maybe I will get rid of that delay.</p>
+<p>After some javascript nonsense, the program now runs in a loop. Each loop goes through a set of practice material and records the practice attempt number for each chord.</p>
+<p>My loop of practice material is all the basic 7th chords. So, I’m about to practice them for a while and then plot the data.</p>
+<p>One detail is whether to do away with the delay between trials. Right now there is a 2 second delay before the next chord. That’s nice and everything, but I feel like chomping through this, so I’ll get rid of that delay.</p>
 <hr>
-<p>I practiced all the chords in a random order for about 10 times each. This is a plot of my chord reaction time as a function of practice for all chords. A bit messy to look.</p>
+<p>I practiced all the chords in a random order for about 10 times each. This is a plot of my chord reaction times as a function of practice for all chords. A bit messy to look at.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -282,7 +282,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
-<p>If I average over keys, did I get any better?</p>
+<p>If I average over keys, did I get any faster?</p>
 <p>There’s a downward trend I guess.</p>
 <div class="cell">
 <div class="cell-output-display">
