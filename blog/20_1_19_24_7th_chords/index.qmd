@@ -286,3 +286,70 @@ I guess I should practice Gb and Db and Bb and flatten out this performance dist
 
 Alright, that's basically all I wanted to accomplish today. Now I have a clunky little tool to relatively quickly assess where I am at on different musical elements. Time to go do something else.
 
+------------
+
+Practicing "Eb","Db","Gb","Ab","B" this morning, and plotting the reactions from yesterday (1), and today (2).
+
+```{r}
+#| fig-height: 10
+
+data_files <- c("jatos_results_data_20240119161739.txt",
+                "jatos_results_data_20240120090705.txt")
+
+all_data <- tibble()
+
+for(i in 1:length(data_files)){
+  # Read the text file from JATOS ...
+  read_file(data_files[i]) %>%
+  # ... split it into lines ...
+  str_split('\n') %>% first() %>%
+  # ... filter empty rows ...
+  discard(function(x) x == '') %>%
+  # ... parse JSON into a data.frame
+  map_dfr(fromJSON, flatten=T) -> single_data
+  
+  single_data <- single_data %>%
+    select(rt,stimulus,key,chord,ascending_order,fifths_order,task,repetition) %>%
+    mutate(epoch = i)
+  
+  all_data <- rbind(all_data,single_data)
+}
+
+
+filtered_data <- all_data %>%
+  filter(task == "practice_trial",
+         key %in% c("Eb","Db","Gb","Ab","B")) %>%
+  mutate(key = reorder(key,ascending_order))
+  
+mean_data <- filtered_data %>%
+  filter(rt <= 6000,
+         rt >= 1000) %>%
+  group_by(repetition, key, epoch) %>%
+  summarize(mean_rt = mean(rt))
+
+ggplot(mean_data, aes(x = repetition, 
+                          y = mean_rt,
+                      color = key))+
+  geom_line()+
+  geom_point()+
+  facet_wrap(~key*epoch, ncol=2)
+```
+
+Averaging over individual chords, and looking at mean chord reaction time yesterday and today on these chords.
+
+```{r}
+# by epoch
+mean_data <- filtered_data %>%
+  filter(rt <= 6000,
+         rt >= 1000) %>%
+  group_by(key, epoch) %>%
+  summarize(mean_rt = mean(rt))
+
+ggplot(mean_data, aes(x = epoch, 
+                      y = mean_rt,
+                      color = key))+
+  geom_line()+
+  geom_point()
+```
+
+Made a change to the program so that when I load it up I can select which keys to practice. I'm assuming that if I select only Gb and Ab (the slowest), I would be able to get them both under 2 seconds. I wonder if I would then maintain that level of performance when increasing the number of other chords in the test. Need to make breakfast first.
