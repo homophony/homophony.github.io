@@ -353,3 +353,101 @@ ggplot(mean_data, aes(x = epoch,
 ```
 
 Made a change to the program so that when I load it up I can select which keys to practice. I'm assuming that if I select only Gb and Ab (the slowest), I would be able to get them both under 2 seconds. I wonder if I would then maintain that level of performance when increasing the number of other chords in the test. Need to make breakfast first.
+
+I put Gb and Ab and practiced those 7th chords for a while.
+
+```{r}
+data_files <- c("jatos_results_data_20240119161739.txt",
+                "jatos_results_data_20240120090705.txt",
+                "jatos_results_data_20240120104033.txt")
+
+all_data <- tibble()
+
+for(i in 1:length(data_files)){
+  # Read the text file from JATOS ...
+  read_file(data_files[i]) %>%
+  # ... split it into lines ...
+  str_split('\n') %>% first() %>%
+  # ... filter empty rows ...
+  discard(function(x) x == '') %>%
+  # ... parse JSON into a data.frame
+  map_dfr(fromJSON, flatten=T) -> single_data
+  
+  single_data <- single_data %>%
+    select(rt,stimulus,key,chord,ascending_order,fifths_order,task,repetition) %>%
+    mutate(epoch = i)
+  
+  all_data <- rbind(all_data,single_data)
+}
+
+
+filtered_data <- all_data %>%
+  filter(task == "practice_trial",
+         key %in% c("Eb","Db","Gb","Ab","B")) %>%
+  mutate(key = reorder(key,ascending_order))
+  
+mean_data <- filtered_data %>%
+  filter(rt <= 6000,
+         rt >= 1000) %>%
+  group_by(key, epoch) %>%
+  summarize(mean_rt = mean(rt))
+
+ggplot(mean_data, aes(x = epoch, 
+                      y = mean_rt,
+                      color = key))+
+  geom_line()+
+  geom_point()
+```
+
+Nice, with 5 minutes or so of banging around those chords, I could get the times way down in the context of this much simpler test (fewer other chords to play, less hand movement between chords etc).
+
+I'm curious whether this improvement for Gb and Ab would persist into a test using all of the keys. 
+
+```{r}
+data_files <- c("jatos_results_data_20240119161739.txt",
+                "jatos_results_data_20240120090705.txt",
+                "jatos_results_data_20240120104033.txt",
+                "jatos_results_data_20240120110218.txt")
+
+all_data <- tibble()
+
+for(i in 1:length(data_files)){
+  # Read the text file from JATOS ...
+  read_file(data_files[i]) %>%
+  # ... split it into lines ...
+  str_split('\n') %>% first() %>%
+  # ... filter empty rows ...
+  discard(function(x) x == '') %>%
+  # ... parse JSON into a data.frame
+  map_dfr(fromJSON, flatten=T) -> single_data
+  
+  single_data <- single_data %>%
+    select(rt,stimulus,key,chord,ascending_order,fifths_order,task,repetition) %>%
+    mutate(epoch = i)
+  
+  all_data <- rbind(all_data,single_data)
+}
+
+
+filtered_data <- all_data %>%
+  filter(task == "practice_trial") %>%
+  mutate(key = reorder(key,ascending_order))
+  
+mean_data <- filtered_data %>%
+  filter(rt <= 6000,
+         rt >= 1000) %>%
+  group_by(key, epoch) %>%
+  summarize(mean_rt = mean(rt))
+
+ggplot(mean_data, aes(x = epoch, 
+                      y = mean_rt,
+                      color = key))+
+  geom_line()+
+  geom_point()
+```
+
+When I added all of the keys back the RTs for Gb and Ab went up a little bit from the last time, but they are over all way down. Almost all of them are under 1500 ms now.
+
+This practice isn't very musical, but it seems to work out my ability to identify and then play chords on demand. Perhaps speeding up on this test would improve my ability to sight read chord changes. 
+
+
