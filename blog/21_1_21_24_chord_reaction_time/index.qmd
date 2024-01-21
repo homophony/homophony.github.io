@@ -1,0 +1,155 @@
+---
+title: "Expanding the chord reaction time test"
+author: "Matt Crump"
+date: 1/21/24
+description: "Using a cog psych task to measure how fast I can play various chords on demand."
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - practice
+  - chord reaction time
+execute: 
+  echo: false
+  message: false
+  warning: false
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "cartoon thundercat scientist building a synthesizer. laboratory. science. 80s cartoon. space music."
+
+for s in range(30):
+  for n in [4,5,6,7]:
+    seed = s+1
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+cartoon thundercat scientist building a synthesizer. laboratory. science. 80s cartoon. space music.
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+I've been tinkering with a web-based "Chord Reaction Time" test to measure how fast I can play various chords on demand. The first version of the task had all the keys and three basic 7th chords (7, -7, ∆7). The newer version adds a selection screen, and more chords to practice. I don't have a demo to share yet, but here's a figure of what happens:
+
+![](images/Screenshot 2024-01-21 at 8.05.10 AM.png)
+
+
+At the moment, whenever I play a chord in response to a name, I have to simultaneously press the space bar on a bluetooth keyboard. That keypress records my reaction time to the chord and triggers the next trial. This coming week I'll look into using the laptop microphone to record reaction time by analyzing amplitude changes (and then later something similar using MIDI).
+
+Yesterday afternoon I tried my hand at all the chords in all the keys. I haven't looked at the data yet, but I'm sure it will tell me that I'm slow at the chords that I already know I'm slow on.
+
+This graph averages over keys and shows mean chord reaction time for each type of tested chord form. 
+
+```{r}
+library(tidyverse)
+library(jsonlite)
+library(xtable)
+library(data.table)
+data_files <- c("jatos_results_data_20240121080835.txt")
+
+all_data <- tibble()
+
+for(i in 1:length(data_files)){
+  # Read the text file from JATOS ...
+  read_file(data_files[i]) %>%
+  # ... split it into lines ...
+  str_split('\n') %>% first() %>%
+  # ... filter empty rows ...
+  discard(function(x) x == '') %>%
+  # ... parse JSON into a data.frame
+  map_dfr(fromJSON, flatten=T) -> single_data
+  
+  single_data <- single_data %>%
+    select(rt,stimulus,key,chord,ascending_order,fifths_order,task,repetition) %>%
+    mutate(epoch = i)
+  
+  all_data <- rbind(all_data,single_data)
+}
+
+
+filtered_data <- all_data %>%
+  filter(task == "practice_trial") %>%
+  mutate(key = reorder(key,ascending_order))
+  
+mean_data <- filtered_data %>%
+  filter(rt <= 6000,
+         rt >= 1000) %>%
+  group_by(chord) %>%
+  summarize(mean_rt = mean(rt))
+
+ggplot(mean_data, aes(x = chord, 
+                          y = mean_rt))+
+  geom_bar(stat="identity")+
+  theme_classic(base_size = 15)
+
+```
+
+I should dedicate practice to all of the chords above the 2 second range.
+
+One question I have is whether the performance on this kind of test would meaningfully predict my ability to fluently play through chord changes on lead sheets.
+
+My experience right now is that I can often get through chord changes on a new song without too much trouble, but I'll get tripped on the altered chords with flats and sharps. More like fall all over the place. I can't dead reckon those chords. Instead, I'll sit there and take 5 seconds or more to puzzle out the chord, which ruins the flow. If I'm feeling diligent I might work out a fingering pattern that makes it easy to play in that context. However, I don't appear to retain any of that chord knowledge in a general way.
+
+I assume that if I was able to play all my chords really well in the context of playing lead sheets then my reaction times in the above graph would be faster and more uniform. I could practice this test over and over, and I'm pretty confident that I would get faster on the slower chords. However, one possibility is that that this learning would be somewhat specific to the peculiar demands of this very non-musical chord production task. So, it's not clear to me that improvements derived from practicing chording in this task would fully generalize to helping me play lead sheets. At the same time, If I can get all the chords down to under 2 seconds in all the keys, that's gotta help. 
+
+Breakfast time.
+
+
+
+
+
+
+
+
+
+
+
+
+

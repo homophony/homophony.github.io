@@ -15,7 +15,53 @@
 <link>https://homophony.quest/notes.html</link>
 </image>
 <generator>quarto-1.4.533</generator>
-<lastBuildDate>Fri, 19 Jan 2024 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 21 Jan 2024 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>Expanding the chord reaction time test</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/21_1_21_24_chord_reaction_time/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/21_1_21_24_chord_reaction_time/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>cartoon thundercat scientist building a synthesizer. laboratory. science. 80s cartoon. space music.</p>
+</div></div><p>I’ve been tinkering with a web-based “Chord Reaction Time” test to measure how fast I can play various chords on demand. The first version of the task had all the keys and three basic 7th chords (7, -7, ∆7). The newer version adds a selection screen, and more chords to practice. I don’t have a demo to share yet, but here’s a figure of what happens:</p>
+<p><img src="https://homophony.quest/blog/21_1_21_24_chord_reaction_time/images/Screenshot 2024-01-21 at 8.05.10 AM.png" class="img-fluid"></p>
+<p>At the moment, whenever I play a chord in response to a name, I have to simultaneously press the space bar on a bluetooth keyboard. That keypress records my reaction time to the chord and triggers the next trial. This coming week I’ll look into using the laptop microphone to record reaction time by analyzing amplitude changes (and then later something similar using MIDI).</p>
+<p>Yesterday afternoon I tried my hand at all the chords in all the keys. I haven’t looked at the data yet, but I’m sure it will tell me that I’m slow at the chords that I already know I’m slow on.</p>
+<p>This graph averages over keys and shows mean chord reaction time for each type of tested chord form.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/21_1_21_24_chord_reaction_time/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>I should dedicate practice to all of the chords above the 2 second range.</p>
+<p>One question I have is whether the performance on this kind of test would meaningfully predict my ability to fluently play through chord changes on lead sheets.</p>
+<p>My experience right now is that I can often get through chord changes on a new song without too much trouble, but I’ll get tripped on the altered chords with flats and sharps. More like fall all over the place. I can’t dead reckon those chords. Instead, I’ll sit there and take 5 seconds or more to puzzle out the chord, which ruins the flow. If I’m feeling diligent I might work out a fingering pattern that makes it easy to play in that context. However, I don’t appear to retain any of that chord knowledge in a general way.</p>
+<p>I assume that if I was able to play all my chords really well in the context of playing lead sheets then my reaction times in the above graph would be faster and more uniform. I could practice this test over and over, and I’m pretty confident that I would get faster on the slower chords. However, one possibility is that that this learning would be somewhat specific to the peculiar demands of this very non-musical chord production task. So, it’s not clear to me that improvements derived from practicing chording in this task would fully generalize to helping me play lead sheets. At the same time, If I can get all the chords down to under 2 seconds in all the keys, that’s gotta help.</p>
+<p>Breakfast time.</p>
+
+
+
+ ]]></description>
+  <category>practice</category>
+  <category>chord reaction time</category>
+  <guid>https://homophony.quest/blog/21_1_21_24_chord_reaction_time/</guid>
+  <pubDate>Sun, 21 Jan 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/21_1_21_24_chord_reaction_time/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Estimating practice time needed, and a bit on contextual interference</title>
   <dc:creator>Matt Crump</dc:creator>
@@ -188,8 +234,8 @@ F-statistic: 266.2 on 1 and 34 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>I loaded in the data, computed the average chord-reaction time for each chord, and put them all in the following table and graph.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-34cae4c6fce3457c5855" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-34cae4c6fce3457c5855">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36"],["A-7","A7","Ab-7","Ab7","Ab∆7","A∆7","B-7","B7","Bb-7","Bb7","Bb∆7","B∆7","C-7","C7","C∆7","D-7","D7","Db-7","Db7","Db∆7","D∆7","E-7","E7","Eb-7","Eb7","Eb∆7","E∆7","F-7","F7","F∆7","G-7","G7","Gb-7","Gb7","Gb∆7","G∆7"],[901.5,1269.5,4730.5,2626.5,4038,1920.5,2974,2563.5,6454.5,3860.5,4595,3846,1414.5,1773.5,1231.5,1160.5,1206.5,3469,2383,3080.5,2951,1196.5,1698,4777.5,1878,2218,2951.5,1231.5,1478,1692,1508.5,1217.5,4033.5,4607,5124,2259]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>stimulus<\/th>\n      <th>mean_rt<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-045288cdf7666406529c" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-045288cdf7666406529c">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36"],["A-7","A7","Ab-7","Ab7","Ab∆7","A∆7","B-7","B7","Bb-7","Bb7","Bb∆7","B∆7","C-7","C7","C∆7","D-7","D7","Db-7","Db7","Db∆7","D∆7","E-7","E7","Eb-7","Eb7","Eb∆7","E∆7","F-7","F7","F∆7","G-7","G7","Gb-7","Gb7","Gb∆7","G∆7"],[901.5,1269.5,4730.5,2626.5,4038,1920.5,2974,2563.5,6454.5,3860.5,4595,3846,1414.5,1773.5,1231.5,1160.5,1206.5,3469,2383,3080.5,2951,1196.5,1698,4777.5,1878,2218,2951.5,1231.5,1478,1692,1508.5,1217.5,4033.5,4607,5124,2259]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>stimulus<\/th>\n      <th>mean_rt<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div class="cell">
@@ -290,6 +336,29 @@ F-statistic: 266.2 on 1 and 34 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>Made a change to the program so that when I load it up I can select which keys to practice. I’m assuming that if I select only Gb and Ab (the slowest), I would be able to get them both under 2 seconds. I wonder if I would then maintain that level of performance when increasing the number of other chords in the test. Need to make breakfast first.</p>
+<p>I put Gb and Ab and practiced those 7th chords for a while.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/20_1_19_24_7th_chords/index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Nice, with 5 minutes or so of banging around those chords, I could get the times way down in the context of this much simpler test (fewer other chords to play, less hand movement between chords etc).</p>
+<p>I’m curious whether this improvement for Gb and Ab would persist into a test using all of the keys.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/20_1_19_24_7th_chords/index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>When I added all of the keys back the RTs for Gb and Ab went up a little bit from the last time, but they are over all way down. Almost all of them are under 1500 ms now.</p>
+<p>This practice isn’t very musical, but it seems to work out my ability to identify and then play chords on demand. Perhaps speeding up on this test would improve my ability to sight read chord changes.</p>
 
 
 
@@ -2526,42 +2595,6 @@ Fairly quick to access aspects of sound control...sensitivity adjustments are gr
   <guid>https://homophony.quest/blog/4_12_24_23_scales_7ths/</guid>
   <pubDate>Sun, 24 Dec 2023 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/4_12_24_23_scales_7ths/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Cycling through Major 7ths</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/3_12_23_23_cycling/</link>
-  <description><![CDATA[ 
-
-
-
-
-<p><audio controls=""> <source src="Maj7ths_01.mp3" type="audio/wav"> </audio></p>
-<p>The basic task is to play Major 7th chords through the circle of fifths.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Circle of fifths</p>
-<p>Going clockwise the next note is a perfect fifth from the previous note.</p>
-<p><img src="https://homophony.quest/blog/3_12_23_23_cycling/circle.png" class="img-fluid"></p>
-</div></div><p>Major 7th chords have a I-III-V-maj7 structure. These are the first, third, fifth, and major 7th notes in the major scale of the root key. For example, the key of C has 7 notes in the major scale: C D E F G A B</p>
-<p>The chord C Maj7 (also notated as C∆7) is C-E-G-B.</p>
-<p>Where C is the root or first note, E is the III, G is the V, and B is the major VII. The same pattern is applied to make Maj7 chords in all other keys.</p>
-<p>At the beginning of this practice track I play chords going anti-clockwise through the circle of fifths:</p>
-<p>C∆7 - F∆7 - Bb∆7 - Eb∆7 - Ab∆7 - Db∆7 - Gb∆7 - B∆7 - E∆7 - A∆7 - D∆7 - G∆7 - C∆7</p>
-<p>I can probably play through this a bit faster, but not without making mistakes. One goal is to get the speed up both in both directions (anti-clockwise and clockwise).</p>
-<p>Next, there is a short riff that I got from <a href="https://www.youtube.com/watch?v=CML0EgoqpxU">Nahre Sol’s youtube channel</a>, who has some other great recommendations for playing through maj7th chords.</p>
-<p>Then, I end with playing ∆7th chords in my left hand and messing around with playing through major scales in the right hand. For example, if I’m playing a C∆7th, then I’m playing through the C major scale and so on. I thought I would have a better grasp on all of the major scales, but some of them are way out of practice. Yeesh. Baby steps.</p>
-<p>A random observation about musical relationships that this exercise drew out. When playing anti-clockwise, the next chord remains ambiguous with respect to the tonal center: it could indicate a switch of the root, but maybe not. There isn’t enough evidence to go on based on the notes in the major 7th chords.</p>
-<p>For example, going from C∆7 to F∆7 involves CEGB and FACE, all of these notes are in the C Major scale. So, the F∆7 chord doesn’t add any new notes, which in my mind allows some ambiguity about whether we are in C major still or have switched to F major. The F major scale has a Bb, which is the one note that makes F major different from C major, but this note is not voiced in the F∆7 chord. However, this “new note”, which would provide evidence that the root had switched from C to F is voiced by the next chord in the circle of fifths, Bb. So, in some sense moving anti-clockwise by one chord sets up a question—has the root changed?—and moving one more chord answers the question—yes—, but also asks the same question again, in a circle of fifths.</p>
-
-
-
- ]]></description>
-  <category>practice exercise</category>
-  <category>circle of fifths</category>
-  <guid>https://homophony.quest/blog/3_12_23_23_cycling/</guid>
-  <pubDate>Sat, 23 Dec 2023 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/3_12_23_23_cycling/circle.png" medium="image" type="image/png" height="135" width="144"/>
 </item>
 </channel>
 </rss>
