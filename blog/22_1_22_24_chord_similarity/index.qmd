@@ -101,31 +101,76 @@ If I have extra time I may play around with some additional ways to visualize th
 
 The table should scroll left and right. The columns can be sorted ascending or descending by clicking the little arrows beside a column name. Sorting from the largest value to the smallest value will re-arrange the row-names on the left side. This produces an ordered list of chords from most to least similar to the column name that was clicked. 
 
+## First order chord similarity
+
 ```{r}
-
+# import excel sheet
 c_chord_excel <- rio::import("chord_vectors.xlsx")
-c_chord_matrix <- as.matrix(c_chord_excel[,2:13])
-row.names(c_chord_matrix) <- c_chord_excel[,1]
 
+# grab feature vectors
+c_chord_matrix <- as.matrix(c_chord_excel[,4:15])
+
+# assign row names to the third column containing chord names
+row.names(c_chord_matrix) <- c_chord_excel[,3]
+
+# define all keys
 keys <- c("C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B")
 
+
+# the excel sheet only has chords in C
+# loop through the keys, permute the matrix to get the chords in the next key
+# add the permuted matrix to new rows in the overall chord_matrix
 for (i in 1:length(keys)) {
   
-  new_key <- keys[i]
-  
   if (i == 1) {
+    # initialize chord_matrix with C matrix
     chord_matrix <- c_chord_matrix
+    
   } else {
+    #permute the matrix as a function of iterator
     new_matrix <- cbind(c_chord_matrix[, (14-i):12],c_chord_matrix[, 1:(13-i)] )
-    new_names <- gsub("C", new_key, c_chord_excel[,1])
+    
+    # rename the rows with the new key
+    new_names <- gsub("C", keys[i], c_chord_excel[,3])
     row.names(new_matrix) <- new_names
+    
+    # append the new_matrix to chord_matrix
     chord_matrix <- rbind(chord_matrix,new_matrix)
-  }
-
+  
+    }
 }
 
+# calculate similarities between keys
 key_similarities <- lsa::cosine(chord_matrix)
+
+# calculate similarities between keys
 chord_similarities <- lsa::cosine(t(chord_matrix))
+
+chord_properties <- tibble(
+  type = rep(c_chord_excel$type,length(keys)),
+  key = rep(keys, each = dim(c_chord_matrix)[1]),
+  chord_names  = row.names(chord_similarities)
+)
+
+chord_similarities <- cbind(chord_properties,
+                            chord_similarities)
+row.names(chord_similarities) <- NULL
+
+# print table
+# try datatable options...didn't work as I wanted
+# DT::datatable(
+#   chord_similarities[1:50,1:50],
+#   extensions = c("FixedColumns","SearchBuilder","Buttons"),
+#   options = list(
+#     paging = TRUE,
+#     pageLength =  25,
+#     fixedColumns = list(leftColumns = 4),
+#     dom = "BQlfrtip",
+#     searchBuilder = TRUE,
+#     search = list(return = TRUE),
+#     buttons = 'colvis'
+#   )
+# )
 
 DT::datatable(
   chord_similarities,
@@ -133,13 +178,39 @@ DT::datatable(
   options = list(
     paging = TRUE,
     pageLength =  25,
-    fixedColumns = list(leftColumns = 1)
+    fixedColumns = list(leftColumns = 4)
   )
 )
 
 ```
 
+## Second-order similarities
 
+This table uses the above cosine similarity vectors for each chord as the basis vectors, and then computes another similarity matrix. The approach has interesting properties in other domains like computational modeling of word semantics. Just curious to look at it in this context.
+
+One basic observation is that in the first-order similarity space (above), there are many 0 similarities between pairs. For example, the single note C has 0 similarity to every other single note, because each note only has one feature, and the features never overlap. However, in the second-order matrix, individual notes now have some positive similarity to each other. This is because the whole vector of similarities for C (from above), now has many shared elements with the vectors for the other chords, and a similarity can be computed.
+
+I suspect this table will have some more musically interesting things going on.
+
+```{r}
+
+first_order <- lsa::cosine(t(chord_matrix))
+second_order <- lsa::cosine(first_order)
+
+second_order_similarities <- cbind(chord_properties,
+                                   second_order)
+row.names(second_order_similarities) <- NULL
+
+DT::datatable(
+  second_order_similarities,
+  extensions = "FixedColumns",
+  options = list(
+    paging = TRUE,
+    pageLength =  25,
+    fixedColumns = list(leftColumns = 4)
+  )
+)
+```
 
 
 
