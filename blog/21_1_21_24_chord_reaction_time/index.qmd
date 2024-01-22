@@ -119,7 +119,7 @@ filtered_data <- all_data %>%
   mutate(key = reorder(key,ascending_order))
   
 mean_data <- filtered_data %>%
-  filter(rt <= 6000,
+  filter(rt <= 20000,
          rt >= 1000) %>%
   group_by(chord) %>%
   summarize(mean_rt = mean(rt))
@@ -141,9 +141,60 @@ I assume that if I was able to play all my chords really well in the context of 
 
 Breakfast time.
 
+---------------------
+
+I did practice some of the extended chords yesterday. This morning I did a round of practice/testing on the 7b9 chords. 
+
+Yesterday, 7b9 were initially excruciatingly slow. I couldn't play any of them and had to construct them on the fly. As the graph below shows, I took over 12 seconds to produce some of the chords. 
+
+Practice felt very slow and I didn't feel like I was locking in new patterns at a fingering level. For example, I can visualize a C7 chord immediately, and still can't visualize a C7b9 (even after all this practice).
+
+Nevertheless, the graph shows some substantial gains in chord production time. There were a few stages in learning to play this chord. Stage 1 was having no clue and working out each chord anew. In stage 2, I settled on a method to get to the 7b9: play the 7th chord in root position, go up 1 inversion, but instead of playing the root at the top, play 1 semitone above the root. Stage 2 was pretty slow also. At some point I realized that I already knew all of these chords as o7 chords. For example C7b9 without the root has E-G-Bb-Db, which are all the notes in Eo7, Go7, Bbo7, and Dbo7. In stage 3, I switched to translating the chord name, "C7b9", and thinking play the o7 on the third (or, in this case Eo7). That helped a little bit in terms of speed, and I think it makes musical sense to build mental associations between the 7b9 and o7 anyway.
+
+```{r}
+data_files <- c("jatos_results_data_20240121080835.txt",
+                "jatos_results_data_20240122080540.txt")
+
+all_data <- tibble()
+
+for(i in 1:length(data_files)){
+  # Read the text file from JATOS ...
+  read_file(data_files[i]) %>%
+  # ... split it into lines ...
+  str_split('\n') %>% first() %>%
+  # ... filter empty rows ...
+  discard(function(x) x == '') %>%
+  # ... parse JSON into a data.frame
+  map_dfr(fromJSON, flatten=T) -> single_data
+  
+  single_data <- single_data %>%
+    select(rt,stimulus,key,chord,ascending_order,fifths_order,task,repetition) %>%
+    mutate(epoch = i)
+  
+  all_data <- rbind(all_data,single_data)
+}
 
 
+filtered_data <- all_data %>%
+  filter(task == "practice_trial",
+         chord == "7b9") %>%
+  mutate(key = reorder(key,ascending_order))
+  
+mean_data <- filtered_data %>%
+  filter(rt <= 20000,
+         rt >= 1000) %>%
+  group_by(key,epoch) %>%
+  summarize(mean_rt = mean(rt))
 
+ggplot(mean_data, aes(x = epoch, 
+                          y = mean_rt,
+                      color = key))+
+  geom_point()+
+  geom_line()+
+  theme_classic(base_size = 15)
+
+```
+```
 
 
 

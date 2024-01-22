@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.533">
+<meta name="generator" content="quarto-1.4.547">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -255,7 +255,7 @@ window.Quarto = {
 
 <div id="listing-blog_list" class="quarto-listing quarto-listing-container-default">
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="practice,chord reaction time" data-listing-date-sort="1705813200000" data-listing-file-modified-sort="1705845075047" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="514">
+<div class="quarto-post image-right" data-index="0" data-categories="practice,chord reaction time" data-listing-date-sort="1705813200000" data-listing-file-modified-sort="1705930127943" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7" data-listing-word-count-sort="1249">
 <div class="thumbnail">
 <p><a href="./blog/21_1_21_24_chord_reaction_time/index.html" class="no-external"></a></p><a href="./blog/21_1_21_24_chord_reaction_time/index.html" class="no-external">
 <p><img src="./blog/21_1_21_24_chord_reaction_time/cover.jpg" class="thumbnail-image" style="height: 100%;"></p>
@@ -336,7 +336,7 @@ Matt Crump
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="2" data-categories="practice,7th chords,jspsych,assessment" data-listing-date-sort="1705640400000" data-listing-file-modified-sort="1705767027939" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="9" data-listing-word-count-sort="1743">
+<div class="quarto-post image-right" data-index="2" data-categories="practice,7th chords,jspsych,assessment" data-listing-date-sort="1705640400000" data-listing-file-modified-sort="1705767027939" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="14" data-listing-word-count-sort="2707">
 <div class="thumbnail">
 <p><a href="./blog/20_1_19_24_7th_chords/index.html" class="no-external"></a></p><a href="./blog/20_1_19_24_7th_chords/index.html" class="no-external">
 <p><img src="./blog/20_1_19_24_7th_chords/cover.jpg" class="thumbnail-image" style="height: 100%;"></p>
@@ -1281,7 +1281,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      return note.innerHTML;
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
     }
   }
   for (var i=0; i<xrefs.length; i++) {
