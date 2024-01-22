@@ -1,0 +1,146 @@
+---
+title: "Chord Similarity analysis table"
+author: "Matt Crump"
+date: 1/22/24
+description: "Using a vector space to analyse similarity between chords in an interactive table"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - chord similarity
+execute: 
+  echo: false
+  message: false
+  warning: false
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "piano chord similarity analysis. cartoon. colorful. musical. science."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+1
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+piano chord similarity analysis. cartoon. colorful. musical. science.
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+This is a quick post with some tools for looking at chord similarity.
+
+I took all of the chords on this [music theory page](https://musictheory.pugetsound.edu/mt21c/ChordLabels.html), and represented them in a chord vector space using one-hot codes.
+
+Each chord is represented as a vector with 12 features, corresponding to each of the 12 possible notes. If a note is in a chord, then the note feature get's a 1 in the vector. All other features are set to 0.
+
+Here's a few examples of what the vectors look like.
+
+```{r}
+library(tidyverse)
+library(rio)
+
+c_chord_excel <- rio::import("chord_vectors.xlsx")
+knitr::kable(c_chord_excel[1:5,])
+```
+
+I created vectors for 47 chords across all keys. This results in a matrix with 564 rows (for each chord vector) and 12 columns for each note feature.
+
+Next, I used the [vector cosine](https://en.wikipedia.org/wiki/Cosine_similarity) to compute the similarity between each chord and every other chords. That results in a 564x564 chord-similarity matrix. 
+
+In the matrix, similarity ranges from 0 (no similarity) to 1 (perfect similarity). The similarity function basically tracks how many overlapping features there are between two chords. If each chord has zero shared notes, then similarity will be 0. As a chord increases in the number of shared notes, then similarity increases.
+
+If I have extra time I may play around with some additional ways to visualize this matrix. For now, I'm using the datatable library to load the matrix into this webpage. It's a bit clunky and very large. 
+
+The table should scroll left and right. The columns can be sorted ascending or descending by clicking the little arrows beside a column name. Sorting from the largest value to the smallest value will re-arrange the row-names on the left side. This produces an ordered list of chords from most to least similar to the column name that was clicked. 
+
+```{r}
+
+c_chord_excel <- rio::import("chord_vectors.xlsx")
+c_chord_matrix <- as.matrix(c_chord_excel[,2:13])
+row.names(c_chord_matrix) <- c_chord_excel[,1]
+
+keys <- c("C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B")
+
+for (i in 1:length(keys)) {
+  
+  new_key <- keys[i]
+  
+  if (i == 1) {
+    chord_matrix <- c_chord_matrix
+  } else {
+    new_matrix <- cbind(c_chord_matrix[, (14-i):12],c_chord_matrix[, 1:(13-i)] )
+    new_names <- gsub("C", new_key, c_chord_excel[,1])
+    row.names(new_matrix) <- new_names
+    chord_matrix <- rbind(chord_matrix,new_matrix)
+  }
+
+}
+
+key_similarities <- lsa::cosine(chord_matrix)
+chord_similarities <- lsa::cosine(t(chord_matrix))
+
+DT::datatable(
+  chord_similarities,
+  extensions = "FixedColumns",
+  options = list(
+    paging = TRUE,
+    pageLength =  25,
+    fixedColumns = list(leftColumns = 1)
+  )
+)
+
+```
+
+
+
+
+
+
