@@ -15,7 +15,1811 @@
 <link>https://homophony.quest/notes.html</link>
 </image>
 <generator>quarto-1.4.547</generator>
-<lastBuildDate>Mon, 22 Jan 2024 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 23 Jan 2024 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>Minerva and expectancy from a chord vector space</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/23_1_23_24_minerva/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> set_seed</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Image</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> random</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ssl</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#locate library</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mps"</span>)</span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"max"</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Minerva robot of wisdom. binary codes. thundercat cartoon. music. music theory. conceptual. reverberation. resonance. colorful."</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>):</span>
+<span id="cb1-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]:</span>
+<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span></span>
+<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-29">    set_seed(seed)</span>
+<span id="cb1-30">    </span>
+<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>num_steps)</span>
+<span id="cb1-32">    </span>
+<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpeg"</span></span>
+<span id="cb1-34">    </span>
+<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/23_1_23_24_minerva/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Minerva robot of wisdom. binary codes. thundercat cartoon. music. music theory. conceptual. reverberation. resonance. colorful.</p>
+</div></div><p>This is a scratchpad post with R code to explore some esoteric computational modeling ideas. I want to get coding, but will put a bit of context around this.</p>
+<p>My plan is to take the chord vector space I made yesterday (see last post), and put it into the memory of a MINERVA-II model. Then, I’m going to probe the model with various input patterns, and see what comes out.</p>
+<p>I wish I had time to review MINERVA-II in more depth here, but I don’t. Very quickly, MINERVA-II is an instance-based model of human memory processes by Douglas Hintzman <span class="citation" data-cites="hintzman1984">(Hintzman 1984)</span>. This model was inspired by Richard Semon’s memory theory <span class="citation" data-cites="semon1923">(Semon 1923)</span>, which I find very poetic. Semon made up his own terms so that he could more precisely state his theoretical ideas, including words like engram, engraphic, and homophony.</p>
+<p>The basic idea is that people store the patterns of individual experiences in memory. And, a current pattern can retrieve old memories by similarity. MINERVA-II uses a resonance metaphor. A pattern is presented to a memory system. The pattern activates all of the traces in memory, in proportion to their similarity to the pattern. In this way, memory is call and response process. The pattern of the present moment resonates with the memory system bringing forth a chorus of activated traces. This memory response is called the echo. The resonance between the structure of the pattern in the present moment and similar traces from the past is what Richard Semon called homophony. I have some <a href="https://www.crumplab.com/cognition/articles/modules/L11_Instance_Theory.html">lecture material on these concepts in my intro to cognition course</a>.</p>
+<p>Now onto the R code. Memory is the chord vector matrix. I can “probe” the model by giving it any feature vector as an input. The input probe activates every chord in memory by it’s similarity (using the vector cosine). The memory responds as a similarity weighted sum. All of traces are multiplied by their similarity, and then summed up into a single feature vector, called the echo.</p>
+<section id="loading-the-chord-vector-space" class="level2">
+<h2 class="anchored" data-anchor-id="loading-the-chord-vector-space">Loading the chord vector space</h2>
+<p>The excel file for the chord vector space is available from the <a href="https://github.com/homophony/homophony.github.io/tree/main">github repo for this blog</a>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb2-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># pre-processing to get the chord vectors</span></span>
+<span id="cb2-3"></span>
+<span id="cb2-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># load chord vectors</span></span>
+<span id="cb2-5">c_chord_excel <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> rio<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">import</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"chord_vectors.xlsx"</span>)</span>
+<span id="cb2-6"></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># grab feature vectors</span></span>
+<span id="cb2-8">c_chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.matrix</span>(c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>])</span>
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># assign row names to the third column containing chord names</span></span>
+<span id="cb2-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(c_chord_matrix) <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>]</span>
+<span id="cb2-12"></span>
+<span id="cb2-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># define all keys</span></span>
+<span id="cb2-14">keys <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Db"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Eb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Gb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Ab"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B"</span>)</span>
+<span id="cb2-15"></span>
+<span id="cb2-16"></span>
+<span id="cb2-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># the excel sheet only has chords in C</span></span>
+<span id="cb2-18"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># loop through the keys, permute the matrix to get the chords in the next key</span></span>
+<span id="cb2-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add the permuted matrix to new rows in the overall chord_matrix</span></span>
+<span id="cb2-20"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(keys)) {</span>
+<span id="cb2-21">  </span>
+<span id="cb2-22">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> (i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) {</span>
+<span id="cb2-23">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># initialize chord_matrix with C matrix</span></span>
+<span id="cb2-24">    chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> c_chord_matrix</span>
+<span id="cb2-25">    </span>
+<span id="cb2-26">  } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> {</span>
+<span id="cb2-27">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#permute the matrix as a function of iterator</span></span>
+<span id="cb2-28">    new_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cbind</span>(c_chord_matrix[, (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>i)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>],c_chord_matrix[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>i)] )</span>
+<span id="cb2-29">    </span>
+<span id="cb2-30">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># rename the rows with the new key</span></span>
+<span id="cb2-31">    new_names <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gsub</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>, keys[i], c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>])</span>
+<span id="cb2-32">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(new_matrix) <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> new_names</span>
+<span id="cb2-33">    </span>
+<span id="cb2-34">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># append the new_matrix to chord_matrix</span></span>
+<span id="cb2-35">    chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbind</span>(chord_matrix,new_matrix)</span>
+<span id="cb2-36">  </span>
+<span id="cb2-37">    }</span>
+<span id="cb2-38">}</span></code></pre></div>
+</details>
+</div>
+<p>Each chord is represented as a vector with 12 features, corresponding to each of the 12 possible notes. If a note is in a chord, then the note feature gets a 1 in the vector. All other features are set to 0.</p>
+<p>The first 10 rows look like this:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">knitr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">kable</span>(c_chord_excel[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>,])</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 19%">
+<col style="width: 20%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">key</th>
+<th style="text-align: left;">type</th>
+<th style="text-align: left;">item</th>
+<th style="text-align: right;">C</th>
+<th style="text-align: right;">Db</th>
+<th style="text-align: right;">D</th>
+<th style="text-align: right;">Eb</th>
+<th style="text-align: right;">E</th>
+<th style="text-align: right;">F</th>
+<th style="text-align: right;">Gb</th>
+<th style="text-align: right;">G</th>
+<th style="text-align: right;">Ab</th>
+<th style="text-align: right;">A</th>
+<th style="text-align: right;">Bb</th>
+<th style="text-align: right;">B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">key</td>
+<td style="text-align: left;">C note</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">scale</td>
+<td style="text-align: left;">C major scale</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">triads</td>
+<td style="text-align: left;">C major triad</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">triads</td>
+<td style="text-align: left;">C minor triad</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">triads</td>
+<td style="text-align: left;">C6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">triads</td>
+<td style="text-align: left;">Cm6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">triads</td>
+<td style="text-align: left;">C (add 9)</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">triads</td>
+<td style="text-align: left;">Cm (add 9)</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">dominant 7th</td>
+<td style="text-align: left;">C7</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">C</td>
+<td style="text-align: left;">dominant 7th</td>
+<td style="text-align: left;">C9</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The vector space includes one feature vector for all of the following chords and scales:</p>
+<p>C note, C major scale, C major triad, C minor triad, C6, Cm6, C (add 9), Cm (add 9), C7, C9, C9(#11), C9 (13), C13 (#11), C∆7, C∆9, C∆9(#11), C∆9(13), C∆7(#5), C∆7(b5), Cm7, Cm9, Cm11, Cm7(11), Cm13, Cm13(#11), Cm7(b5), Cm9(b5), Cm11(b5), Csus, C7sus, C9sus, C13sus, C7susb9, C13susb9, C7(b5), C7(#5), C7(b9), C7#9b5, C7#9#5, C7b9b5, C7b9#5, Cm∆7, Cm∆9, Cdim, Co7, Cdim(∆7), C7#11#9, C chromatic, C whole-tone, C major pentatonic, C minor pentatonic, C Ionian, C Dorian, C Phrygian, C Lydian, C Mixolydian, C Aeolian, C Locrian, C maj 6th diminished, C melodic minor, C half-step/whole-step, C whole-step/half-step, C Blues</p>
+<p>The above shows everything in the key of C. The matrix contains all of the above in all of the keys. For a total of 756 patterns to be stored in the memory matrix.</p>
+<p>In the next sections I’ll be giving this model an input pattern as a “reminder cue”, and then computing what the model “remembers” based on the cue. This is a way of asking about associations or expectations between one pattern and a history of other patterns. The answers the model gives back are entirely dependent on the nature of the memory traces.</p>
+<p>The current set of chord vectors is very unlike my own musical experience. If I tried to capture my own musical experience as a series of individual traces, I would be inputting one feature vector for every chord, note, scale, or let’s say short phrase, that I have ever played in my entire life. That collection of traces would be severely biased in terms key, as I way over played things in CFGDA in my life.</p>
+<p>The chord vector space I’m using here is more like an uniform agent who played every chord and scale equally frequently in all keys. So, the expectations returned by the model are in relation to that kind of unbiased musical history.</p>
+</section>
+<section id="minerva-ii-modeling" class="level2">
+<h2 class="anchored" data-anchor-id="minerva-ii-modeling">MINERVA II modeling</h2>
+<section id="probe-with-a-c-note" class="level3">
+<h3 class="anchored" data-anchor-id="probe-with-a-c-note">Probe with a C note</h3>
+<p>The following code shows the basic steps in probing the memory with a cue pattern. I used a C note, which is coded as a single 1, followed by 11 zeros.</p>
+<p>The cosine similarity between the probe and all patterns in memory is computed. There is a possibility of “tuning” the similarities by raising them to an exponent, but I’ll talk about that later.</p>
+<p>The individual patterns in memory are multiplied by their similarity to the probe. This allows the cue to selectively retrieve memories that contain features in the cue. For example, traces that have 0 similarity to the cue will be multiplied by 0, and thus eliminated from the echo. The echo is produced by summing the similarity weighted traces.</p>
+<p>The values in the echo are additive and can get very large. In the last step I divide all of the values in the echo by the maximum value to squish them between 0 and 1.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Try minerva</span></span>
+<span id="cb4-2">memory <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix</span>
+<span id="cb4-3"></span>
+<span id="cb4-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># probe with a C</span></span>
+<span id="cb4-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Each of the 12 spots is a note, starting on C</span></span>
+<span id="cb4-6">probe <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb4-7"></span>
+<span id="cb4-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute similarities between probe and all traces</span></span>
+<span id="cb4-9">similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb4-10"></span>
+<span id="cb4-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># tuning function: raise similarities to a power </span></span>
+<span id="cb4-12">activations <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> similarities<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb4-13"></span>
+<span id="cb4-14">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(activations)))</span>
+<span id="cb4-15">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(echo))</span>
+<span id="cb4-16"></span>
+<span id="cb4-17">echo</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        C        Db         D        Eb         E         F        Gb         G 
+1.0000000 0.2163667 0.4790949 0.4772587 0.4200609 0.5390773 0.3656121 0.5390773 
+       Ab         A        Bb         B 
+0.4200609 0.4772587 0.4790949 0.2163667 </code></pre>
+</div>
+</div>
+<p>I like to think of the echo as the reminder values. Given the model hears a C, it is reminded of things that have a C in them. The echo is a similarity weighted sum of all of those things.</p>
+</section>
+<section id="full-cacophony" class="level3">
+<h3 class="anchored" data-anchor-id="full-cacophony">Full cacophony</h3>
+<p>A couple short detours before going in a more musical direction with this.</p>
+<p>The echo in MINERVA-II is the concept that memory retrieval acts like a chorus of singers, where each singer is an individual memory trace.</p>
+<p>Consider what would happen if memory was totally unselective and everything was retrieved all at once.</p>
+<p>In the model, this would be like hearing all of the chords in the memory all at once. This can be represented by summing every trace together into one echo. This is the same as summing down the columns of the matrix like so:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>(memory)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  C  Db   D  Eb   E   F  Gb   G  Ab   A  Bb   B 
+338 338 338 338 338 338 338 338 338 338 338 338 </code></pre>
+</div>
+</div>
+<p>Each note appears 338 times across all of the chords in memory. If they were all played at once, the echo would sound like every note played simultaneously with a loudness of 338. If I normalize the echo by dividing by 338, I’d get all 1s, which would be saying play all the notes at 100% amplitude. In other words, if memory reminded you of everything, everywhere, all at once, it sounds like full cacophony.</p>
+</section>
+<section id="the-sound-of-unbiased-memory-from-c" class="level3">
+<h3 class="anchored" data-anchor-id="the-sound-of-unbiased-memory-from-c">The sound of unbiased memory from C</h3>
+<p>MINERVA-II allows for selective retrieval of prior memories. The primary mechanism is that a probe pattern activates memories by similarity.</p>
+<p>In this example, I apply the <code>ceiling()</code> function to the similarities and transform any positive value to 1, and leave the 0s at 0.</p>
+<p>I’m using the C probe, so any chord pattern that has a C element in it will get a 1, and any chord pattern that does not have a C in it will get a 0.</p>
+<p>I calculate both the echo and the normalized echo.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Try minerva</span></span>
+<span id="cb8-2">memory <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix</span>
+<span id="cb8-3"></span>
+<span id="cb8-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># probe with a C</span></span>
+<span id="cb8-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Each of the 12 spots is a note, starting on C</span></span>
+<span id="cb8-6">probe <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb8-7"></span>
+<span id="cb8-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute similarities between probe and all traces</span></span>
+<span id="cb8-9">similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb8-10"></span>
+<span id="cb8-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># force similarities to 0 or 1</span></span>
+<span id="cb8-12">activations <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ceiling</span>(similarities)</span>
+<span id="cb8-13"></span>
+<span id="cb8-14">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(activations)))</span>
+<span id="cb8-15">echo</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  C  Db   D  Eb   E   F  Gb   G  Ab   A  Bb   B 
+338  81 172 169 148 191 130 191 148 169 172  81 </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(echo))</span>
+<span id="cb10-2">echo</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        C        Db         D        Eb         E         F        Gb         G 
+1.0000000 0.2396450 0.5088757 0.5000000 0.4378698 0.5650888 0.3846154 0.5650888 
+       Ab         A        Bb         B 
+0.4378698 0.5000000 0.5088757 0.2396450 </code></pre>
+</div>
+</div>
+<p>The first echo is a measure of co-occurrence frequency between C and the other notes, counting across all of the patterns in memory. The second echo is the same information, just in terms of proportion to the largest value.</p>
+<p>C always co-occurs with itself. C co-occurs next most often with G and F, and then Bb and D etc.</p>
+<p>This echo is not as cacophonous as hearing every single chord in memory played at the same time. However, i’m guessing this would still sound pretty cacophonous, as it is the sound of about 338 patterns that all contain a C played at the same time.</p>
+<p>At some point, hopefully today, I’d like to synthesize tones using these echo values for note amplitude and hear what they sound like.</p>
+</section>
+<section id="increasingly-selective-echoes-of-c" class="level3">
+<h3 class="anchored" data-anchor-id="increasingly-selective-echoes-of-c">Increasingly selective echoes of C</h3>
+<p>MINERVA-II has a few options for controlling how many memories get added into the echo. After computing similarities between the probe and memory traces, the similarities can be raised to a power before weighting the traces. As the exponent increases, smaller similarity values get squashed into 0 and become effectively 0. Larger similarity values remain proportionally larger. Perfectly similar traces remain at 1 regardless of the exponent.</p>
+<p>The bottom line is that as the power is raised, fewer traces (only the most similar) are allowed to contribute to the echo. As a result, the echo becomes much less cacophonous.</p>
+<p>The code below shows what happens when the probe is a C, and the exponent is raised to 1, 3, 11, and 51.</p>
+<p>When the exponent is small, C is the loudest feature in the echo, but many other notes have some loudness too.</p>
+<p>When the exponent is increased, the C remains the loudest, but the other notes get softer.</p>
+<p>In the case of this vector space, driving up the exponent really, really high, essentially causes only the identical patterns in memory to be retrieved. In the extreme, the C retrieves itself, and there are not other sounds of co-occurrence.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Try minerva</span></span>
+<span id="cb12-2">memory <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix</span>
+<span id="cb12-3"></span>
+<span id="cb12-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># probe with a C</span></span>
+<span id="cb12-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Each of the 12 spots is a note, starting on C</span></span>
+<span id="cb12-6">probe <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb12-7"></span>
+<span id="cb12-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute similarities between probe and all traces</span></span>
+<span id="cb12-9">similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb12-10"></span>
+<span id="cb12-11">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(similarities<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)))</span>
+<span id="cb12-12">echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(echo))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        C        Db         D        Eb         E         F        Gb         G 
+1.0000000 0.2163667 0.4790949 0.4772587 0.4200609 0.5390773 0.3656121 0.5390773 
+       Ab         A        Bb         B 
+0.4200609 0.4772587 0.4790949 0.2163667 </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(similarities<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>)))</span>
+<span id="cb14-2">echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(echo))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        C        Db         D        Eb         E         F        Gb         G 
+1.0000000 0.1731107 0.4114787 0.4288597 0.3797730 0.4798933 0.3271873 0.4798933 
+       Ab         A        Bb         B 
+0.3797730 0.4288597 0.4114787 0.1731107 </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(similarities<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">11</span>)))</span>
+<span id="cb16-2">echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(echo))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>          C          Db           D          Eb           E           F 
+1.000000000 0.005599951 0.016650339 0.025743877 0.020721170 0.026529044 
+         Gb           G          Ab           A          Bb           B 
+0.018535963 0.026529044 0.020721170 0.025743877 0.016650339 0.005599951 </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(similarities<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">51</span>)))</span>
+<span id="cb18-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(echo)))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> C Db  D Eb  E  F Gb  G Ab  A Bb  B 
+ 1  0  0  0  0  0  0  0  0  0  0  0 </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="messing-around" class="level2">
+<h2 class="anchored" data-anchor-id="messing-around">Messing around</h2>
+<p>I’m using this code block to try different probe patterns and see what happens. In general, the echo contains the elements of the probe, and then partial activation of other elements in approximate orders that seem to make musical sense.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Try minerva</span></span>
+<span id="cb20-2">memory <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix</span>
+<span id="cb20-3"></span>
+<span id="cb20-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># probe using row names</span></span>
+<span id="cb20-5">probe <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'C major triad'</span>,]</span>
+<span id="cb20-6"></span>
+<span id="cb20-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute similarities between probe and all traces</span></span>
+<span id="cb20-8">similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb20-9"></span>
+<span id="cb20-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># tuning function: raise similarities to a power </span></span>
+<span id="cb20-11">activations <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> similarities<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb20-12"></span>
+<span id="cb20-13">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(activations)))</span>
+<span id="cb20-14">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(echo))</span>
+<span id="cb20-15"></span>
+<span id="cb20-16"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(echo,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decreasing =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        G         C         E         A         D        Bb         F         B 
+1.0000000 0.9648918 0.9283912 0.6326961 0.6308542 0.4828259 0.4436583 0.4141189 
+       Gb        Eb        Db        Ab 
+0.3390815 0.3329919 0.3127329 0.3109608 </code></pre>
+</div>
+</div>
+<section id="adding-probes-together" class="level3">
+<h3 class="anchored" data-anchor-id="adding-probes-together">Adding probes together</h3>
+<p>Let’s say one is playing a Dm7 chord in the left hand, and a G as part of a melody line. A probe could be constructed by adding together the vector for Dm7 and G. I’m also sorting the echo by feature intensity. I wonder if the order of notes in the echo could work for figuring out which scales to play over what chords and situations.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Try minerva</span></span>
+<span id="cb22-2">memory <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix</span>
+<span id="cb22-3"></span>
+<span id="cb22-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># probe using row names</span></span>
+<span id="cb22-5">probe <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>(chord_matrix[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Dm7'</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'G note'</span>),])</span>
+<span id="cb22-6"></span>
+<span id="cb22-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute similarities between probe and all traces</span></span>
+<span id="cb22-8">similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb22-9"></span>
+<span id="cb22-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># tuning function: raise similarities to a power </span></span>
+<span id="cb22-11">activations <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> similarities<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb22-12"></span>
+<span id="cb22-13">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(activations)))</span>
+<span id="cb22-14">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(echo))</span>
+<span id="cb22-15"></span>
+<span id="cb22-16"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(echo,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decreasing =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        C         D         G         F         A         E        Bb        Eb 
+1.0000000 0.9970230 0.9948008 0.9326157 0.9326157 0.5419088 0.5419088 0.4465277 
+        B        Ab        Gb        Db 
+0.4378429 0.3103659 0.2854669 0.2686588 </code></pre>
+</div>
+</div>
+</section>
+<section id="discrepancy" class="level3">
+<h3 class="anchored" data-anchor-id="discrepancy">Discrepancy</h3>
+<p>The echo contains partial activations of non-probe features. These in some sense represent an expectation about what elements usually co-occur with the probe features in the stored memory traces.</p>
+<p>It may be interesting to compute a discrepancy vector, which is a difference between the pattern in the probe and the echo.</p>
+<p>These differences in expectation might be interesting to think about in terms of musical tension and resolution.</p>
+<p>random notes:</p>
+<ul>
+<li>subtraction introduces negative values and negative similarity</li>
+<li>which way to subtract? probe-echo or echo-probe</li>
+</ul>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Try minerva</span></span>
+<span id="cb24-2">memory <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix</span>
+<span id="cb24-3"></span>
+<span id="cb24-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># probe using row names</span></span>
+<span id="cb24-5">probe <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'C note'</span>,]</span>
+<span id="cb24-6"></span>
+<span id="cb24-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute similarities between probe and all traces</span></span>
+<span id="cb24-8">similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb24-9"></span>
+<span id="cb24-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># tuning function: raise similarities to a power </span></span>
+<span id="cb24-11">activations <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> similarities<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb24-12"></span>
+<span id="cb24-13">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(activations)))</span>
+<span id="cb24-14">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(echo))</span>
+<span id="cb24-15">echo</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        C        Db         D        Eb         E         F        Gb         G 
+1.0000000 0.2163667 0.4790949 0.4772587 0.4200609 0.5390773 0.3656121 0.5390773 
+       Ab         A        Bb         B 
+0.4200609 0.4772587 0.4790949 0.2163667 </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1">discrepancy <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>probe</span>
+<span id="cb26-2">discrepancy</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        C        Db         D        Eb         E         F        Gb         G 
+0.0000000 0.2163667 0.4790949 0.4772587 0.4200609 0.5390773 0.3656121 0.5390773 
+       Ab         A        Bb         B 
+0.4200609 0.4772587 0.4790949 0.2163667 </code></pre>
+</div>
+</div>
+<p>In this case the discrepancy vector has activation across all notes except C. Although the activation is not uniform, this discrepancy vector is similar to the chromatic scale, which is all of the notes.</p>
+<p>Submitting the discrepancy vector as a probe to memory, and then listing the top 10 most similar traces in memory as a way to interpret the vector in terms of the chord patterns.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1">probe <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> discrepancy</span>
+<span id="cb28-2"></span>
+<span id="cb28-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute similarities between probe and all traces</span></span>
+<span id="cb28-4">similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb28-5"></span>
+<span id="cb28-6">df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">chords =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(similarities),</span>
+<span id="cb28-7">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">similarities =</span> similarities) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb28-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrange</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">desc</span>(similarities))</span>
+<span id="cb28-9">df[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>,]</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   chords similarities
+C chromatic   C chromatic    0.9274934
+Db chromatic Db chromatic    0.9274934
+D chromatic   D chromatic    0.9274934
+Eb chromatic Eb chromatic    0.9274934
+E chromatic   E chromatic    0.9274934
+F chromatic   F chromatic    0.9274934
+Gb chromatic Gb chromatic    0.9274934
+G chromatic   G chromatic    0.9274934
+Ab chromatic Ab chromatic    0.9274934
+A chromatic   A chromatic    0.9274934</code></pre>
+</div>
+</div>
+<p>Adding the echo to probe. After hearing a note the model retrieves the echo as a response. In this new moment the original note and the retrieved chorus are a new combined probe.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Try minerva</span></span>
+<span id="cb30-2">memory <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix</span>
+<span id="cb30-3"></span>
+<span id="cb30-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># probe using row names</span></span>
+<span id="cb30-5">probe <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'C note'</span>,]</span>
+<span id="cb30-6"></span>
+<span id="cb30-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute similarities between probe and all traces</span></span>
+<span id="cb30-8">similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb30-9"></span>
+<span id="cb30-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># tuning function: raise similarities to a power </span></span>
+<span id="cb30-11">activations <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> similarities<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb30-12"></span>
+<span id="cb30-13">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(activations)))</span>
+<span id="cb30-14">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(echo))</span>
+<span id="cb30-15">echo</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        C        Db         D        Eb         E         F        Gb         G 
+1.0000000 0.2163667 0.4790949 0.4772587 0.4200609 0.5390773 0.3656121 0.5390773 
+       Ab         A        Bb         B 
+0.4200609 0.4772587 0.4790949 0.2163667 </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add echo to probe</span></span>
+<span id="cb32-2">probe <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> probe<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span>echo</span>
+<span id="cb32-3"></span>
+<span id="cb32-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute similarities between probe and all traces</span></span>
+<span id="cb32-5">similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb32-6"></span>
+<span id="cb32-7">activations <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> similarities<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb32-8"></span>
+<span id="cb32-9">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(activations)))</span>
+<span id="cb32-10">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(echo))</span>
+<span id="cb32-11">echo</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        C        Db         D        Eb         E         F        Gb         G 
+1.0000000 0.6284936 0.7864139 0.7701819 0.7288598 0.8174667 0.6928161 0.8174667 
+       Ab         A        Bb         B 
+0.7288598 0.7701819 0.7864139 0.6284936 </code></pre>
+</div>
+</div>
+<p>This is like having steps of iterative retrieval. A variation is to get the retrieved echo and then submit the echo as the probe. What happens is that the echo fills up with more general co-occurrence information.</p>
+</section>
+<section id="echo-meaning" class="level3">
+<h3 class="anchored" data-anchor-id="echo-meaning">Echo meaning</h3>
+<p>The echo is a feature vector in the same space as the chords. In general, the echo will contain more activation across all elements compared to any individual chord. This is because the echo sums over many chords, and typically sums over enough chords that all notes end up in the sum.</p>
+<p>In this sense, the fact that an echo usually has partial activation across all notes, makes the pattern in the echo similar to the chromatic scale, which has all notes. This is not a particularly interesting or nuanced meaning of the echo. If the echo was all 1s, then it would be the chromatic scale.</p>
+<p>The activation values in the echo depend on the activation function that raises similarity to a power. A given echo can be interpreted in terms of the original chord vectors by calculating similarity between the echo and all of the chords, and then looking at the chords that are most similar. When the exponent is small, the most similar chords returned are all the chromatic scales (which are identical), and other chords with lots of notes in them.</p>
+<p>As the exponent is raised higher, the pattern in the echo grows more similar to the probe pattern (with some extra activations), and the echo becomes similar to different patterns of chords, eventually honing in on the same ordering as the probe pattern would have.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Try minerva</span></span>
+<span id="cb34-2">memory <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix</span>
+<span id="cb34-3"></span>
+<span id="cb34-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># probe using row names</span></span>
+<span id="cb34-5">probe <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'C note'</span>,]</span>
+<span id="cb34-6"></span>
+<span id="cb34-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute similarities between probe and all traces</span></span>
+<span id="cb34-8">similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb34-9"></span>
+<span id="cb34-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># tuning function: raise similarities to a power </span></span>
+<span id="cb34-11">activations <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> similarities<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9</span></span>
+<span id="cb34-12"></span>
+<span id="cb34-13">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(activations)))</span>
+<span id="cb34-14">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(echo))</span>
+<span id="cb34-15">echo</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>         C         Db          D         Eb          E          F         Gb 
+1.00000000 0.02269835 0.06352622 0.08694634 0.07307524 0.09134910 0.06433469 
+         G         Ab          A         Bb          B 
+0.09134910 0.07307524 0.08694634 0.06352622 0.02269835 </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1">echo_similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(echo,memory)</span>
+<span id="cb36-2">df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">chords =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(echo_similarities),</span>
+<span id="cb36-3">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">similarities =</span> echo_similarities) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb36-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrange</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">desc</span>(echo_similarities))</span>
+<span id="cb36-5">df[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>,]</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       chords similarities
+C note                 C note    0.9732485
+Csus                     Csus    0.6645644
+C minor triad   C minor triad    0.6620904
+F major triad   F major triad    0.6620904
+Adim                     Adim    0.6596165
+C major triad   C major triad    0.6542962
+F minor triad   F minor triad    0.6542962
+Ab major triad Ab major triad    0.6518223
+A minor triad   A minor triad    0.6518223
+Fsus                     Fsus    0.6489305
+Gsus                     Gsus    0.6489305
+Cdim                     Cdim    0.6469109
+Gbdim                   Gbdim    0.6469109
+F (add 9)           F (add 9)    0.6178398
+Cm6                       Cm6    0.6156973
+F7                         F7    0.6156973
+Am7(b5)               Am7(b5)    0.6156973
+Fm (add 9)         Fm (add 9)    0.6110898
+C6                         C6    0.6089473
+F∆7                       F∆7    0.6089473</code></pre>
+</div>
+</div>
+<p>In this variation the echo is submitted as the probe to generate a second echo. The first echo is already very general because even a single C note is in many chords. The second echo is extremely general because it has positive similarity to all chords. The values in the second echo can be thought of as reflecting very general expectations about note co-occurrence. The first echo also has some of these very general expectations.</p>
+<p>What happens here is some proportion of the second echo, which represents super general features, is subtracted from the first echo. This allows the first echo to reflect more nuanced and specific expectations given the probe.</p>
+<p>It seems necessary to turn this into a shiny app or something, where the parameters can be wiggled around as a way to explore whether there are interesting things going on.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Try minerva</span></span>
+<span id="cb38-2">memory <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix</span>
+<span id="cb38-3"></span>
+<span id="cb38-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># probe using row names</span></span>
+<span id="cb38-5">probe <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'Dm7'</span>,]</span>
+<span id="cb38-6"></span>
+<span id="cb38-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute similarities between probe and all traces</span></span>
+<span id="cb38-8">similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb38-9"></span>
+<span id="cb38-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># tuning function: raise similarities to a power </span></span>
+<span id="cb38-11">activations <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> similarities<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb38-12"></span>
+<span id="cb38-13">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(activations)))</span>
+<span id="cb38-14">echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(echo))</span>
+<span id="cb38-15">echo</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        C        Db         D        Eb         E         F        Gb         G 
+0.9918638 0.2479850 1.0000000 0.4178599 0.5037347 0.9766951 0.3491312 0.7242753 
+       Ab         A        Bb         B 
+0.3603990 0.9657370 0.4859291 0.4261934 </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb40" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add echo to probe</span></span>
+<span id="cb40-2">probe <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> echo</span>
+<span id="cb40-3"></span>
+<span id="cb40-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute similarities between probe and all traces</span></span>
+<span id="cb40-5">similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb40-6"></span>
+<span id="cb40-7">activations <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> similarities<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">^</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb40-8"></span>
+<span id="cb40-9">second_echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>((memory<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(activations)))</span>
+<span id="cb40-10">second_echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> second_echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(second_echo))</span>
+<span id="cb40-11">second_echo</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>        C        Db         D        Eb         E         F        Gb         G 
+0.9946912 0.5014757 1.0000000 0.6381784 0.7237607 0.9389013 0.5636836 0.9371725 
+       Ab         A        Bb         B 
+0.5704482 0.9385442 0.7156892 0.6432196 </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb42" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># subtract a weighted portion of second echo</span></span>
+<span id="cb42-2">more_specific_echo <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> echo<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>second_echo)</span>
+<span id="cb42-3"></span>
+<span id="cb42-4">echo_similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(more_specific_echo,memory)</span>
+<span id="cb42-5">df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">chords =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(echo_similarities),</span>
+<span id="cb42-6">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">similarities =</span> echo_similarities) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb42-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrange</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">desc</span>(echo_similarities))</span>
+<span id="cb42-8">df[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>,]</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                               chords similarities
+Dm7                               Dm7    0.8386204
+F6                                 F6    0.8386204
+D minor triad           D minor triad    0.7413557
+F major triad           F major triad    0.7368539
+Dm7(11)                       Dm7(11)    0.7272550
+D minor pentatonic D minor pentatonic    0.7272550
+F major pentatonic F major pentatonic    0.7272550
+G9sus                           G9sus    0.7272550
+Dm9                               Dm9    0.6825942
+Bb∆9                             Bb∆9    0.6724193
+D7#11#9                       D7#11#9    0.6640474
+F (add 9)                   F (add 9)    0.6126096
+Dm11                             Dm11    0.6022796
+G13sus                         G13sus    0.6022796
+G7sus                           G7sus    0.5976717
+C13sus                         C13sus    0.5929913
+Gm11                             Gm11    0.5929913
+F9 (13)                       F9 (13)    0.5880307
+D7sus                           D7sus    0.5869733
+D Blues                       D Blues    0.5853489</code></pre>
+</div>
+</div>
+<p>Lots of breadcrumbs here to follow up on later. Ultimately, I didn’t get close to what I was hoping to accomplish. Making a note here that it would be interesting if this type of analysis could provide insight into chord movement from one to another.</p>
+
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0">
+<div id="ref-hintzman1984" class="csl-entry">
+Hintzman, Douglas L. 1984. <span>“MINERVA 2: A Simulation Model of Human Memory.”</span> <em>Behavior Research Methods, Instruments, &amp; Computers</em> 16 (2): 96101. <a href="https://doi.org/10.3758/BF03202365">https://doi.org/10.3758/BF03202365</a>.
+</div>
+<div id="ref-semon1923" class="csl-entry">
+Semon, R. 1923. <span>“Mnemic Psychology (b. Duffy, Trans.).”</span> <em>Concord, Ma: George Allen &amp; Unwin.(original Work Published 1909)</em>.
+</div>
+</div></section></div> ]]></description>
+  <category>chord similarity</category>
+  <category>MINERVA</category>
+  <guid>https://homophony.quest/blog/23_1_23_24_minerva/</guid>
+  <pubDate>Tue, 23 Jan 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/23_1_23_24_minerva/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Chord Similarity analysis table</title>
   <dc:creator>Matt Crump</dc:creator>
@@ -3101,52 +4905,6 @@ Fairly quick to access aspects of sound control...sensitivity adjustments are gr
   <guid>https://homophony.quest/blog/6_12_26_23_rootless9th/</guid>
   <pubDate>Tue, 26 Dec 2023 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/6_12_26_23_rootless9th/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>7th first II-V-I</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/5_12_25_23_7thFirst/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/5_12_25_23_7thFirst/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-<p>I’ve been taking practice inspiration from Mark Levine’s <a href="https://www.amazon.com/Jazz-Theory-Book-Mark-Levine/dp/1883217040">Jazz Theory Book</a>. This exercise wasn’t in there specifically, but it’s in the spirit of root-bias deprogramming.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p><img src="https://homophony.quest/blog/5_12_25_23_7thFirst/levine.png" class="img-fluid"></p>
-</div></div><p>Levine has these fun quips throughout that I’m trying to follow through on:</p>
-<blockquote class="blockquote">
-<p>Remember, practice all scales and patterns both ascending and descending; on the major, melodic minor, diminished, and whole-tone scales and in all keys</p>
-</blockquote>
-<blockquote class="blockquote">
-<p>You’ve now learned about all four of the scales you’ll need under your fingers to play over chord changes. The next question is how to practice them. And you don’t just want to practice them, but to internalize them to the point where they become an <strong>available pool of notes</strong>, on which to improvise.</p>
-</blockquote>
-<blockquote class="blockquote">
-<p>…the goal is to deprogram yourself from years of root-bias conditioning</p>
-</blockquote>
-<p>I learned piano in the classical music tradition and practiced all my scales and chords in a massively root-biased way when I was a kid. So, one of my goals right now is to think about chords from non-root perspectives.</p>
-<p>For example, in this exercise my goal is to practice leading with the 7th note. This is related to the exercise from yesterday, but I did few things differently. Here’s the idea:</p>
-<p><img src="https://homophony.quest/blog/5_12_25_23_7thFirst/7thfirst-01.jpg" class="img-fluid"></p>
-<ol type="1">
-<li>Play II-V-I chords through the circle of fifths</li>
-<li>For each chord, lead with the 7th note, then bounce between the 7th note and each inversion of the 7th chord.</li>
-</ol>
-<p>In the first bar I have a D-7 chord in the key of C major. The minor 7th note is a C, and instead of thinking C = C major, I’m trying to also think C = D-7 . And, by doing this around the circle of fifths, you end up practicing every kind of 7th chord (maj, dom, min) for every key.</p>
-<p>This exercise implies some related ones that I’ll get to some other day, such as leading with the 5th, or leading with the 3rd…and then leading with the weirder stuff (sus, b5, b9, #11).</p>
-
-
-
- ]]></description>
-  <category>practice</category>
-  <guid>https://homophony.quest/blog/5_12_25_23_7thFirst/</guid>
-  <pubDate>Mon, 25 Dec 2023 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/5_12_25_23_7thFirst/levine.png" medium="image" type="image/png" height="186" width="144"/>
 </item>
 </channel>
 </rss>

@@ -1,0 +1,541 @@
+---
+title: "Minerva and expectancy from a chord vector space"
+author: "Matt Crump"
+date: 1/23/24
+description: "Scratchpad for messing around with a MINERVA II model in a musical chord context. Notes to self"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - chord similarity
+  - MINERVA
+execute: 
+  echo: true
+  message: false
+  warning: false
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+bibliography: references.bib
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "Minerva robot of wisdom. binary codes. thundercat cartoon. music. music theory. conceptual. reverberation. resonance. colorful."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+Minerva robot of wisdom. binary codes. thundercat cartoon. music. music theory. conceptual. reverberation. resonance. colorful.
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+This is a scratchpad post with R code to explore some esoteric computational modeling ideas. I want to get coding, but will put a bit of context around this.
+
+My plan is to take the chord vector space I made yesterday (see last post), and put it into the memory of a MINERVA-II model. Then, I'm going to probe the model with various input patterns, and see what comes out.
+
+I wish I had time to review MINERVA-II in more depth here, but I don't. Very quickly, MINERVA-II is an instance-based model of human memory processes by Douglas Hintzman [@hintzman1984]. This model was inspired by Richard Semon's memory theory [@semon1923], which I find very poetic. Semon made up his own terms so that he could more precisely state his theoretical ideas, including words like engram, engraphic, and homophony.
+
+The basic idea is that people store the patterns of individual experiences in memory. And, a current pattern can retrieve old memories by similarity. MINERVA-II uses a resonance metaphor. A pattern is presented to a memory system. The pattern activates all of the traces in memory, in proportion to their similarity to the pattern. In this way, memory is call and response process. The pattern of the present moment resonates with the memory system bringing forth a chorus of activated traces. This memory response is called the echo. The resonance between the structure of the pattern in the present moment and similar traces from the past is what Richard Semon called homophony. I have some [lecture material on these concepts in my intro to cognition course](https://www.crumplab.com/cognition/articles/modules/L11_Instance_Theory.html).
+
+Now onto the R code. Memory is the chord vector matrix. I can "probe" the model by giving it any feature vector as an input. The input probe activates every chord in memory by it's similarity (using the vector cosine). The memory responds as a similarity weighted sum. All of traces are multiplied by their similarity, and then summed up into a single feature vector, called the echo.
+
+## Loading the chord vector space
+
+The excel file for the chord vector space is available from the [github repo for this blog](https://github.com/homophony/homophony.github.io/tree/main).
+
+```{r}
+library(tidyverse)
+# pre-processing to get the chord vectors
+
+# load chord vectors
+c_chord_excel <- rio::import("chord_vectors.xlsx")
+
+# grab feature vectors
+c_chord_matrix <- as.matrix(c_chord_excel[,4:15])
+
+# assign row names to the third column containing chord names
+row.names(c_chord_matrix) <- c_chord_excel[,3]
+
+# define all keys
+keys <- c("C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B")
+
+
+# the excel sheet only has chords in C
+# loop through the keys, permute the matrix to get the chords in the next key
+# add the permuted matrix to new rows in the overall chord_matrix
+for (i in 1:length(keys)) {
+  
+  if (i == 1) {
+    # initialize chord_matrix with C matrix
+    chord_matrix <- c_chord_matrix
+    
+  } else {
+    #permute the matrix as a function of iterator
+    new_matrix <- cbind(c_chord_matrix[, (14-i):12],c_chord_matrix[, 1:(13-i)] )
+    
+    # rename the rows with the new key
+    new_names <- gsub("C", keys[i], c_chord_excel[,3])
+    row.names(new_matrix) <- new_names
+    
+    # append the new_matrix to chord_matrix
+    chord_matrix <- rbind(chord_matrix,new_matrix)
+  
+    }
+}
+
+```
+
+Each chord is represented as a vector with 12 features, corresponding to each of the 12 possible notes. If a note is in a chord, then the note feature gets a 1 in the vector. All other features are set to 0.
+
+The first 10 rows look like this:
+
+```{r}
+knitr::kable(c_chord_excel[1:10,])
+```
+
+The vector space includes one feature vector for all of the following chords and scales:
+
+`r paste(c_chord_excel$item, collapse = ", ")`
+
+The above shows everything in the key of C. The matrix contains all of the above in all of the keys. For a total of `r dim(chord_matrix)[1]` patterns to be stored in the memory matrix.
+
+In the next sections I'll be giving this model an input pattern as a "reminder cue", and then computing what the model "remembers" based on the cue. This is a way of asking about associations or expectations between one pattern and a history of other patterns. The answers the model gives back are entirely dependent on the nature of the memory traces.
+
+The current set of chord vectors is very unlike my own musical experience. If I tried to capture my own musical experience as a series of individual traces, I would be inputting one feature vector for every chord, note, scale, or let's say short phrase, that I have ever played in my entire life. That collection of traces would be severely biased in terms key, as I way over played things in CFGDA in my life. 
+
+The chord vector space I'm using here is more like an uniform agent who played every chord and scale equally frequently in all keys. So, the expectations returned by the model are in relation to that kind of unbiased musical history. 
+
+## MINERVA II modeling
+
+### Probe with a C note
+
+The following code shows the basic steps in probing the memory with a cue pattern. I used a C note, which is coded as a single 1, followed by 11 zeros.
+
+The cosine similarity between the probe and all patterns in memory is computed. There is a possibility of "tuning" the similarities by raising them to an exponent, but I'll talk about that later.
+
+The individual patterns in memory are multiplied by their similarity to the probe. This allows the cue to selectively retrieve memories that contain features in the cue. For example, traces that have 0 similarity to the cue will be multiplied by 0, and thus eliminated from the echo. The echo is produced by summing the similarity weighted traces.
+
+The values in the echo are additive and can get very large. In the last step I divide all of the values in the echo by the maximum value to squish them between 0 and 1.
+
+
+```{r}
+#| echo: true
+#| code-fold: show
+
+# Try minerva
+memory <- chord_matrix
+
+# probe with a C
+# Each of the 12 spots is a note, starting on C
+probe <- c(1,0,0,0,0,0,0,0,0,0,0,0)
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+# tuning function: raise similarities to a power 
+activations <- similarities^1
+
+echo <- colSums((memory*c(activations)))
+echo <- echo/max(abs(echo))
+
+echo
+```
+
+I like to think of the echo as the reminder values. Given the model hears a C, it is reminded of things that have a C in them. The echo is a similarity weighted sum of all of those things. 
+
+### Full cacophony
+
+A couple short detours before going in a more musical direction with this.
+
+The echo in MINERVA-II is the concept that memory retrieval acts like a chorus of singers, where each singer is an individual memory trace.
+
+Consider what would happen if memory was totally unselective and everything was retrieved all at once.
+
+In the model, this would be like hearing all of the chords in the memory all at once. This can be represented by summing every trace together into one echo. This is the same as summing down the columns of the matrix like so:
+
+```{r}
+#| echo: true
+#| code-fold: show
+
+colSums(memory)
+```
+
+Each note appears 338 times across all of the chords in memory. If they were all played at once, the echo would sound like every note played simultaneously with a loudness of 338. If I normalize the echo by dividing by 338, I'd get all 1s, which would be saying play all the notes at 100% amplitude. In other words, if memory reminded you of everything, everywhere, all at once, it sounds like full cacophony.
+
+### The sound of unbiased memory from C
+
+MINERVA-II allows for selective retrieval of prior memories. The primary mechanism is that a probe pattern activates memories by similarity.
+
+In this example, I apply the `ceiling()` function to the similarities and transform any positive value to 1, and leave the 0s at 0. 
+
+I'm using the C probe, so any chord pattern that has a C element in it will get a 1, and any chord pattern that does not have a C in it will get a 0.
+
+I calculate both the echo and the normalized echo.
+
+```{r}
+#| echo: true
+#| code-fold: show
+
+# Try minerva
+memory <- chord_matrix
+
+# probe with a C
+# Each of the 12 spots is a note, starting on C
+probe <- c(1,0,0,0,0,0,0,0,0,0,0,0)
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+# force similarities to 0 or 1
+activations <- ceiling(similarities)
+
+echo <- colSums((memory*c(activations)))
+echo
+echo <- echo/max(abs(echo))
+echo
+```
+The first echo is a measure of co-occurrence frequency between C and the other notes, counting across all of the patterns in memory. The second echo is the same information, just in terms of proportion to the largest value. 
+
+C always co-occurs with itself. C co-occurs next most often with G and F, and then Bb and D etc.
+
+This echo is not as cacophonous as hearing every single chord in memory played at the same time. However, i'm guessing this would still sound pretty cacophonous, as it is the sound of about 338 patterns that all contain a C played at the same time. 
+
+At some point, hopefully today, I'd like to synthesize tones using these echo values for note amplitude and hear what they sound like.
+
+### Increasingly selective echoes of C
+
+MINERVA-II has a few options for controlling how many memories get added into the echo. After computing similarities between the probe and memory traces, the similarities can be raised to a power before weighting the traces. As the exponent increases, smaller similarity values get squashed into 0 and become effectively 0. Larger similarity values remain proportionally larger. Perfectly similar traces remain at 1 regardless of the exponent.
+
+The bottom line is that as the power is raised, fewer traces (only the most similar) are allowed to contribute to the echo. As a result, the echo becomes much less cacophonous. 
+
+The code below shows what happens when the probe is a C, and the exponent is raised to 1, 3, 11, and 51.
+
+When the exponent is small, C is the loudest feature in the echo, but many other notes have some loudness too.
+
+When the exponent is increased, the C remains the loudest, but the other notes get softer.
+
+In the case of this vector space, driving up the exponent really, really high, essentially causes only the identical patterns in memory to be retrieved. In the extreme, the C retrieves itself, and there are not other sounds of co-occurrence.
+
+```{r}
+#| echo: true
+#| code-fold: show
+
+# Try minerva
+memory <- chord_matrix
+
+# probe with a C
+# Each of the 12 spots is a note, starting on C
+probe <- c(1,0,0,0,0,0,0,0,0,0,0,0)
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+echo <- colSums((memory*c(similarities^1)))
+echo/max(abs(echo))
+
+echo <- colSums((memory*c(similarities^3)))
+echo/max(abs(echo))
+
+echo <- colSums((memory*c(similarities^11)))
+echo/max(abs(echo))
+
+echo <- colSums((memory*c(similarities^51)))
+round(echo/max(abs(echo)))
+```
+
+## Messing around
+
+I'm using this code block to try different probe patterns and see what happens. In general, the echo contains the elements of the probe, and then partial activation of other elements in approximate orders that seem to make musical sense.
+
+```{r}
+#| echo: true
+#| code-fold: show
+
+# Try minerva
+memory <- chord_matrix
+
+# probe using row names
+probe <- chord_matrix['C major triad',]
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+# tuning function: raise similarities to a power 
+activations <- similarities^3
+
+echo <- colSums((memory*c(activations)))
+echo <- echo/max(abs(echo))
+
+sort(echo,decreasing = TRUE)
+```
+### Adding probes together
+
+Let's say one is playing a Dm7 chord in the left hand, and a G as part of a melody line. A probe could be constructed by adding together the vector for Dm7 and G. I'm also sorting the echo by feature intensity. I wonder if the order of notes in the echo could work for figuring out which scales to play over what chords and situations. 
+
+```{r}
+#| echo: true
+#| code-fold: show
+
+# Try minerva
+memory <- chord_matrix
+
+# probe using row names
+probe <- colSums(chord_matrix[c('Dm7','G note'),])
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+# tuning function: raise similarities to a power 
+activations <- similarities^3
+
+echo <- colSums((memory*c(activations)))
+echo <- echo/max(abs(echo))
+
+sort(echo,decreasing = TRUE)
+```
+### Discrepancy
+
+The echo contains partial activations of non-probe features. These in some sense represent an expectation about what elements usually co-occur with the probe features in the stored memory traces.
+
+It may be interesting to compute a discrepancy vector, which is a difference between the pattern in the probe and the echo. 
+
+These differences in expectation might be interesting to think about in terms of musical tension and resolution. 
+
+random notes:
+
+- subtraction introduces negative values and negative similarity
+- which way to subtract? probe-echo or echo-probe
+
+```{r}
+#| echo: true
+#| code-fold: show
+
+# Try minerva
+memory <- chord_matrix
+
+# probe using row names
+probe <- chord_matrix['C note',]
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+# tuning function: raise similarities to a power 
+activations <- similarities^1
+
+echo <- colSums((memory*c(activations)))
+echo <- echo/max(abs(echo))
+echo
+
+discrepancy <- echo-probe
+discrepancy
+
+```
+In this case the discrepancy vector has activation across all notes except C. Although the activation is not uniform, this discrepancy vector is similar to the chromatic scale, which is all of the notes.
+
+Submitting the discrepancy vector as a probe to memory, and then listing the top 10 most similar traces in memory as a way to interpret the vector in terms of the chord patterns.
+
+```{r}
+#| echo: true
+#| code-fold: show
+
+probe <- discrepancy
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+df <- data.frame(chords = row.names(similarities),
+                 similarities = similarities) %>%
+  arrange(desc(similarities))
+df[1:10,]
+
+```
+
+
+Adding the echo to probe. After hearing a note the model retrieves the echo as a response. In this new moment the original note and the retrieved chorus are a new combined probe.
+
+```{r}
+#| echo: true
+#| code-fold: show
+
+# Try minerva
+memory <- chord_matrix
+
+# probe using row names
+probe <- chord_matrix['C note',]
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+# tuning function: raise similarities to a power 
+activations <- similarities^1
+
+echo <- colSums((memory*c(activations)))
+echo <- echo/max(abs(echo))
+echo
+
+# add echo to probe
+probe <- probe+echo
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+activations <- similarities^1
+
+echo <- colSums((memory*c(activations)))
+echo <- echo/max(abs(echo))
+echo
+```
+
+This is like having steps of iterative retrieval. A variation is to get the retrieved echo and then submit the echo as the probe. What happens is that the echo fills up with more general co-occurrence information.
+
+### Echo meaning
+
+The echo is a feature vector in the same space as the chords. In general, the echo will contain more activation across all elements compared to any individual chord. This is because the echo sums over many chords, and typically sums over enough chords that all notes end up in the sum.
+
+In this sense, the fact that an echo usually has partial activation across all notes, makes the pattern in the echo similar to the chromatic scale, which has all notes. This is not a particularly interesting or nuanced meaning of the echo. If the echo was all 1s, then it would be the chromatic scale. 
+
+The activation values in the echo depend on the activation function that raises similarity to a power. A given echo can be interpreted in terms of the original chord vectors by calculating similarity between the echo and all of the chords, and then looking at the chords that are most similar. When the exponent is small, the most similar chords returned are all the chromatic scales (which are identical), and other chords with lots of notes in them. 
+
+As the exponent is raised higher, the pattern in the echo grows more similar to the probe pattern (with some extra activations), and the echo becomes similar to different patterns of chords, eventually honing in on the same ordering as the probe pattern would have.
+
+```{r}
+#| echo: true
+#| code-fold: show
+
+# Try minerva
+memory <- chord_matrix
+
+# probe using row names
+probe <- chord_matrix['C note',]
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+# tuning function: raise similarities to a power 
+activations <- similarities^9
+
+echo <- colSums((memory*c(activations)))
+echo <- echo/max(abs(echo))
+echo
+
+echo_similarities <- RsemanticLibrarian::cosine_x_to_m(echo,memory)
+df <- data.frame(chords = row.names(echo_similarities),
+                 similarities = echo_similarities) %>%
+  arrange(desc(echo_similarities))
+df[1:20,]
+```
+
+In this variation the echo is submitted as the probe to generate a second echo. The first echo is already very general because even a single C note is in many chords. The second echo is extremely general because it has positive similarity to all chords. The values in the second echo can be thought of as reflecting very general expectations about note co-occurrence. The first echo also has some of these very general expectations. 
+
+What happens here is some proportion of the second echo, which represents super general features, is subtracted from the first echo. This allows the first echo to reflect more nuanced and specific expectations given the probe.
+
+It seems necessary to turn this into a shiny app or something, where the parameters can be wiggled around as a way to explore whether there are interesting things going on.
+
+```{r}
+#| echo: true
+#| code-fold: show
+
+# Try minerva
+memory <- chord_matrix
+
+# probe using row names
+probe <- chord_matrix['Dm7',]
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+# tuning function: raise similarities to a power 
+activations <- similarities^3
+
+echo <- colSums((memory*c(activations)))
+echo <- echo/max(abs(echo))
+echo
+
+# add echo to probe
+probe <- echo
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+activations <- similarities^3
+
+second_echo <- colSums((memory*c(activations)))
+second_echo <- second_echo/max(abs(second_echo))
+second_echo
+
+# subtract a weighted portion of second echo
+more_specific_echo <- echo-(.8*second_echo)
+
+echo_similarities <- RsemanticLibrarian::cosine_x_to_m(more_specific_echo,memory)
+df <- data.frame(chords = row.names(echo_similarities),
+                 similarities = echo_similarities) %>%
+  arrange(desc(echo_similarities))
+df[1:20,]
+```
+
+Lots of breadcrumbs here to follow up on later. Ultimately, I didn't get close to what I was hoping to accomplish. Making a note here that it would be interesting if this type of analysis could provide insight into chord movement from one to another.
+
+
+
+
+
+
+
+
+
+
+
+
+
