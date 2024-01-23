@@ -446,5 +446,12 @@
     "title": "Chord Similarity analysis table",
     "section": "First order chord similarity",
     "text": "First order chord similarity"
+  },
+  {
+    "objectID": "blog/22_1_22_24_chord_similarity/index.html#shiny-app",
+    "href": "blog/22_1_22_24_chord_similarity/index.html#shiny-app",
+    "title": "Chord Similarity analysis table",
+    "section": "Shiny app",
+    "text": "Shiny app\nupdate\nThe tables below are not very useable. Ideally, I’d like to be able to check stuff out from the tables on my ipad while it is sitting on my piano.\nI tried to make a shiny app using webr (that would run without a server), but I couldn’t make it work.\nSo, here is a shiny app that does work:\nhttps://crumplab.shinyapps.io/webr-chord-similarity/"
   }
 ]

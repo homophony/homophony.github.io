@@ -101,6 +101,18 @@ If I have extra time I may play around with some additional ways to visualize th
 
 The table should scroll left and right. The columns can be sorted ascending or descending by clicking the little arrows beside a column name. Sorting from the largest value to the smallest value will re-arrange the row-names on the left side. This produces an ordered list of chords from most to least similar to the column name that was clicked. 
 
+## Shiny app
+
+update
+
+The tables below are not very useable. Ideally, I'd like to be able to check stuff out from the tables on my ipad while it is sitting on my piano.
+
+I tried to make a shiny app using webr (that would run without a server), but I couldn't make it work.
+
+So, here is a shiny app that does work:
+
+<https://crumplab.shinyapps.io/webr-chord-similarity/>
+
 ## First order chord similarity
 
 ```{r}
