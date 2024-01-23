@@ -1102,6 +1102,69 @@ D Blues                       D Blues    0.5853489</code></pre>
 </div>
 </div>
 <p>Lots of breadcrumbs here to follow up on later. Ultimately, I didn’t get close to what I was hoping to accomplish. Making a note here that it would be interesting if this type of analysis could provide insight into chord movement from one to another.</p>
+<hr>
+<p>Some code for listening to echoes in terms of complex tones made from sine waves, with sine wave amplitude for each note set by the echo intensity for each note.</p>
+<p>need to explore this</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tuneR)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to generate a complex tone</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>generate_complex_tone <span class="ot">&lt;-</span> <span class="cf">function</span>(duration, sampling_rate, frequencies, amplitudes) {</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  time_points <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, duration, <span class="dv">1</span><span class="sc">/</span>sampling_rate)</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  complex_tone <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">seq_along</span>(frequencies), <span class="cf">function</span>(i) {</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    amplitudes[i] <span class="sc">*</span> <span class="fu">sin</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> frequencies[i] <span class="sc">*</span> time_points)</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">rowSums</span>(complex_tone))</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Set parameters</span></span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>duration <span class="ot">&lt;-</span> <span class="dv">5</span>  <span class="co"># seconds</span></span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>sampling_rate <span class="ot">&lt;-</span> <span class="dv">44100</span>  <span class="co"># Hz (standard audio sampling rate)</span></span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>frequencies <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">261.63</span>,</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a><span class="fl">277.18</span>,</span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a><span class="fl">293.66</span>,</span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a><span class="fl">311.13</span>,</span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a><span class="fl">329.63</span>,</span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a><span class="fl">349.23</span>,</span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a><span class="fl">369.99</span>,</span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a><span class="dv">392</span>,</span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a><span class="fl">415.3</span>,</span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a><span class="dv">440</span>,</span>
+<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a><span class="fl">466.16</span>,</span>
+<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a><span class="fl">493.88</span>)  <span class="co"># frequencies of sine waves in Hz</span></span>
+<span id="cb44-27"><a href="#cb44-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-28"><a href="#cb44-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Try minerva</span></span>
+<span id="cb44-29"><a href="#cb44-29" aria-hidden="true" tabindex="-1"></a>memory <span class="ot">&lt;-</span> chord_matrix</span>
+<span id="cb44-30"><a href="#cb44-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-31"><a href="#cb44-31" aria-hidden="true" tabindex="-1"></a><span class="co"># probe with a C</span></span>
+<span id="cb44-32"><a href="#cb44-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Each of the 12 spots is a note, starting on C</span></span>
+<span id="cb44-33"><a href="#cb44-33" aria-hidden="true" tabindex="-1"></a>probe <span class="ot">&lt;-</span> chord_matrix[<span class="st">'C note'</span>,]</span>
+<span id="cb44-34"><a href="#cb44-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-35"><a href="#cb44-35" aria-hidden="true" tabindex="-1"></a><span class="co"># compute similarities between probe and all traces</span></span>
+<span id="cb44-36"><a href="#cb44-36" aria-hidden="true" tabindex="-1"></a>similarities <span class="ot">&lt;-</span> RsemanticLibrarian<span class="sc">::</span><span class="fu">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb44-37"><a href="#cb44-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-38"><a href="#cb44-38" aria-hidden="true" tabindex="-1"></a><span class="co"># tuning function: raise similarities to a power </span></span>
+<span id="cb44-39"><a href="#cb44-39" aria-hidden="true" tabindex="-1"></a>activations <span class="ot">&lt;-</span> similarities<span class="sc">^</span><span class="dv">5</span></span>
+<span id="cb44-40"><a href="#cb44-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-41"><a href="#cb44-41" aria-hidden="true" tabindex="-1"></a>echo <span class="ot">&lt;-</span> <span class="fu">colSums</span>((memory<span class="sc">*</span><span class="fu">c</span>(activations)))</span>
+<span id="cb44-42"><a href="#cb44-42" aria-hidden="true" tabindex="-1"></a>echo <span class="ot">&lt;-</span> echo<span class="sc">/</span><span class="fu">max</span>(<span class="fu">abs</span>(echo))</span>
+<span id="cb44-43"><a href="#cb44-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-44"><a href="#cb44-44" aria-hidden="true" tabindex="-1"></a>amplitudes <span class="ot">&lt;-</span> echo   <span class="co"># amplitudes of sine waves</span></span>
+<span id="cb44-45"><a href="#cb44-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-46"><a href="#cb44-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate complex tone</span></span>
+<span id="cb44-47"><a href="#cb44-47" aria-hidden="true" tabindex="-1"></a>complex_tone <span class="ot">&lt;-</span> <span class="fu">generate_complex_tone</span>(duration, sampling_rate, frequencies, amplitudes)</span>
+<span id="cb44-48"><a href="#cb44-48" aria-hidden="true" tabindex="-1"></a>complex_tone <span class="ot">&lt;-</span> complex_tone<span class="sc">/</span><span class="fu">max</span>(<span class="fu">abs</span>(complex_tone))</span>
+<span id="cb44-49"><a href="#cb44-49" aria-hidden="true" tabindex="-1"></a>complex_tone <span class="ot">&lt;-</span> complex_tone<span class="sc">*</span><span class="dv">32767</span></span>
+<span id="cb44-50"><a href="#cb44-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-51"><a href="#cb44-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-52"><a href="#cb44-52" aria-hidden="true" tabindex="-1"></a>wave <span class="ot">&lt;-</span> <span class="fu">Wave</span>(<span class="at">left =</span> complex_tone, </span>
+<span id="cb44-53"><a href="#cb44-53" aria-hidden="true" tabindex="-1"></a>             <span class="at">right =</span> complex_tone,</span>
+<span id="cb44-54"><a href="#cb44-54" aria-hidden="true" tabindex="-1"></a>             <span class="at">samp.rate =</span> sampling_rate, <span class="at">bit =</span> <span class="dv">16</span>)</span>
+<span id="cb44-55"><a href="#cb44-55" aria-hidden="true" tabindex="-1"></a><span class="fu">writeWave</span>(wave,<span class="st">"test.wav"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 
 
 

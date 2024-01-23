@@ -528,6 +528,70 @@ df[1:20,]
 Lots of breadcrumbs here to follow up on later. Ultimately, I didn't get close to what I was hoping to accomplish. Making a note here that it would be interesting if this type of analysis could provide insight into chord movement from one to another.
 
 
+---------------------
+
+Some code for listening to echoes in terms of complex tones made from sine waves, with sine wave amplitude for each note set by the echo intensity for each note.
+
+need to explore this
+
+
+```{r}
+library(tuneR)
+# Function to generate a complex tone
+generate_complex_tone <- function(duration, sampling_rate, frequencies, amplitudes) {
+  time_points <- seq(0, duration, 1/sampling_rate)
+  complex_tone <- sapply(seq_along(frequencies), function(i) {
+    amplitudes[i] * sin(2 * pi * frequencies[i] * time_points)
+  })
+  
+  return(rowSums(complex_tone))
+}
+
+# Set parameters
+duration <- 5  # seconds
+sampling_rate <- 44100  # Hz (standard audio sampling rate)
+frequencies <- c(261.63,
+277.18,
+293.66,
+311.13,
+329.63,
+349.23,
+369.99,
+392,
+415.3,
+440,
+466.16,
+493.88)  # frequencies of sine waves in Hz
+
+# Try minerva
+memory <- chord_matrix
+
+# probe with a C
+# Each of the 12 spots is a note, starting on C
+probe <- chord_matrix['C note',]
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+# tuning function: raise similarities to a power 
+activations <- similarities^5
+
+echo <- colSums((memory*c(activations)))
+echo <- echo/max(abs(echo))
+
+amplitudes <- echo   # amplitudes of sine waves
+
+# Generate complex tone
+complex_tone <- generate_complex_tone(duration, sampling_rate, frequencies, amplitudes)
+complex_tone <- complex_tone/max(abs(complex_tone))
+complex_tone <- complex_tone*32767
+
+
+wave <- Wave(left = complex_tone, 
+             right = complex_tone,
+             samp.rate = sampling_rate, bit = 16)
+writeWave(wave,"test.wav")
+```
 
 
 
