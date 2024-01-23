@@ -105,7 +105,7 @@ The table should scroll left and right. The columns can be sorted ascending or d
 
 update
 
-The tables below are not very useable. Ideally, I'd like to be able to check stuff out from the tables on my ipad while it is sitting on my piano.
+There were originally tables in this post, but they were basically unusable. Ideally, I'd like to search the tables on my ipad while it is sitting on my piano.
 
 I tried to make a shiny app using webr (that would run without a server), but I couldn't make it work.
 
@@ -115,7 +115,7 @@ So, here is a shiny app that does work:
 
 ## First order chord similarity
 
-```{r}
+```{r, echo=TRUE, eval = FALSE}
 # import excel sheet
 c_chord_excel <- rio::import("chord_vectors.xlsx")
 
@@ -198,13 +198,15 @@ DT::datatable(
 
 ## Second-order similarities
 
+update: this table has been moved to the shiny app
+
 This table uses the above cosine similarity vectors for each chord as the basis vectors, and then computes another similarity matrix. The approach has interesting properties in other domains like computational modeling of word semantics. Just curious to look at it in this context.
 
 One basic observation is that in the first-order similarity space (above), there are many 0 similarities between pairs. For example, the single note C has 0 similarity to every other single note, because each note only has one feature, and the features never overlap. However, in the second-order matrix, individual notes now have some positive similarity to each other. This is because the whole vector of similarities for C (from above), now has many shared elements with the vectors for the other chords, and a similarity can be computed.
 
 I suspect this table will have some more musically interesting things going on.
 
-```{r}
+```{r, echo=TRUE, eval = FALSE}
 
 first_order <- lsa::cosine(t(chord_matrix))
 second_order <- lsa::cosine(first_order)
