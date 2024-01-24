@@ -246,7 +246,7 @@ echo
 echo <- echo/max(abs(echo))
 echo
 ```
-The first echo is a measure of co-occurrence frequency between C and the other notes, counting across all of the patterns in memory. The second echo is the same information, just in terms of proportion to the largest value. 
+The first echo is basically co-occurrence context vector containing the co-occurrence frequency between C and the other notes, counting across all of the patterns in memory. The second echo is the same information, just in terms of proportion to the largest value. 
 
 C always co-occurs with itself. C co-occurs next most often with G and F, and then Bb and D etc.
 
@@ -590,11 +590,59 @@ complex_tone <- complex_tone*32767
 wave <- Wave(left = complex_tone, 
              right = complex_tone,
              samp.rate = sampling_rate, bit = 16)
-writeWave(wave,"test.wav")
+#writeWave(wave,"test.wav")
 ```
 
 
+-------------------
 
+experiment graveyard of fun ideas
+
+extruding a subtracted echo from the middle out
+
+```{r}
+#| echo: true
+#| code-fold: show
+
+# Try minerva
+memory <- chord_matrix
+
+# probe using row names
+probe <- chord_matrix['C7',]
+
+for(i in 1:10){
+
+# compute similarities between probe and all traces
+similarities <- RsemanticLibrarian::cosine_x_to_m(probe,memory)
+
+# tuning function: raise similarities to a power 
+activations <- similarities^3
+
+echo <- colSums((memory*c(activations)))
+echo <- echo/max(abs(echo))
+#echo
+
+# add echo to probe
+subtracted_echo <- echo-probe + rnorm(12,0,.05)
+subtracted_echo <- subtracted_echo/max(abs(subtracted_echo))
+subtracted_echo <- subtracted_echo^5
+
+echo_similarities <- RsemanticLibrarian::cosine_x_to_m(subtracted_echo, memory)
+
+df <- data.frame(chords = row.names(echo_similarities),
+                 similarities = echo_similarities) %>%
+  arrange(desc(echo_similarities))
+
+next_chord <- df$chord[sample(1,1)]
+#probe <- chord_matrix[next_chord,]
+probe <- subtracted_echo
+
+print(next_chord)
+
+}
+
+
+```
 
 
 

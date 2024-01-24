@@ -700,7 +700,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 0.4378698 0.5000000 0.5088757 0.2396450 </code></pre>
 </div>
 </div>
-<p>The first echo is a measure of co-occurrence frequency between C and the other notes, counting across all of the patterns in memory. The second echo is the same information, just in terms of proportion to the largest value.</p>
+<p>The first echo is basically co-occurrence context vector containing the co-occurrence frequency between C and the other notes, counting across all of the patterns in memory. The second echo is the same information, just in terms of proportion to the largest value.</p>
 <p>C always co-occurs with itself. C co-occurs next most often with G and F, and then Bb and D etc.</p>
 <p>This echo is not as cacophonous as hearing every single chord in memory played at the same time. However, i’m guessing this would still sound pretty cacophonous, as it is the sound of about 338 patterns that all contain a C played at the same time.</p>
 <p>At some point, hopefully today, I’d like to synthesize tones using these echo values for note amplitude and hear what they sound like.</p>
@@ -1162,8 +1162,64 @@ D Blues                       D Blues    0.5853489</code></pre>
 <span id="cb44-52"><a href="#cb44-52" aria-hidden="true" tabindex="-1"></a>wave <span class="ot">&lt;-</span> <span class="fu">Wave</span>(<span class="at">left =</span> complex_tone, </span>
 <span id="cb44-53"><a href="#cb44-53" aria-hidden="true" tabindex="-1"></a>             <span class="at">right =</span> complex_tone,</span>
 <span id="cb44-54"><a href="#cb44-54" aria-hidden="true" tabindex="-1"></a>             <span class="at">samp.rate =</span> sampling_rate, <span class="at">bit =</span> <span class="dv">16</span>)</span>
-<span id="cb44-55"><a href="#cb44-55" aria-hidden="true" tabindex="-1"></a><span class="fu">writeWave</span>(wave,<span class="st">"test.wav"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb44-55"><a href="#cb44-55" aria-hidden="true" tabindex="-1"></a><span class="co">#writeWave(wave,"test.wav")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+</div>
+<hr>
+<p>experiment graveyard of fun ideas</p>
+<p>extruding a subtracted echo from the middle out</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Try minerva</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>memory <span class="ot">&lt;-</span> chord_matrix</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="co"># probe using row names</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>probe <span class="ot">&lt;-</span> chord_matrix[<span class="st">'C7'</span>,]</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>){</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="co"># compute similarities between probe and all traces</span></span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>similarities <span class="ot">&lt;-</span> RsemanticLibrarian<span class="sc">::</span><span class="fu">cosine_x_to_m</span>(probe,memory)</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a><span class="co"># tuning function: raise similarities to a power </span></span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>activations <span class="ot">&lt;-</span> similarities<span class="sc">^</span><span class="dv">3</span></span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>echo <span class="ot">&lt;-</span> <span class="fu">colSums</span>((memory<span class="sc">*</span><span class="fu">c</span>(activations)))</span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>echo <span class="ot">&lt;-</span> echo<span class="sc">/</span><span class="fu">max</span>(<span class="fu">abs</span>(echo))</span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a><span class="co">#echo</span></span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a><span class="co"># add echo to probe</span></span>
+<span id="cb45-20"><a href="#cb45-20" aria-hidden="true" tabindex="-1"></a>subtracted_echo <span class="ot">&lt;-</span> echo<span class="sc">-</span>probe <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">12</span>,<span class="dv">0</span>,.<span class="dv">05</span>)</span>
+<span id="cb45-21"><a href="#cb45-21" aria-hidden="true" tabindex="-1"></a>subtracted_echo <span class="ot">&lt;-</span> subtracted_echo<span class="sc">/</span><span class="fu">max</span>(<span class="fu">abs</span>(subtracted_echo))</span>
+<span id="cb45-22"><a href="#cb45-22" aria-hidden="true" tabindex="-1"></a>subtracted_echo <span class="ot">&lt;-</span> subtracted_echo<span class="sc">^</span><span class="dv">5</span></span>
+<span id="cb45-23"><a href="#cb45-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-24"><a href="#cb45-24" aria-hidden="true" tabindex="-1"></a>echo_similarities <span class="ot">&lt;-</span> RsemanticLibrarian<span class="sc">::</span><span class="fu">cosine_x_to_m</span>(subtracted_echo, memory)</span>
+<span id="cb45-25"><a href="#cb45-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-26"><a href="#cb45-26" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">chords =</span> <span class="fu">row.names</span>(echo_similarities),</span>
+<span id="cb45-27"><a href="#cb45-27" aria-hidden="true" tabindex="-1"></a>                 <span class="at">similarities =</span> echo_similarities) <span class="sc">%&gt;%</span></span>
+<span id="cb45-28"><a href="#cb45-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(echo_similarities))</span>
+<span id="cb45-29"><a href="#cb45-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-30"><a href="#cb45-30" aria-hidden="true" tabindex="-1"></a>next_chord <span class="ot">&lt;-</span> df<span class="sc">$</span>chord[<span class="fu">sample</span>(<span class="dv">1</span>,<span class="dv">1</span>)]</span>
+<span id="cb45-31"><a href="#cb45-31" aria-hidden="true" tabindex="-1"></a><span class="co">#probe &lt;- chord_matrix[next_chord,]</span></span>
+<span id="cb45-32"><a href="#cb45-32" aria-hidden="true" tabindex="-1"></a>probe <span class="ot">&lt;-</span> subtracted_echo</span>
+<span id="cb45-33"><a href="#cb45-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-34"><a href="#cb45-34" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(next_chord)</span>
+<span id="cb45-35"><a href="#cb45-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-36"><a href="#cb45-36" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "D note"
+[1] "C∆7"
+[1] "D note"
+[1] "Am9"
+[1] "D note"
+[1] "B7(#5)"
+[1] "Asus"
+[1] "A note"
+[1] "E note"
+[1] "A note"</code></pre>
+</div>
 </div>
 
 
