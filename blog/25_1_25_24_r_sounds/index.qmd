@@ -1,0 +1,979 @@
+---
+title: "Listening to complex tones using sine waves and toneR"
+author: "Matt Crump"
+date: 1/24/24
+description: "An experiment in listening to similar chord patterns as complex tones, and side adventures."
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - computer music
+  - tuneR
+  - R music
+execute: 
+  echo: true
+  message: false
+  warning: false
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "sine waves. nature. brilliant. sunset. ocean. frequency. complex"
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+musical pattern. music wallpaper. intense music trip. music everywhere. - Dreamshaper v7
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+In previous posts I've been messing around with analyzing chord similarity using a vector space. My plan for this post is render chords as complex tones using R and the {toneR} package, and then listen to things.
+
+The code for this is taking me back to grad school. I used to run experiments involving complex tones with missing fundamentals, and I used Matlab to create those tones from sine waves. 
+
+Here's some R code will generate a complex tone as a sum of a series of sine waves, each at different frequencies and amplitudes.
+
+The result is a C7 chord, rendered as a complex tone, with the frequency for each note getting equal amplitude in the summed sine wave.
+
+```{r}
+library(tuneR)
+
+
+# Function to generate a complex tone
+generate_complex_tone <-
+  function(duration,
+           sampling_rate,
+           frequencies,
+           amplitudes) {
+    time_points <- seq(0, duration, 1 / sampling_rate)
+    complex_tone <- sapply(seq_along(frequencies), 
+                           function(i) {
+      amplitudes[i] * sin(2 * pi * frequencies[i] * time_points)
+                             }
+      )
+    return(rowSums(complex_tone))
+  }
+
+# Set parameters
+duration <- 5  # seconds
+sampling_rate <- 44100  # Hz (standard audio sampling rate)
+frequencies <- c(261.63, # Middle C, frequencies of sine waves in Hz
+                 277.18, # D
+                 293.66,
+                 311.13,
+                 329.63,
+                 349.23,
+                 369.99,
+                 392,
+                 415.3,
+                 440,
+                 466.16,
+                 493.88)
+
+# set amplitudes
+# 12 amplitudes, one for each note from C to B
+# this makes a C7 chord
+amplitudes <- c(1,0,0,0,1,0,0,1,0,0,1,0)
+
+# Generate complex tone
+complex_tone <- generate_complex_tone(duration, 
+                                      sampling_rate, 
+                                      frequencies, 
+                                      amplitudes)
+# normalize for 16 bit
+complex_tone <- complex_tone / max(abs(complex_tone))
+complex_tone <- complex_tone * 32767
+
+# use tuneR to convert to wave
+wave <- Wave(
+  left = complex_tone,
+  right = complex_tone,
+  samp.rate = sampling_rate,
+  bit = 16
+)
+
+writeWave(wave,"C7.wav")
+
+```
+
+`r html_tag_audio("C7.wav", type = "wav")`
+
+## A series of similar chords
+
+I'm pretty sure what I'm about to make is going to sound janky, oh well.
+
+Step 1: load in the chord vector space I've been using to compute similarities between chord patterns.
+
+```{r}
+library(tidyverse)
+# pre-processing to get the chord vectors
+
+# load chord vectors
+c_chord_excel <- rio::import("chord_vectors.xlsx")
+
+# grab feature vectors
+c_chord_matrix <- as.matrix(c_chord_excel[,4:15])
+
+# assign row names to the third column containing chord names
+row.names(c_chord_matrix) <- c_chord_excel[,3]
+
+# define all keys
+keys <- c("C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B")
+
+
+# the excel sheet only has chords in C
+# loop through the keys, permute the matrix to get the chords in the next key
+# add the permuted matrix to new rows in the overall chord_matrix
+for (i in 1:length(keys)) {
+  
+  if (i == 1) {
+    # initialize chord_matrix with C matrix
+    chord_matrix <- c_chord_matrix
+    
+  } else {
+    #permute the matrix as a function of iterator
+    new_matrix <- cbind(c_chord_matrix[, (14-i):12],c_chord_matrix[, 1:(13-i)] )
+    
+    # rename the rows with the new key
+    new_names <- gsub("C", keys[i], c_chord_excel[,3])
+    row.names(new_matrix) <- new_names
+    
+    # append the new_matrix to chord_matrix
+    chord_matrix <- rbind(chord_matrix,new_matrix)
+  
+    }
+}
+```
+
+Step 2: compute the cosine similarities between all chords
+
+```{r}
+first_order <- lsa::cosine(t(chord_matrix))
+second_order <- lsa::cosine(first_order)
+```
+
+Step 3: Pick a starting chord and get the list of all other chords, ordered in terms of decreasing similarity. I'll start with C7. This also prints the first 10, but I there are hundreds more in a row. Also using second-order similarity here for fun.
+
+```{r}
+chord_similarities <- sort(second_order['C7',],decreasing=T)
+print(chord_similarities[1:10])
+```
+Step 4: This is what I've been waiting for. Time for some teeny tiny steps. Basically, the plan is to generate a complex tone for each chord, in order of decreasing similarity, then stitch them together and then listen to them.
+
+I'm going to experiment with some of the parameters, like duration, and see what happens. Let's also try the first 10 chords.
+
+Issue tracker:
+ - try shorter duration per chord
+ - clicks between tones need smoothing
+ - add amplitude envelopes at beginning and end
+ - learned about the {av} package! looks like a wrapper for ffmpeg, can use this to convert wavs to mp3
+ 
+
+```{r}
+# envelope generator function
+vector_envelope <- function(input_vector,proportion){
+  window <- round(length(input_vector)*proportion)
+  up <- seq(0,1,length.out = window)
+  down <- seq(1,0,length.out = window)
+  input_vector[1:window] <- input_vector[1:window]*up
+  input_vector[(length(input_vector)-(window-1)):length(input_vector)] <- input_vector[(length(input_vector)-(window-1)):length(input_vector)]*down
+  return(input_vector)
+}
+```
+
+```{r,results='hide'}
+
+# Set parameters
+duration <- 1  # seconds
+sampling_rate <- 44100  # Hz (standard audio sampling rate)
+frequencies <- c(261.63, # Middle C, frequencies of sine waves in Hz
+                 277.18, # D
+                 293.66,
+                 311.13,
+                 329.63,
+                 349.23,
+                 369.99,
+                 392,
+                 415.3,
+                 440,
+                 466.16,
+                 493.88)
+
+# loop through chords
+
+for(i in 1:20) {
+  amplitudes <- chord_matrix[names(chord_similarities[i]),]
+  
+  # Generate complex tone
+  complex_tone <- generate_complex_tone(duration,
+                                        sampling_rate,
+                                        frequencies,
+                                        amplitudes)
+  # normalize for 16 bit
+  complex_tone <- complex_tone / max(abs(complex_tone))
+  complex_tone <- complex_tone * 32767
+  
+  complex_tone <- vector_envelope(complex_tone,.5)
+  
+  if(i == 1){
+    tone_series <- complex_tone
+  } else {
+    ##smoothing
+    smooth <- round(length(complex_tone)*.1)
+    
+    tone_series[(length(tone_series)-(smooth-1)):length(tone_series)] <- (tone_series[(length(tone_series)-(smooth-1)):length(tone_series)] + complex_tone[1:smooth])
+    
+    tone_series <- c(tone_series, complex_tone[(smooth+1):length(complex_tone)])
+    
+    #tone_series <- c(tone_series,complex_tone)
+  }
+  
+}
+
+
+# use tuneR to convert to wave
+wave <- Wave(
+  left = tone_series,
+  right = tone_series,
+  samp.rate = sampling_rate,
+  bit = 16
+)
+
+sound_name <- "C7_series_10"
+writeWave(wave,paste0(sound_name,".wav"))
+av::av_audio_convert(paste0(sound_name,".wav"),paste0(sound_name,".mp3"), verbose=FALSE)
+file.remove(paste0(sound_name,".wav"))
+```
+
+`r html_tag_audio("C7_series_10.mp3", type = "wav")`
+
+This one runs through the first 20 most similar chords to C7. The chords don'transition super smoothly (no portamento), but I got rid of then clicks using envelopes. It's been a while since I did the math for audio signal processing. The last 10 or so chords all sound the same because the database has lots of chord identities (same note pattern under a different name).
+
+## More experiments
+
+Remove identical chord patterns
+
+I botched this so many times...kept coming back to fix little problems.
+
+```{r}
+chord_properties <- tibble(
+  type = rep(c_chord_excel$type,length(keys)),
+  key = rep(keys, each = dim(c_chord_matrix)[1]),
+  chord_names  = row.names(chord_matrix),
+  synonyms = list(NA)
+)
+
+# find repeats and build synonym list
+repeat_indices <- c()
+chord_names <- list()
+
+first_occurrence <- c()
+
+for(i in 1:dim(first_order)[1]){
+  # get the current row
+  evaluate_row <- first_order[i,]
+  
+  # don't count the current item as a repeat
+  evaluate_row[i] <- 0
+  
+  # repeats are the ids for any other 1s found
+  repeats <- which(evaluate_row == 1 )
+  
+  if(length(repeats) == 0){
+  }
+  
+  if(length(repeats) > 0){
+    #add to list of repeat items
+    repeat_indices <- c(repeat_indices,repeats)
+    
+    # add synonyms
+    chord_properties$synonyms[i] <- list(synonyms = row.names(first_order)[repeats])
+  }
+  
+   if(i %in% first_occurrence == FALSE){
+     if(i %in% repeat_indices == FALSE){
+       first_occurrence <- c(first_occurrence,i)
+     }
+  }
+}
+
+# remove repeats, recompute similarities
+chord_matrix_no_repeats <- chord_matrix[first_occurrence,]
+
+first_order_no_repeats <- lsa::cosine(t(chord_matrix_no_repeats))
+second_order_no_repeats <- lsa::cosine(first_order_no_repeats)
+
+```
+
+
+Listen to C7 in descending similarity with no repeat chords.
+
+```{r,results='hide'}
+
+chord_similarities <- sort(second_order_no_repeats['C7',],decreasing=T)
+
+# Set parameters
+duration <- 1  # seconds
+sampling_rate <- 44100  # Hz (standard audio sampling rate)
+frequencies <- c(261.63, # Middle C, frequencies of sine waves in Hz
+                 277.18, # D
+                 293.66,
+                 311.13,
+                 329.63,
+                 349.23,
+                 369.99,
+                 392,
+                 415.3,
+                 440,
+                 466.16,
+                 493.88)
+
+# loop through chords
+
+for(i in 1:30) {
+  amplitudes <- chord_matrix[names(chord_similarities[i]),]
+  
+  # Generate complex tone
+  complex_tone <- generate_complex_tone(duration,
+                                        sampling_rate,
+                                        frequencies,
+                                        amplitudes)
+  # normalize for 16 bit
+  complex_tone <- complex_tone / max(abs(complex_tone))
+  complex_tone <- complex_tone * 32767
+  
+  complex_tone <- vector_envelope(complex_tone,.5)
+  
+  if(i == 1){
+    tone_series <- complex_tone
+  } else {
+    ##smoothing
+    smooth <- round(length(complex_tone)*.1)
+    
+    tone_series[(length(tone_series)-(smooth-1)):length(tone_series)] <- (tone_series[(length(tone_series)-(smooth-1)):length(tone_series)] + complex_tone[1:smooth])
+    
+    tone_series <- c(tone_series, complex_tone[(smooth+1):length(complex_tone)])
+    
+    #tone_series <- c(tone_series,complex_tone)
+  }
+  
+}
+
+
+# use tuneR to convert to wave
+wave <- Wave(
+  left = tone_series,
+  right = tone_series,
+  samp.rate = sampling_rate,
+  bit = 16
+)
+
+sound_name <- "C7_series_30"
+writeWave(wave,paste0(sound_name,".wav"))
+av::av_audio_convert(paste0(sound_name,".wav"),paste0(sound_name,".mp3"), verbose=FALSE)
+file.remove(paste0(sound_name,".wav"))
+```
+
+`r html_tag_audio("C7_series_30.mp3", type = "wav")`
+
+Taking bigger steps (10) between each chord in terms of similarity.
+
+```{r,results='hide'}
+
+chord_similarities <- sort(second_order_no_repeats['C7',],decreasing=T)
+
+# Set parameters
+duration <- 1  # seconds
+sampling_rate <- 44100  # Hz (standard audio sampling rate)
+frequencies <- c(261.63, # Middle C, frequencies of sine waves in Hz
+                 277.18, # D
+                 293.66,
+                 311.13,
+                 329.63,
+                 349.23,
+                 369.99,
+                 392,
+                 415.3,
+                 440,
+                 466.16,
+                 493.88)
+
+# loop through chords
+
+for(i in seq(1,300,10)) {
+  amplitudes <- chord_matrix[names(chord_similarities[i]),]
+  
+  # Generate complex tone
+  complex_tone <- generate_complex_tone(duration,
+                                        sampling_rate,
+                                        frequencies,
+                                        amplitudes)
+  # normalize for 16 bit
+  complex_tone <- complex_tone / max(abs(complex_tone))
+  complex_tone <- complex_tone * 32767
+  
+  complex_tone <- vector_envelope(complex_tone,.5)
+  
+  if(i == 1){
+    tone_series <- complex_tone
+  } else {
+    ##smoothing
+    smooth <- round(length(complex_tone)*.1)
+    
+    tone_series[(length(tone_series)-(smooth-1)):length(tone_series)] <- (tone_series[(length(tone_series)-(smooth-1)):length(tone_series)] + complex_tone[1:smooth])
+    
+    tone_series <- c(tone_series, complex_tone[(smooth+1):length(complex_tone)])
+    
+    #tone_series <- c(tone_series,complex_tone)
+  }
+  
+}
+
+
+# use tuneR to convert to wave
+wave <- Wave(
+  left = tone_series,
+  right = tone_series,
+  samp.rate = sampling_rate,
+  bit = 16
+)
+
+sound_name <- "C7_series_30b"
+writeWave(wave,paste0(sound_name,".wav"))
+av::av_audio_convert(paste0(sound_name,".wav"),paste0(sound_name,".mp3"), verbose=FALSE)
+file.remove(paste0(sound_name,".wav"))
+```
+
+`r html_tag_audio("C7_series_30b.mp3", type = "wav")`
+
+Mildly interesting. These sine waves are tough on the ears though.
+
+------------------------
+
+The chord vectors only have 12 features, so they abstract over note positions, chord inversions, voicings, octaves, etc. These experiments might sound more interesting if I randomly assigned frequencies to different octaves to spread out the sound a little bit.
+
+```{r,results='hide'}
+
+chord_similarities <- sort(second_order_no_repeats['C7',],decreasing=T)
+
+# Set parameters
+duration <- 1  # seconds
+sampling_rate <- 44100  # Hz (standard audio sampling rate)
+frequencies <- c(261.63, # Middle C, frequencies of sine waves in Hz
+                 277.18, # D
+                 293.66,
+                 311.13,
+                 329.63,
+                 349.23,
+                 369.99,
+                 392,
+                 415.3,
+                 440,
+                 466.16,
+                 493.88)
+
+# loop through chords
+
+for(i in seq(1,300,10)) {
+  amplitudes <- chord_matrix[names(chord_similarities[i]),]
+  
+  random_frequencies <- sample(c(.5,1,2),12,replace=TRUE) *frequencies
+  # Generate complex tone
+  complex_tone <- generate_complex_tone(duration,
+                                        sampling_rate,
+                                        random_frequencies,
+                                        amplitudes)
+  # normalize for 16 bit
+  complex_tone <- complex_tone / max(abs(complex_tone))
+  complex_tone <- complex_tone * 32767
+  
+  complex_tone <- vector_envelope(complex_tone,.5)
+  
+  if(i == 1){
+    tone_series <- complex_tone
+  } else {
+    ##smoothing
+    smooth <- round(length(complex_tone)*.1)
+    
+    tone_series[(length(tone_series)-(smooth-1)):length(tone_series)] <- (tone_series[(length(tone_series)-(smooth-1)):length(tone_series)] + complex_tone[1:smooth])
+    
+    tone_series <- c(tone_series, complex_tone[(smooth+1):length(complex_tone)])
+    
+    #tone_series <- c(tone_series,complex_tone)
+  }
+  
+}
+
+
+# use tuneR to convert to wave
+wave <- Wave(
+  left = tone_series,
+  right = tone_series,
+  samp.rate = sampling_rate,
+  bit = 16
+)
+
+sound_name <- "C7_series_30c"
+writeWave(wave,paste0(sound_name,".wav"))
+av::av_audio_convert(paste0(sound_name,".wav"),paste0(sound_name,".mp3"), verbose=FALSE)
+file.remove(paste0(sound_name,".wav"))
+```
+
+`r html_tag_audio("C7_series_30c.mp3", type = "wav")`
+
+sounds more interesting. need to refactor the code a bit so I delete the wav file and save the mp3
+
+------------
+
+Let's start somewhere out there, and then move toward C7.
+
+```{r,results='hide'}
+
+chord_similarities <- sort(second_order_no_repeats['C7',],decreasing=T)
+
+# Set parameters
+duration <- 1  # seconds
+sampling_rate <- 44100  # Hz (standard audio sampling rate)
+frequencies <- c(261.63, # Middle C, frequencies of sine waves in Hz
+                 277.18, # D
+                 293.66,
+                 311.13,
+                 329.63,
+                 349.23,
+                 369.99,
+                 392,
+                 415.3,
+                 440,
+                 466.16,
+                 493.88)
+
+# loop through chords
+counter <- 0
+for(i in seq(301,1,-5)) {
+  counter <- counter+1
+  amplitudes <- chord_matrix[names(chord_similarities[i]),]
+  
+  random_frequencies <- sample(c(.5,1,2),12,replace=TRUE) *frequencies
+  # Generate complex tone
+  complex_tone <- generate_complex_tone(duration,
+                                        sampling_rate,
+                                        random_frequencies,
+                                        amplitudes)
+  # normalize for 16 bit
+  complex_tone <- complex_tone / max(abs(complex_tone))
+  complex_tone <- complex_tone * 32767
+  
+  complex_tone <- vector_envelope(complex_tone,.5)
+  
+  if(counter == 1){
+    tone_series <- complex_tone
+  } else {
+    ##smoothing
+    smooth <- round(length(complex_tone)*.1)
+    
+    tone_series[(length(tone_series)-(smooth-1)):length(tone_series)] <- (tone_series[(length(tone_series)-(smooth-1)):length(tone_series)] + complex_tone[1:smooth])
+    
+    tone_series <- c(tone_series, complex_tone[(smooth+1):length(complex_tone)])
+    
+    #tone_series <- c(tone_series,complex_tone)
+  }
+  
+}
+
+
+# use tuneR to convert to wave
+wave <- Wave(
+  left = tone_series,
+  right = tone_series,
+  samp.rate = sampling_rate,
+  bit = 16
+)
+
+sound_name <- "C7_series_30d"
+writeWave(wave,paste0(sound_name,".wav"))
+av::av_audio_convert(paste0(sound_name,".wav"),paste0(sound_name,".mp3"), verbose=FALSE)
+file.remove(paste0(sound_name,".wav"))
+```
+
+`r html_tag_audio("C7_series_30d.mp3", type = "wav")`
+
+That goes for almost a minute, not sure If I got the feeling I was headed toward C7.
+
+## Stepping distances between chords
+
+NOTE: This section is rough because I keep going back and fixing code, and the answers change.
+
+I was going to start working on an endless chord progression algorithm, but I realized I needed to pause and figure this out instead.
+
+The issue is to consider movement from one chord to another in the vector space. In the above examples I was moving away from C7 or toward C7, simply on the basis of the similarity scores from other chords. 
+
+What if I wanted to move between two different chords, say a C major triad, and a G major triad.
+
+It's still the morning, so my vector space math isn't totally working.
+
+I'm at C major triad in the multi-dimensional vector space. I see G major triad over there as another point in vector space. I could go straight there. Or, I could go anywhere else from C before going to G. With those options out of the way, let's do equal-interval steps.
+
+Starting simple. Choose the C major chord, sort it by decreasing similarity. Find, the G major triad in the list. Print the chord that is halfway between the two.
+
+```{r}
+starting_chord_similarities <- sort(second_order_no_repeats["C major triad",],decreasing = T)
+
+target_id <- which(names(starting_chord_similarities) == 'G major triad')
+
+middle_chord <- starting_chord_similarities[round(target_id/2)]
+print(middle_chord)
+
+```
+
+This one works fine between C and G
+
+another mistake:I had made a mistake earlier in the code that removed repeats, I previously got a D 9 (13), which sounded good. The Dm13(#11) is harded on the ears.
+
+From before the fix: I played C major triad, D 9 (13), and G major triad on a piano and it sounded great! Neat.
+
+I'm curious what some of the other chords near this spot are like.
+
+```{r}
+
+starting_chord_similarities[(round(target_id/2)-3):(round(target_id/2)+3)]
+
+```
+After another fix, mostly look fine. Good that there are good options!
+
+After fix: The Ab∆9 sounds great in between C and G. The Eb7(b9) works very well. I was almost worried this would start breaking, but still sounding good.
+
+From before the fix: Nice, all of those work pretty well. I might need to switch gears today and make a tool to compute these while I'm at the piano.
+
+But let's persist a little longer.
+
+What if we want to get there in more equal interval steps.
+
+```{r}
+starting_chord_similarities <- sort(second_order_no_repeats["C major triad",],decreasing = T)
+
+target_id <- which(names(starting_chord_similarities) == 'G major triad')
+
+num_steps <- 3
+
+progression <- starting_chord_similarities[floor(seq(1,target_id,length.out=2+num_steps ))]
+print(progression)
+
+
+```
+This is pretty cool, damn. Sometimes I'm getting back scales instead of chords, so I'd need to clean this up a little bit. 
+
+I'm using existing chords in the space as the locations for intermediate chords. It would be interesting to add a little noise into the process so that some the chords are not quite "right". Also, interesting to explore unequal steps.
+
+The method I'm using is not necessarily finding the exact middle between two chords in chord space, but that's OK these ones sound good.
+
+Also, not necessarily getting symmetrical answers. fun.
+
+```{r}
+starting_chord_similarities <- sort(second_order_no_repeats["G major triad",],decreasing = T)
+
+target_id <- which(names(starting_chord_similarities) == 'C major triad')
+
+num_steps <- 3
+
+progression <- starting_chord_similarities[floor(seq(1,target_id,length.out=2+num_steps ))]
+print(progression)
+
+
+```
+
+---------
+
+using this a chord progression calculator. Had to switch to the similarity matrix with lots of repeat chords. 
+
+Overall, I'd like to refine this chord vector space "intermediate" chord finder. It has potential. But, lots of little issues right now.
+
+```{r}
+start_chord <- "D7"
+end_chord <- "G7"
+
+starting_chord_similarities <- sort(second_order[start_chord,],decreasing = T)
+
+target_id <- which(names(starting_chord_similarities) == end_chord)
+
+num_steps <- 1
+
+progression <- starting_chord_similarities[floor(seq(1,target_id,length.out=2+num_steps ))]
+print(progression)
+
+```
+
+## Improving an intermediate chord finder function
+
+I need to clean up a bunch of things. Ideally, I want a function that takes a chord similarity matrix, a start and end chord, and computes intermediate chords and returns them.
+
+- delete non-unique chord, lots of bugs but seems fine now
+- made synonym list for deleted chords
+- not yet implemented, search by synonym
+
+```{r}
+###################
+# load chord vectors and pre-process
+###################
+
+library(tidyverse)
+# pre-processing to get the chord vectors
+
+# load chord vectors
+c_chord_excel <- rio::import("chord_vectors.xlsx")
+
+# grab feature vectors
+c_chord_matrix <- as.matrix(c_chord_excel[,4:15])
+
+# assign row names to the third column containing chord names
+row.names(c_chord_matrix) <- c_chord_excel[,3]
+
+# define all keys
+keys <- c("C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B")
+
+
+# the excel sheet only has chords in C
+# loop through the keys, permute the matrix to get the chords in the next key
+# add the permuted matrix to new rows in the overall chord_matrix
+for (i in 1:length(keys)) {
+  
+  if (i == 1) {
+    # initialize chord_matrix with C matrix
+    chord_matrix <- c_chord_matrix
+    
+  } else {
+    #permute the matrix as a function of iterator
+    new_matrix <- cbind(c_chord_matrix[, (14-i):12],c_chord_matrix[, 1:(13-i)] )
+    
+    # rename the rows with the new key
+    new_names <- gsub("C", keys[i], c_chord_excel[,3])
+    row.names(new_matrix) <- new_names
+    
+    # append the new_matrix to chord_matrix
+    chord_matrix <- rbind(chord_matrix,new_matrix)
+  
+    }
+}
+
+chord_properties <- tibble(
+  type = rep(c_chord_excel$type,length(keys)),
+  key = rep(keys, each = dim(c_chord_matrix)[1]),
+  chord_names  = row.names(chord_matrix),
+  synonyms = list(NA),
+  database_chord = FALSE
+)
+
+# find repeats and build synonym list
+repeat_indices <- c()
+chord_names <- list()
+
+first_occurrence <- c()
+
+for(i in 1:dim(first_order)[1]){
+  # get the current row
+  evaluate_row <- first_order[i,]
+  
+  # don't count the current item as a repeat
+  evaluate_row[i] <- 0
+  
+  # repeats are the ids for any other 1s found
+  repeats <- which(evaluate_row == 1 )
+  
+  if(length(repeats) == 0){
+  }
+  
+  if(length(repeats) > 0){
+    #add to list of repeat items
+    repeat_indices <- c(repeat_indices,repeats)
+    
+    # add synonyms
+    chord_properties$synonyms[i] <- list(synonyms = row.names(first_order)[repeats])
+  }
+  
+   if(i %in% first_occurrence == FALSE){
+     if(i %in% repeat_indices == FALSE){
+       first_occurrence <- c(first_occurrence,i)
+       chord_properties$database_chord[i] <- TRUE
+     }
+  }
+}
+
+# keep only unique chord, recompute similarities
+chord_matrix_no_repeats <- chord_matrix[first_occurrence,]
+first_order_no_repeats <- lsa::cosine(t(chord_matrix_no_repeats))
+second_order_no_repeats <- lsa::cosine(first_order_no_repeats)
+
+# remove scales and individual notes
+only_chords <- chord_properties %>%
+  filter(type!="scale",
+         type!="key",
+         database_chord == TRUE)
+
+second_order_chords <- second_order_no_repeats[only_chords$chord_names,
+                                               only_chords$chord_names]
+
+#################################
+# FUNCTIONS
+#################################
+
+generate_intermediate_chords <- function(start,
+                                         target,
+                                         steps,
+                                         chord_similarity_matrix
+                                         ){
+  ordered_similarities <- sort(chord_similarity_matrix[start,],decreasing =T)
+  target_id <- which(names(ordered_similarities) == target)
+  progression <- ordered_similarities[floor(seq(1,target_id,length.out = 2+steps ))]
+  return(progression)
+}
+
+generate_intermediate_chords("C7","G7", steps = 3, second_order_chords)
+
+```
+
+That's good enough for now. I have a bunch more things I'd want to add to this function
+
+- add option to print more choices (near neighbors)
+
+### listening to a progression
+
+From C7 to G7
+
+```{r}
+chord_progression <- generate_intermediate_chords("C7","G7", steps = 3, second_order_chords)
+chord_progression <- c(chord_progression[1],
+                       chord_progression[5],
+                       chord_progression
+                       )
+
+# Set parameters
+duration <- 1  # seconds
+sampling_rate <- 44100  # Hz (standard audio sampling rate)
+frequencies <- c(261.63, # Middle C, frequencies of sine waves in Hz
+                 277.18, # D
+                 293.66,
+                 311.13,
+                 329.63,
+                 349.23,
+                 369.99,
+                 392,
+                 415.3,
+                 440,
+                 466.16,
+                 493.88)
+
+# loop through chords
+counter <- 0
+for(i in 1:length(chord_progression)) {
+  counter <- counter+1
+  amplitudes <- chord_matrix[names(chord_progression[i]),]
+  
+  random_frequencies <- sample(c(1,1,1),12,replace=TRUE) *frequencies
+  # Generate complex tone
+  complex_tone <- generate_complex_tone(duration,
+                                        sampling_rate,
+                                        random_frequencies,
+                                        amplitudes)
+  # normalize for 16 bit
+  complex_tone <- complex_tone / max(abs(complex_tone))
+  complex_tone <- complex_tone * 32767
+  
+  complex_tone <- vector_envelope(complex_tone,.5)
+  
+  if(counter == 1){
+    tone_series <- complex_tone
+  } else {
+    ##smoothing
+    smooth <- round(length(complex_tone)*.1)
+    
+    tone_series[(length(tone_series)-(smooth-1)):length(tone_series)] <- (tone_series[(length(tone_series)-(smooth-1)):length(tone_series)] + complex_tone[1:smooth])
+    
+    tone_series <- c(tone_series, complex_tone[(smooth+1):length(complex_tone)])
+    
+    #tone_series <- c(tone_series,complex_tone)
+  }
+  
+}
+
+
+# use tuneR to convert to wave
+wave <- Wave(
+  left = tone_series,
+  right = tone_series,
+  samp.rate = sampling_rate,
+  bit = 16
+)
+
+sound_name <- "C7toG7"
+writeWave(wave,paste0(sound_name,".wav"))
+av::av_audio_convert(paste0(sound_name,".wav"),paste0(sound_name,".mp3"), verbose=FALSE)
+file.remove(paste0(sound_name,".wav"))
+
+```
+
+`r html_tag_audio("C7toG7.mp3", type = "wav")`
+
+I think I am nearing the end of wanting to listen to things in terms of sine waves. Maybe I'll try midi later. 
+
+## Endless progression
+
+Didn't get this far today.
+
+Goals:
+
+- start on some chord
+- move away from the chord in similarity terms
+- after some steps, re-center on the current chord

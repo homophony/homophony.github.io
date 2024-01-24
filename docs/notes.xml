@@ -17,6 +17,3534 @@
 <generator>quarto-1.4.547</generator>
 <lastBuildDate>Wed, 24 Jan 2024 05:00:00 GMT</lastBuildDate>
 <item>
+  <title>Listening to complex tones using sine waves and toneR</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/25_1_25_24_r_sounds/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> set_seed</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Image</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> random</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ssl</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#locate library</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mps"</span>)</span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"max"</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sine waves. nature. brilliant. sunset. ocean. frequency. complex"</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>):</span>
+<span id="cb1-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]:</span>
+<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span></span>
+<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-29">    set_seed(seed)</span>
+<span id="cb1-30">    </span>
+<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>num_steps)</span>
+<span id="cb1-32">    </span>
+<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpeg"</span></span>
+<span id="cb1-34">    </span>
+<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/25_1_25_24_r_sounds/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>musical pattern. music wallpaper. intense music trip. music everywhere. - Dreamshaper v7</p>
+</div></div><p>In previous posts I’ve been messing around with analyzing chord similarity using a vector space. My plan for this post is render chords as complex tones using R and the {toneR} package, and then listen to things.</p>
+<p>The code for this is taking me back to grad school. I used to run experiments involving complex tones with missing fundamentals, and I used Matlab to create those tones from sine waves.</p>
+<p>Here’s some R code will generate a complex tone as a sum of a series of sine waves, each at different frequencies and amplitudes.</p>
+<p>The result is a C7 chord, rendered as a complex tone, with the frequency for each note getting equal amplitude in the summed sine wave.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tuneR)</span>
+<span id="cb2-2"></span>
+<span id="cb2-3"></span>
+<span id="cb2-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Function to generate a complex tone</span></span>
+<span id="cb2-5">generate_complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span></span>
+<span id="cb2-6">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(duration,</span>
+<span id="cb2-7">           sampling_rate,</span>
+<span id="cb2-8">           frequencies,</span>
+<span id="cb2-9">           amplitudes) {</span>
+<span id="cb2-10">    time_points <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, duration, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> sampling_rate)</span>
+<span id="cb2-11">    complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sapply</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq_along</span>(frequencies), </span>
+<span id="cb2-12">                           <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(i) {</span>
+<span id="cb2-13">      amplitudes[i] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sin</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> pi <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> frequencies[i] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> time_points)</span>
+<span id="cb2-14">                             }</span>
+<span id="cb2-15">      )</span>
+<span id="cb2-16">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rowSums</span>(complex_tone))</span>
+<span id="cb2-17">  }</span>
+<span id="cb2-18"></span>
+<span id="cb2-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set parameters</span></span>
+<span id="cb2-20">duration <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># seconds</span></span>
+<span id="cb2-21">sampling_rate <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">44100</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Hz (standard audio sampling rate)</span></span>
+<span id="cb2-22">frequencies <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">261.63</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Middle C, frequencies of sine waves in Hz</span></span>
+<span id="cb2-23">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">277.18</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># D</span></span>
+<span id="cb2-24">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">293.66</span>,</span>
+<span id="cb2-25">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">311.13</span>,</span>
+<span id="cb2-26">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">329.63</span>,</span>
+<span id="cb2-27">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">349.23</span>,</span>
+<span id="cb2-28">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">369.99</span>,</span>
+<span id="cb2-29">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">392</span>,</span>
+<span id="cb2-30">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">415.3</span>,</span>
+<span id="cb2-31">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">440</span>,</span>
+<span id="cb2-32">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">466.16</span>,</span>
+<span id="cb2-33">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">493.88</span>)</span>
+<span id="cb2-34"></span>
+<span id="cb2-35"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># set amplitudes</span></span>
+<span id="cb2-36"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># 12 amplitudes, one for each note from C to B</span></span>
+<span id="cb2-37"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># this makes a C7 chord</span></span>
+<span id="cb2-38">amplitudes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb2-39"></span>
+<span id="cb2-40"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate complex tone</span></span>
+<span id="cb2-41">complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">generate_complex_tone</span>(duration, </span>
+<span id="cb2-42">                                      sampling_rate, </span>
+<span id="cb2-43">                                      frequencies, </span>
+<span id="cb2-44">                                      amplitudes)</span>
+<span id="cb2-45"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># normalize for 16 bit</span></span>
+<span id="cb2-46">complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(complex_tone))</span>
+<span id="cb2-47">complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">32767</span></span>
+<span id="cb2-48"></span>
+<span id="cb2-49"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># use tuneR to convert to wave</span></span>
+<span id="cb2-50">wave <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Wave</span>(</span>
+<span id="cb2-51">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">left =</span> complex_tone,</span>
+<span id="cb2-52">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">right =</span> complex_tone,</span>
+<span id="cb2-53">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">samp.rate =</span> sampling_rate,</span>
+<span id="cb2-54">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bit =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span></span>
+<span id="cb2-55">)</span>
+<span id="cb2-56"></span>
+<span id="cb2-57"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">writeWave</span>(wave,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C7.wav"</span>)</span></code></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="C7.wav" type="audio/wav"> </audio></p>
+<section id="a-series-of-similar-chords" class="level2">
+<h2 class="anchored" data-anchor-id="a-series-of-similar-chords">A series of similar chords</h2>
+<p>I’m pretty sure what I’m about to make is going to sound janky, oh well.</p>
+<p>Step 1: load in the chord vector space I’ve been using to compute similarities between chord patterns.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb3-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># pre-processing to get the chord vectors</span></span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># load chord vectors</span></span>
+<span id="cb3-5">c_chord_excel <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> rio<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">import</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"chord_vectors.xlsx"</span>)</span>
+<span id="cb3-6"></span>
+<span id="cb3-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># grab feature vectors</span></span>
+<span id="cb3-8">c_chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.matrix</span>(c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>])</span>
+<span id="cb3-9"></span>
+<span id="cb3-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># assign row names to the third column containing chord names</span></span>
+<span id="cb3-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(c_chord_matrix) <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>]</span>
+<span id="cb3-12"></span>
+<span id="cb3-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># define all keys</span></span>
+<span id="cb3-14">keys <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Db"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Eb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Gb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Ab"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B"</span>)</span>
+<span id="cb3-15"></span>
+<span id="cb3-16"></span>
+<span id="cb3-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># the excel sheet only has chords in C</span></span>
+<span id="cb3-18"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># loop through the keys, permute the matrix to get the chords in the next key</span></span>
+<span id="cb3-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add the permuted matrix to new rows in the overall chord_matrix</span></span>
+<span id="cb3-20"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(keys)) {</span>
+<span id="cb3-21">  </span>
+<span id="cb3-22">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> (i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) {</span>
+<span id="cb3-23">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># initialize chord_matrix with C matrix</span></span>
+<span id="cb3-24">    chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> c_chord_matrix</span>
+<span id="cb3-25">    </span>
+<span id="cb3-26">  } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> {</span>
+<span id="cb3-27">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#permute the matrix as a function of iterator</span></span>
+<span id="cb3-28">    new_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cbind</span>(c_chord_matrix[, (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>i)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>],c_chord_matrix[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>i)] )</span>
+<span id="cb3-29">    </span>
+<span id="cb3-30">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># rename the rows with the new key</span></span>
+<span id="cb3-31">    new_names <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gsub</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>, keys[i], c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>])</span>
+<span id="cb3-32">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(new_matrix) <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> new_names</span>
+<span id="cb3-33">    </span>
+<span id="cb3-34">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># append the new_matrix to chord_matrix</span></span>
+<span id="cb3-35">    chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbind</span>(chord_matrix,new_matrix)</span>
+<span id="cb3-36">  </span>
+<span id="cb3-37">    }</span>
+<span id="cb3-38">}</span></code></pre></div>
+</details>
+</div>
+<p>Step 2: compute the cosine similarities between all chords</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">first_order <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t</span>(chord_matrix))</span>
+<span id="cb4-2">second_order <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(first_order)</span></code></pre></div>
+</details>
+</div>
+<p>Step 3: Pick a starting chord and get the list of all other chords, ordered in terms of decreasing similarity. I’ll start with C7. This also prints the first 10, but I there are hundreds more in a row. Also using second-order similarity here for fun.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">chord_similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(second_order[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'C7'</span>,],<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decreasing=</span>T)</span>
+<span id="cb5-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(chord_similarities[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>])</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>           C7            C9        C7(b9)       Gb7b9b5          Edim 
+    1.0000000     0.9763873     0.9701562     0.9691460     0.9633453 
+C major triad       C9(#11)       C9 (13)       Em7(b5)           Gm6 
+    0.9597563     0.9528986     0.9527819     0.9401221     0.9401221 </code></pre>
+</div>
+</div>
+<p>Step 4: This is what I’ve been waiting for. Time for some teeny tiny steps. Basically, the plan is to generate a complex tone for each chord, in order of decreasing similarity, then stitch them together and then listen to them.</p>
+<p>I’m going to experiment with some of the parameters, like duration, and see what happens. Let’s also try the first 10 chords.</p>
+<p>Issue tracker: - try shorter duration per chord - clicks between tones need smoothing - add amplitude envelopes at beginning and end - learned about the {av} package! looks like a wrapper for ffmpeg, can use this to convert wavs to mp3</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># envelope generator function</span></span>
+<span id="cb7-2">vector_envelope <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(input_vector,proportion){</span>
+<span id="cb7-3">  window <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(input_vector)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>proportion)</span>
+<span id="cb7-4">  up <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length.out =</span> window)</span>
+<span id="cb7-5">  down <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length.out =</span> window)</span>
+<span id="cb7-6">  input_vector[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>window] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> input_vector[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>window]<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>up</span>
+<span id="cb7-7">  input_vector[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(input_vector)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(window<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(input_vector)] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> input_vector[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(input_vector)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(window<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(input_vector)]<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>down</span>
+<span id="cb7-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(input_vector)</span>
+<span id="cb7-9">}</span></code></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set parameters</span></span>
+<span id="cb8-2">duration <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># seconds</span></span>
+<span id="cb8-3">sampling_rate <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">44100</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Hz (standard audio sampling rate)</span></span>
+<span id="cb8-4">frequencies <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">261.63</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Middle C, frequencies of sine waves in Hz</span></span>
+<span id="cb8-5">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">277.18</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># D</span></span>
+<span id="cb8-6">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">293.66</span>,</span>
+<span id="cb8-7">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">311.13</span>,</span>
+<span id="cb8-8">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">329.63</span>,</span>
+<span id="cb8-9">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">349.23</span>,</span>
+<span id="cb8-10">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">369.99</span>,</span>
+<span id="cb8-11">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">392</span>,</span>
+<span id="cb8-12">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">415.3</span>,</span>
+<span id="cb8-13">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">440</span>,</span>
+<span id="cb8-14">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">466.16</span>,</span>
+<span id="cb8-15">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">493.88</span>)</span>
+<span id="cb8-16"></span>
+<span id="cb8-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># loop through chords</span></span>
+<span id="cb8-18"></span>
+<span id="cb8-19"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>) {</span>
+<span id="cb8-20">  amplitudes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(chord_similarities[i]),]</span>
+<span id="cb8-21">  </span>
+<span id="cb8-22">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate complex tone</span></span>
+<span id="cb8-23">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">generate_complex_tone</span>(duration,</span>
+<span id="cb8-24">                                        sampling_rate,</span>
+<span id="cb8-25">                                        frequencies,</span>
+<span id="cb8-26">                                        amplitudes)</span>
+<span id="cb8-27">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># normalize for 16 bit</span></span>
+<span id="cb8-28">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(complex_tone))</span>
+<span id="cb8-29">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">32767</span></span>
+<span id="cb8-30">  </span>
+<span id="cb8-31">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">vector_envelope</span>(complex_tone,.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)</span>
+<span id="cb8-32">  </span>
+<span id="cb8-33">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>){</span>
+<span id="cb8-34">    tone_series <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone</span>
+<span id="cb8-35">  } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> {</span>
+<span id="cb8-36">    <span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">##smoothing</span></span>
+<span id="cb8-37">    smooth <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(complex_tone)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb8-38">    </span>
+<span id="cb8-39">    tone_series[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(smooth<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> (tone_series[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(smooth<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> complex_tone[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>smooth])</span>
+<span id="cb8-40">    </span>
+<span id="cb8-41">    tone_series <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(tone_series, complex_tone[(smooth<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(complex_tone)])</span>
+<span id="cb8-42">    </span>
+<span id="cb8-43">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#tone_series &lt;- c(tone_series,complex_tone)</span></span>
+<span id="cb8-44">  }</span>
+<span id="cb8-45">  </span>
+<span id="cb8-46">}</span>
+<span id="cb8-47"></span>
+<span id="cb8-48"></span>
+<span id="cb8-49"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># use tuneR to convert to wave</span></span>
+<span id="cb8-50">wave <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Wave</span>(</span>
+<span id="cb8-51">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">left =</span> tone_series,</span>
+<span id="cb8-52">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">right =</span> tone_series,</span>
+<span id="cb8-53">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">samp.rate =</span> sampling_rate,</span>
+<span id="cb8-54">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bit =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span></span>
+<span id="cb8-55">)</span>
+<span id="cb8-56"></span>
+<span id="cb8-57">sound_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C7_series_10"</span></span>
+<span id="cb8-58"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">writeWave</span>(wave,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>))</span>
+<span id="cb8-59">av<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">av_audio_convert</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>),<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mp3"</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">verbose=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span>
+<span id="cb8-60"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.remove</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>))</span></code></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="C7_series_10.mp3" type="audio/wav"> </audio></p>
+<p>This one runs through the first 20 most similar chords to C7. The chords don’transition super smoothly (no portamento), but I got rid of then clicks using envelopes. It’s been a while since I did the math for audio signal processing. The last 10 or so chords all sound the same because the database has lots of chord identities (same note pattern under a different name).</p>
+</section>
+<section id="more-experiments" class="level2">
+<h2 class="anchored" data-anchor-id="more-experiments">More experiments</h2>
+<p>Remove identical chord patterns</p>
+<p>I botched this so many times…kept coming back to fix little problems.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">chord_properties <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(</span>
+<span id="cb9-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(c_chord_excel<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>type,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(keys)),</span>
+<span id="cb9-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">key =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(keys, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">each =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(c_chord_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]),</span>
+<span id="cb9-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">chord_names  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(chord_matrix),</span>
+<span id="cb9-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">synonyms =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>)</span>
+<span id="cb9-6">)</span>
+<span id="cb9-7"></span>
+<span id="cb9-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># find repeats and build synonym list</span></span>
+<span id="cb9-9">repeat_indices <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb9-10">chord_names <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>()</span>
+<span id="cb9-11"></span>
+<span id="cb9-12">first_occurrence <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb9-13"></span>
+<span id="cb9-14"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(first_order)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]){</span>
+<span id="cb9-15">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># get the current row</span></span>
+<span id="cb9-16">  evaluate_row <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> first_order[i,]</span>
+<span id="cb9-17">  </span>
+<span id="cb9-18">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># don't count the current item as a repeat</span></span>
+<span id="cb9-19">  evaluate_row[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb9-20">  </span>
+<span id="cb9-21">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># repeats are the ids for any other 1s found</span></span>
+<span id="cb9-22">  repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(evaluate_row <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> )</span>
+<span id="cb9-23">  </span>
+<span id="cb9-24">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(repeats) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>){</span>
+<span id="cb9-25">  }</span>
+<span id="cb9-26">  </span>
+<span id="cb9-27">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(repeats) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>){</span>
+<span id="cb9-28">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#add to list of repeat items</span></span>
+<span id="cb9-29">    repeat_indices <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(repeat_indices,repeats)</span>
+<span id="cb9-30">    </span>
+<span id="cb9-31">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add synonyms</span></span>
+<span id="cb9-32">    chord_properties<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>synonyms[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">synonyms =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(first_order)[repeats])</span>
+<span id="cb9-33">  }</span>
+<span id="cb9-34">  </span>
+<span id="cb9-35">   <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> first_occurrence <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>){</span>
+<span id="cb9-36">     <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> repeat_indices <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>){</span>
+<span id="cb9-37">       first_occurrence <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(first_occurrence,i)</span>
+<span id="cb9-38">     }</span>
+<span id="cb9-39">  }</span>
+<span id="cb9-40">}</span>
+<span id="cb9-41"></span>
+<span id="cb9-42"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># remove repeats, recompute similarities</span></span>
+<span id="cb9-43">chord_matrix_no_repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[first_occurrence,]</span>
+<span id="cb9-44"></span>
+<span id="cb9-45">first_order_no_repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t</span>(chord_matrix_no_repeats))</span>
+<span id="cb9-46">second_order_no_repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(first_order_no_repeats)</span></code></pre></div>
+</details>
+</div>
+<p>Listen to C7 in descending similarity with no repeat chords.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">chord_similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(second_order_no_repeats[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'C7'</span>,],<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decreasing=</span>T)</span>
+<span id="cb10-2"></span>
+<span id="cb10-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set parameters</span></span>
+<span id="cb10-4">duration <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># seconds</span></span>
+<span id="cb10-5">sampling_rate <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">44100</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Hz (standard audio sampling rate)</span></span>
+<span id="cb10-6">frequencies <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">261.63</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Middle C, frequencies of sine waves in Hz</span></span>
+<span id="cb10-7">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">277.18</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># D</span></span>
+<span id="cb10-8">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">293.66</span>,</span>
+<span id="cb10-9">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">311.13</span>,</span>
+<span id="cb10-10">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">329.63</span>,</span>
+<span id="cb10-11">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">349.23</span>,</span>
+<span id="cb10-12">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">369.99</span>,</span>
+<span id="cb10-13">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">392</span>,</span>
+<span id="cb10-14">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">415.3</span>,</span>
+<span id="cb10-15">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">440</span>,</span>
+<span id="cb10-16">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">466.16</span>,</span>
+<span id="cb10-17">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">493.88</span>)</span>
+<span id="cb10-18"></span>
+<span id="cb10-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># loop through chords</span></span>
+<span id="cb10-20"></span>
+<span id="cb10-21"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>) {</span>
+<span id="cb10-22">  amplitudes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(chord_similarities[i]),]</span>
+<span id="cb10-23">  </span>
+<span id="cb10-24">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate complex tone</span></span>
+<span id="cb10-25">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">generate_complex_tone</span>(duration,</span>
+<span id="cb10-26">                                        sampling_rate,</span>
+<span id="cb10-27">                                        frequencies,</span>
+<span id="cb10-28">                                        amplitudes)</span>
+<span id="cb10-29">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># normalize for 16 bit</span></span>
+<span id="cb10-30">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(complex_tone))</span>
+<span id="cb10-31">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">32767</span></span>
+<span id="cb10-32">  </span>
+<span id="cb10-33">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">vector_envelope</span>(complex_tone,.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)</span>
+<span id="cb10-34">  </span>
+<span id="cb10-35">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>){</span>
+<span id="cb10-36">    tone_series <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone</span>
+<span id="cb10-37">  } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> {</span>
+<span id="cb10-38">    <span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">##smoothing</span></span>
+<span id="cb10-39">    smooth <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(complex_tone)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb10-40">    </span>
+<span id="cb10-41">    tone_series[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(smooth<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> (tone_series[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(smooth<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> complex_tone[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>smooth])</span>
+<span id="cb10-42">    </span>
+<span id="cb10-43">    tone_series <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(tone_series, complex_tone[(smooth<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(complex_tone)])</span>
+<span id="cb10-44">    </span>
+<span id="cb10-45">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#tone_series &lt;- c(tone_series,complex_tone)</span></span>
+<span id="cb10-46">  }</span>
+<span id="cb10-47">  </span>
+<span id="cb10-48">}</span>
+<span id="cb10-49"></span>
+<span id="cb10-50"></span>
+<span id="cb10-51"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># use tuneR to convert to wave</span></span>
+<span id="cb10-52">wave <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Wave</span>(</span>
+<span id="cb10-53">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">left =</span> tone_series,</span>
+<span id="cb10-54">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">right =</span> tone_series,</span>
+<span id="cb10-55">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">samp.rate =</span> sampling_rate,</span>
+<span id="cb10-56">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bit =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span></span>
+<span id="cb10-57">)</span>
+<span id="cb10-58"></span>
+<span id="cb10-59">sound_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C7_series_30"</span></span>
+<span id="cb10-60"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">writeWave</span>(wave,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>))</span>
+<span id="cb10-61">av<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">av_audio_convert</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>),<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mp3"</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">verbose=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span>
+<span id="cb10-62"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.remove</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>))</span></code></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="C7_series_30.mp3" type="audio/wav"> </audio></p>
+<p>Taking bigger steps (10) between each chord in terms of similarity.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1">chord_similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(second_order_no_repeats[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'C7'</span>,],<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decreasing=</span>T)</span>
+<span id="cb11-2"></span>
+<span id="cb11-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set parameters</span></span>
+<span id="cb11-4">duration <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># seconds</span></span>
+<span id="cb11-5">sampling_rate <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">44100</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Hz (standard audio sampling rate)</span></span>
+<span id="cb11-6">frequencies <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">261.63</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Middle C, frequencies of sine waves in Hz</span></span>
+<span id="cb11-7">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">277.18</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># D</span></span>
+<span id="cb11-8">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">293.66</span>,</span>
+<span id="cb11-9">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">311.13</span>,</span>
+<span id="cb11-10">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">329.63</span>,</span>
+<span id="cb11-11">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">349.23</span>,</span>
+<span id="cb11-12">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">369.99</span>,</span>
+<span id="cb11-13">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">392</span>,</span>
+<span id="cb11-14">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">415.3</span>,</span>
+<span id="cb11-15">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">440</span>,</span>
+<span id="cb11-16">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">466.16</span>,</span>
+<span id="cb11-17">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">493.88</span>)</span>
+<span id="cb11-18"></span>
+<span id="cb11-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># loop through chords</span></span>
+<span id="cb11-20"></span>
+<span id="cb11-21"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">300</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)) {</span>
+<span id="cb11-22">  amplitudes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(chord_similarities[i]),]</span>
+<span id="cb11-23">  </span>
+<span id="cb11-24">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate complex tone</span></span>
+<span id="cb11-25">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">generate_complex_tone</span>(duration,</span>
+<span id="cb11-26">                                        sampling_rate,</span>
+<span id="cb11-27">                                        frequencies,</span>
+<span id="cb11-28">                                        amplitudes)</span>
+<span id="cb11-29">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># normalize for 16 bit</span></span>
+<span id="cb11-30">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(complex_tone))</span>
+<span id="cb11-31">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">32767</span></span>
+<span id="cb11-32">  </span>
+<span id="cb11-33">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">vector_envelope</span>(complex_tone,.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)</span>
+<span id="cb11-34">  </span>
+<span id="cb11-35">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>){</span>
+<span id="cb11-36">    tone_series <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone</span>
+<span id="cb11-37">  } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> {</span>
+<span id="cb11-38">    <span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">##smoothing</span></span>
+<span id="cb11-39">    smooth <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(complex_tone)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb11-40">    </span>
+<span id="cb11-41">    tone_series[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(smooth<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> (tone_series[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(smooth<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> complex_tone[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>smooth])</span>
+<span id="cb11-42">    </span>
+<span id="cb11-43">    tone_series <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(tone_series, complex_tone[(smooth<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(complex_tone)])</span>
+<span id="cb11-44">    </span>
+<span id="cb11-45">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#tone_series &lt;- c(tone_series,complex_tone)</span></span>
+<span id="cb11-46">  }</span>
+<span id="cb11-47">  </span>
+<span id="cb11-48">}</span>
+<span id="cb11-49"></span>
+<span id="cb11-50"></span>
+<span id="cb11-51"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># use tuneR to convert to wave</span></span>
+<span id="cb11-52">wave <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Wave</span>(</span>
+<span id="cb11-53">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">left =</span> tone_series,</span>
+<span id="cb11-54">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">right =</span> tone_series,</span>
+<span id="cb11-55">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">samp.rate =</span> sampling_rate,</span>
+<span id="cb11-56">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bit =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span></span>
+<span id="cb11-57">)</span>
+<span id="cb11-58"></span>
+<span id="cb11-59">sound_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C7_series_30b"</span></span>
+<span id="cb11-60"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">writeWave</span>(wave,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>))</span>
+<span id="cb11-61">av<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">av_audio_convert</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>),<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mp3"</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">verbose=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span>
+<span id="cb11-62"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.remove</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>))</span></code></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="C7_series_30b.mp3" type="audio/wav"> </audio></p>
+<p>Mildly interesting. These sine waves are tough on the ears though.</p>
+<hr>
+<p>The chord vectors only have 12 features, so they abstract over note positions, chord inversions, voicings, octaves, etc. These experiments might sound more interesting if I randomly assigned frequencies to different octaves to spread out the sound a little bit.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1">chord_similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(second_order_no_repeats[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'C7'</span>,],<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decreasing=</span>T)</span>
+<span id="cb12-2"></span>
+<span id="cb12-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set parameters</span></span>
+<span id="cb12-4">duration <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># seconds</span></span>
+<span id="cb12-5">sampling_rate <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">44100</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Hz (standard audio sampling rate)</span></span>
+<span id="cb12-6">frequencies <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">261.63</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Middle C, frequencies of sine waves in Hz</span></span>
+<span id="cb12-7">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">277.18</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># D</span></span>
+<span id="cb12-8">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">293.66</span>,</span>
+<span id="cb12-9">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">311.13</span>,</span>
+<span id="cb12-10">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">329.63</span>,</span>
+<span id="cb12-11">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">349.23</span>,</span>
+<span id="cb12-12">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">369.99</span>,</span>
+<span id="cb12-13">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">392</span>,</span>
+<span id="cb12-14">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">415.3</span>,</span>
+<span id="cb12-15">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">440</span>,</span>
+<span id="cb12-16">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">466.16</span>,</span>
+<span id="cb12-17">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">493.88</span>)</span>
+<span id="cb12-18"></span>
+<span id="cb12-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># loop through chords</span></span>
+<span id="cb12-20"></span>
+<span id="cb12-21"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">300</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)) {</span>
+<span id="cb12-22">  amplitudes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(chord_similarities[i]),]</span>
+<span id="cb12-23">  </span>
+<span id="cb12-24">  random_frequencies <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sample</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>),<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">replace=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>frequencies</span>
+<span id="cb12-25">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate complex tone</span></span>
+<span id="cb12-26">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">generate_complex_tone</span>(duration,</span>
+<span id="cb12-27">                                        sampling_rate,</span>
+<span id="cb12-28">                                        random_frequencies,</span>
+<span id="cb12-29">                                        amplitudes)</span>
+<span id="cb12-30">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># normalize for 16 bit</span></span>
+<span id="cb12-31">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(complex_tone))</span>
+<span id="cb12-32">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">32767</span></span>
+<span id="cb12-33">  </span>
+<span id="cb12-34">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">vector_envelope</span>(complex_tone,.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)</span>
+<span id="cb12-35">  </span>
+<span id="cb12-36">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>){</span>
+<span id="cb12-37">    tone_series <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone</span>
+<span id="cb12-38">  } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> {</span>
+<span id="cb12-39">    <span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">##smoothing</span></span>
+<span id="cb12-40">    smooth <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(complex_tone)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb12-41">    </span>
+<span id="cb12-42">    tone_series[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(smooth<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> (tone_series[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(smooth<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> complex_tone[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>smooth])</span>
+<span id="cb12-43">    </span>
+<span id="cb12-44">    tone_series <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(tone_series, complex_tone[(smooth<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(complex_tone)])</span>
+<span id="cb12-45">    </span>
+<span id="cb12-46">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#tone_series &lt;- c(tone_series,complex_tone)</span></span>
+<span id="cb12-47">  }</span>
+<span id="cb12-48">  </span>
+<span id="cb12-49">}</span>
+<span id="cb12-50"></span>
+<span id="cb12-51"></span>
+<span id="cb12-52"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># use tuneR to convert to wave</span></span>
+<span id="cb12-53">wave <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Wave</span>(</span>
+<span id="cb12-54">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">left =</span> tone_series,</span>
+<span id="cb12-55">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">right =</span> tone_series,</span>
+<span id="cb12-56">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">samp.rate =</span> sampling_rate,</span>
+<span id="cb12-57">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bit =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span></span>
+<span id="cb12-58">)</span>
+<span id="cb12-59"></span>
+<span id="cb12-60">sound_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C7_series_30c"</span></span>
+<span id="cb12-61"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">writeWave</span>(wave,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>))</span>
+<span id="cb12-62">av<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">av_audio_convert</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>),<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mp3"</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">verbose=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span>
+<span id="cb12-63"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.remove</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>))</span></code></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="C7_series_30c.mp3" type="audio/wav"> </audio></p>
+<p>sounds more interesting. need to refactor the code a bit so I delete the wav file and save the mp3</p>
+<hr>
+<p>Let’s start somewhere out there, and then move toward C7.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1">chord_similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(second_order_no_repeats[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'C7'</span>,],<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decreasing=</span>T)</span>
+<span id="cb13-2"></span>
+<span id="cb13-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set parameters</span></span>
+<span id="cb13-4">duration <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># seconds</span></span>
+<span id="cb13-5">sampling_rate <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">44100</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Hz (standard audio sampling rate)</span></span>
+<span id="cb13-6">frequencies <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">261.63</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Middle C, frequencies of sine waves in Hz</span></span>
+<span id="cb13-7">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">277.18</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># D</span></span>
+<span id="cb13-8">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">293.66</span>,</span>
+<span id="cb13-9">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">311.13</span>,</span>
+<span id="cb13-10">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">329.63</span>,</span>
+<span id="cb13-11">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">349.23</span>,</span>
+<span id="cb13-12">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">369.99</span>,</span>
+<span id="cb13-13">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">392</span>,</span>
+<span id="cb13-14">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">415.3</span>,</span>
+<span id="cb13-15">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">440</span>,</span>
+<span id="cb13-16">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">466.16</span>,</span>
+<span id="cb13-17">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">493.88</span>)</span>
+<span id="cb13-18"></span>
+<span id="cb13-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># loop through chords</span></span>
+<span id="cb13-20">counter <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb13-21"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">301</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)) {</span>
+<span id="cb13-22">  counter <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> counter<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb13-23">  amplitudes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(chord_similarities[i]),]</span>
+<span id="cb13-24">  </span>
+<span id="cb13-25">  random_frequencies <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sample</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>),<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">replace=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>frequencies</span>
+<span id="cb13-26">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate complex tone</span></span>
+<span id="cb13-27">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">generate_complex_tone</span>(duration,</span>
+<span id="cb13-28">                                        sampling_rate,</span>
+<span id="cb13-29">                                        random_frequencies,</span>
+<span id="cb13-30">                                        amplitudes)</span>
+<span id="cb13-31">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># normalize for 16 bit</span></span>
+<span id="cb13-32">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(complex_tone))</span>
+<span id="cb13-33">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">32767</span></span>
+<span id="cb13-34">  </span>
+<span id="cb13-35">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">vector_envelope</span>(complex_tone,.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)</span>
+<span id="cb13-36">  </span>
+<span id="cb13-37">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(counter <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>){</span>
+<span id="cb13-38">    tone_series <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone</span>
+<span id="cb13-39">  } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> {</span>
+<span id="cb13-40">    <span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">##smoothing</span></span>
+<span id="cb13-41">    smooth <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(complex_tone)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb13-42">    </span>
+<span id="cb13-43">    tone_series[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(smooth<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> (tone_series[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(smooth<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> complex_tone[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>smooth])</span>
+<span id="cb13-44">    </span>
+<span id="cb13-45">    tone_series <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(tone_series, complex_tone[(smooth<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(complex_tone)])</span>
+<span id="cb13-46">    </span>
+<span id="cb13-47">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#tone_series &lt;- c(tone_series,complex_tone)</span></span>
+<span id="cb13-48">  }</span>
+<span id="cb13-49">  </span>
+<span id="cb13-50">}</span>
+<span id="cb13-51"></span>
+<span id="cb13-52"></span>
+<span id="cb13-53"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># use tuneR to convert to wave</span></span>
+<span id="cb13-54">wave <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Wave</span>(</span>
+<span id="cb13-55">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">left =</span> tone_series,</span>
+<span id="cb13-56">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">right =</span> tone_series,</span>
+<span id="cb13-57">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">samp.rate =</span> sampling_rate,</span>
+<span id="cb13-58">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bit =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span></span>
+<span id="cb13-59">)</span>
+<span id="cb13-60"></span>
+<span id="cb13-61">sound_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C7_series_30d"</span></span>
+<span id="cb13-62"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">writeWave</span>(wave,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>))</span>
+<span id="cb13-63">av<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">av_audio_convert</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>),<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mp3"</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">verbose=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span>
+<span id="cb13-64"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.remove</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>))</span></code></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="C7_series_30d.mp3" type="audio/wav"> </audio></p>
+<p>That goes for almost a minute, not sure If I got the feeling I was headed toward C7.</p>
+</section>
+<section id="stepping-distances-between-chords" class="level2">
+<h2 class="anchored" data-anchor-id="stepping-distances-between-chords">Stepping distances between chords</h2>
+<p>NOTE: This section is rough because I keep going back and fixing code, and the answers change.</p>
+<p>I was going to start working on an endless chord progression algorithm, but I realized I needed to pause and figure this out instead.</p>
+<p>The issue is to consider movement from one chord to another in the vector space. In the above examples I was moving away from C7 or toward C7, simply on the basis of the similarity scores from other chords.</p>
+<p>What if I wanted to move between two different chords, say a C major triad, and a G major triad.</p>
+<p>It’s still the morning, so my vector space math isn’t totally working.</p>
+<p>I’m at C major triad in the multi-dimensional vector space. I see G major triad over there as another point in vector space. I could go straight there. Or, I could go anywhere else from C before going to G. With those options out of the way, let’s do equal-interval steps.</p>
+<p>Starting simple. Choose the C major chord, sort it by decreasing similarity. Find, the G major triad in the list. Print the chord that is halfway between the two.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1">starting_chord_similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(second_order_no_repeats[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C major triad"</span>,],<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decreasing =</span> T)</span>
+<span id="cb14-2"></span>
+<span id="cb14-3">target_id <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(starting_chord_similarities) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'G major triad'</span>)</span>
+<span id="cb14-4"></span>
+<span id="cb14-5">middle_chord <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> starting_chord_similarities[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(target_id<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)]</span>
+<span id="cb14-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(middle_chord)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>     Cm13 
+0.8095027 </code></pre>
+</div>
+</div>
+<p>This one works fine between C and G</p>
+<p>another mistake:I had made a mistake earlier in the code that removed repeats, I previously got a D 9 (13), which sounded good. The Dm13(#11) is harded on the ears.</p>
+<p>From before the fix: I played C major triad, D 9 (13), and G major triad on a piano and it sounded great! Neat.</p>
+<p>I’m curious what some of the other chords near this spot are like.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1">starting_chord_similarities[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(target_id<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(target_id<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>)]</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      Ab∆9(#11)       Gm13(#11)       Cm13(#11)            Cm13         F9(#11) 
+      0.8113597       0.8111463       0.8101535       0.8095027       0.8088325 
+C melodic minor      Em (add 9) 
+      0.8085356       0.8084651 </code></pre>
+</div>
+</div>
+<p>After another fix, mostly look fine. Good that there are good options!</p>
+<p>After fix: The Ab∆9 sounds great in between C and G. The Eb7(b9) works very well. I was almost worried this would start breaking, but still sounding good.</p>
+<p>From before the fix: Nice, all of those work pretty well. I might need to switch gears today and make a tool to compute these while I’m at the piano.</p>
+<p>But let’s persist a little longer.</p>
+<p>What if we want to get there in more equal interval steps.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1">starting_chord_similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(second_order_no_repeats[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C major triad"</span>,],<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decreasing =</span> T)</span>
+<span id="cb18-2"></span>
+<span id="cb18-3">target_id <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(starting_chord_similarities) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'G major triad'</span>)</span>
+<span id="cb18-4"></span>
+<span id="cb18-5">num_steps <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb18-6"></span>
+<span id="cb18-7">progression <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> starting_chord_similarities[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">floor</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,target_id,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length.out=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span>num_steps ))]</span>
+<span id="cb18-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(progression)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>C major triad      Edim(∆7)          Cm13        C note G major triad 
+    1.0000000     0.8436963     0.8095027     0.7804147     0.7302693 </code></pre>
+</div>
+</div>
+<p>This is pretty cool, damn. Sometimes I’m getting back scales instead of chords, so I’d need to clean this up a little bit.</p>
+<p>I’m using existing chords in the space as the locations for intermediate chords. It would be interesting to add a little noise into the process so that some the chords are not quite “right”. Also, interesting to explore unequal steps.</p>
+<p>The method I’m using is not necessarily finding the exact middle between two chords in chord space, but that’s OK these ones sound good.</p>
+<p>Also, not necessarily getting symmetrical answers. fun.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1">starting_chord_similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(second_order_no_repeats[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G major triad"</span>,],<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decreasing =</span> T)</span>
+<span id="cb20-2"></span>
+<span id="cb20-3">target_id <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(starting_chord_similarities) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'C major triad'</span>)</span>
+<span id="cb20-4"></span>
+<span id="cb20-5">num_steps <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span></span>
+<span id="cb20-6"></span>
+<span id="cb20-7">progression <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> starting_chord_similarities[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">floor</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,target_id,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length.out=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span>num_steps ))]</span>
+<span id="cb20-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(progression)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>G major triad      Bdim(∆7)  C Mixolydian        G note C major triad 
+    1.0000000     0.8436963     0.8095027     0.7804147     0.7302693 </code></pre>
+</div>
+</div>
+<hr>
+<p>using this a chord progression calculator. Had to switch to the similarity matrix with lots of repeat chords.</p>
+<p>Overall, I’d like to refine this chord vector space “intermediate” chord finder. It has potential. But, lots of little issues right now.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1">start_chord <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D7"</span></span>
+<span id="cb22-2">end_chord <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G7"</span></span>
+<span id="cb22-3"></span>
+<span id="cb22-4">starting_chord_similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(second_order[start_chord,],<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decreasing =</span> T)</span>
+<span id="cb22-5"></span>
+<span id="cb22-6">target_id <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(starting_chord_similarities) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> end_chord)</span>
+<span id="cb22-7"></span>
+<span id="cb22-8">num_steps <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb22-9"></span>
+<span id="cb22-10">progression <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> starting_chord_similarities[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">floor</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,target_id,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length.out=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span>num_steps ))]</span>
+<span id="cb22-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(progression)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>       D7   D∆9(13)        G7 
+1.0000000 0.8595150 0.7792604 </code></pre>
+</div>
+</div>
+</section>
+<section id="improving-an-intermediate-chord-finder-function" class="level2">
+<h2 class="anchored" data-anchor-id="improving-an-intermediate-chord-finder-function">Improving an intermediate chord finder function</h2>
+<p>I need to clean up a bunch of things. Ideally, I want a function that takes a chord similarity matrix, a start and end chord, and computes intermediate chords and returns them.</p>
+<ul>
+<li>delete non-unique chord, lots of bugs but seems fine now</li>
+<li>made synonym list for deleted chords</li>
+<li>not yet implemented, search by synonym</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">###################</span></span>
+<span id="cb24-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># load chord vectors and pre-process</span></span>
+<span id="cb24-3"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">###################</span></span>
+<span id="cb24-4"></span>
+<span id="cb24-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb24-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># pre-processing to get the chord vectors</span></span>
+<span id="cb24-7"></span>
+<span id="cb24-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># load chord vectors</span></span>
+<span id="cb24-9">c_chord_excel <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> rio<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">import</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"chord_vectors.xlsx"</span>)</span>
+<span id="cb24-10"></span>
+<span id="cb24-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># grab feature vectors</span></span>
+<span id="cb24-12">c_chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.matrix</span>(c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>])</span>
+<span id="cb24-13"></span>
+<span id="cb24-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># assign row names to the third column containing chord names</span></span>
+<span id="cb24-15"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(c_chord_matrix) <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>]</span>
+<span id="cb24-16"></span>
+<span id="cb24-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># define all keys</span></span>
+<span id="cb24-18">keys <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Db"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Eb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Gb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Ab"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B"</span>)</span>
+<span id="cb24-19"></span>
+<span id="cb24-20"></span>
+<span id="cb24-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># the excel sheet only has chords in C</span></span>
+<span id="cb24-22"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># loop through the keys, permute the matrix to get the chords in the next key</span></span>
+<span id="cb24-23"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add the permuted matrix to new rows in the overall chord_matrix</span></span>
+<span id="cb24-24"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(keys)) {</span>
+<span id="cb24-25">  </span>
+<span id="cb24-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> (i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) {</span>
+<span id="cb24-27">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># initialize chord_matrix with C matrix</span></span>
+<span id="cb24-28">    chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> c_chord_matrix</span>
+<span id="cb24-29">    </span>
+<span id="cb24-30">  } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> {</span>
+<span id="cb24-31">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#permute the matrix as a function of iterator</span></span>
+<span id="cb24-32">    new_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cbind</span>(c_chord_matrix[, (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>i)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>],c_chord_matrix[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>i)] )</span>
+<span id="cb24-33">    </span>
+<span id="cb24-34">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># rename the rows with the new key</span></span>
+<span id="cb24-35">    new_names <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gsub</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>, keys[i], c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>])</span>
+<span id="cb24-36">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(new_matrix) <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> new_names</span>
+<span id="cb24-37">    </span>
+<span id="cb24-38">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># append the new_matrix to chord_matrix</span></span>
+<span id="cb24-39">    chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbind</span>(chord_matrix,new_matrix)</span>
+<span id="cb24-40">  </span>
+<span id="cb24-41">    }</span>
+<span id="cb24-42">}</span>
+<span id="cb24-43"></span>
+<span id="cb24-44">chord_properties <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(</span>
+<span id="cb24-45">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(c_chord_excel<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>type,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(keys)),</span>
+<span id="cb24-46">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">key =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(keys, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">each =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(c_chord_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]),</span>
+<span id="cb24-47">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">chord_names  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(chord_matrix),</span>
+<span id="cb24-48">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">synonyms =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>),</span>
+<span id="cb24-49">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">database_chord =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span></span>
+<span id="cb24-50">)</span>
+<span id="cb24-51"></span>
+<span id="cb24-52"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># find repeats and build synonym list</span></span>
+<span id="cb24-53">repeat_indices <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb24-54">chord_names <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>()</span>
+<span id="cb24-55"></span>
+<span id="cb24-56">first_occurrence <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb24-57"></span>
+<span id="cb24-58"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(first_order)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]){</span>
+<span id="cb24-59">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># get the current row</span></span>
+<span id="cb24-60">  evaluate_row <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> first_order[i,]</span>
+<span id="cb24-61">  </span>
+<span id="cb24-62">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># don't count the current item as a repeat</span></span>
+<span id="cb24-63">  evaluate_row[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb24-64">  </span>
+<span id="cb24-65">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># repeats are the ids for any other 1s found</span></span>
+<span id="cb24-66">  repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(evaluate_row <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> )</span>
+<span id="cb24-67">  </span>
+<span id="cb24-68">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(repeats) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>){</span>
+<span id="cb24-69">  }</span>
+<span id="cb24-70">  </span>
+<span id="cb24-71">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(repeats) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>){</span>
+<span id="cb24-72">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#add to list of repeat items</span></span>
+<span id="cb24-73">    repeat_indices <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(repeat_indices,repeats)</span>
+<span id="cb24-74">    </span>
+<span id="cb24-75">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add synonyms</span></span>
+<span id="cb24-76">    chord_properties<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>synonyms[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">synonyms =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(first_order)[repeats])</span>
+<span id="cb24-77">  }</span>
+<span id="cb24-78">  </span>
+<span id="cb24-79">   <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> first_occurrence <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>){</span>
+<span id="cb24-80">     <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> repeat_indices <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>){</span>
+<span id="cb24-81">       first_occurrence <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(first_occurrence,i)</span>
+<span id="cb24-82">       chord_properties<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>database_chord[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb24-83">     }</span>
+<span id="cb24-84">  }</span>
+<span id="cb24-85">}</span>
+<span id="cb24-86"></span>
+<span id="cb24-87"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># keep only unique chord, recompute similarities</span></span>
+<span id="cb24-88">chord_matrix_no_repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[first_occurrence,]</span>
+<span id="cb24-89">first_order_no_repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t</span>(chord_matrix_no_repeats))</span>
+<span id="cb24-90">second_order_no_repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(first_order_no_repeats)</span>
+<span id="cb24-91"></span>
+<span id="cb24-92"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># remove scales and individual notes</span></span>
+<span id="cb24-93">only_chords <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_properties <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb24-94">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(type<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"scale"</span>,</span>
+<span id="cb24-95">         type<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"key"</span>,</span>
+<span id="cb24-96">         database_chord <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb24-97"></span>
+<span id="cb24-98">second_order_chords <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> second_order_no_repeats[only_chords<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chord_names,</span>
+<span id="cb24-99">                                               only_chords<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chord_names]</span>
+<span id="cb24-100"></span>
+<span id="cb24-101"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">#################################</span></span>
+<span id="cb24-102"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># FUNCTIONS</span></span>
+<span id="cb24-103"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">#################################</span></span>
+<span id="cb24-104"></span>
+<span id="cb24-105">generate_intermediate_chords <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(start,</span>
+<span id="cb24-106">                                         target,</span>
+<span id="cb24-107">                                         steps,</span>
+<span id="cb24-108">                                         chord_similarity_matrix</span>
+<span id="cb24-109">                                         ){</span>
+<span id="cb24-110">  ordered_similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(chord_similarity_matrix[start,],<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">decreasing =</span>T)</span>
+<span id="cb24-111">  target_id <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(ordered_similarities) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> target)</span>
+<span id="cb24-112">  progression <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> ordered_similarities[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">floor</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,target_id,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length.out =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span>steps ))]</span>
+<span id="cb24-113">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(progression)</span>
+<span id="cb24-114">}</span>
+<span id="cb24-115"></span>
+<span id="cb24-116"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">generate_intermediate_chords</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C7"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G7"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">steps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, second_order_chords)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>       C7      Gsus  D13susb9   Em7(11)        G7 
+1.0000000 0.8677997 0.8211606 0.7944620 0.7368894 </code></pre>
+</div>
+</div>
+<p>That’s good enough for now. I have a bunch more things I’d want to add to this function</p>
+<ul>
+<li>add option to print more choices (near neighbors)</li>
+</ul>
+<section id="listening-to-a-progression" class="level3">
+<h3 class="anchored" data-anchor-id="listening-to-a-progression">listening to a progression</h3>
+<p>From C7 to G7</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1">chord_progression <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">generate_intermediate_chords</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C7"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G7"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">steps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, second_order_chords)</span>
+<span id="cb26-2">chord_progression <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(chord_progression[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>],</span>
+<span id="cb26-3">                       chord_progression[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>],</span>
+<span id="cb26-4">                       chord_progression</span>
+<span id="cb26-5">                       )</span>
+<span id="cb26-6"></span>
+<span id="cb26-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set parameters</span></span>
+<span id="cb26-8">duration <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># seconds</span></span>
+<span id="cb26-9">sampling_rate <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">44100</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Hz (standard audio sampling rate)</span></span>
+<span id="cb26-10">frequencies <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">261.63</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Middle C, frequencies of sine waves in Hz</span></span>
+<span id="cb26-11">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">277.18</span>, <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># D</span></span>
+<span id="cb26-12">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">293.66</span>,</span>
+<span id="cb26-13">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">311.13</span>,</span>
+<span id="cb26-14">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">329.63</span>,</span>
+<span id="cb26-15">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">349.23</span>,</span>
+<span id="cb26-16">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">369.99</span>,</span>
+<span id="cb26-17">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">392</span>,</span>
+<span id="cb26-18">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">415.3</span>,</span>
+<span id="cb26-19">                 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">440</span>,</span>
+<span id="cb26-20">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">466.16</span>,</span>
+<span id="cb26-21">                 <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">493.88</span>)</span>
+<span id="cb26-22"></span>
+<span id="cb26-23"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># loop through chords</span></span>
+<span id="cb26-24">counter <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb26-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(chord_progression)) {</span>
+<span id="cb26-26">  counter <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> counter<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb26-27">  amplitudes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(chord_progression[i]),]</span>
+<span id="cb26-28">  </span>
+<span id="cb26-29">  random_frequencies <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sample</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>),<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">replace=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>frequencies</span>
+<span id="cb26-30">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate complex tone</span></span>
+<span id="cb26-31">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">generate_complex_tone</span>(duration,</span>
+<span id="cb26-32">                                        sampling_rate,</span>
+<span id="cb26-33">                                        random_frequencies,</span>
+<span id="cb26-34">                                        amplitudes)</span>
+<span id="cb26-35">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># normalize for 16 bit</span></span>
+<span id="cb26-36">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">abs</span>(complex_tone))</span>
+<span id="cb26-37">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">32767</span></span>
+<span id="cb26-38">  </span>
+<span id="cb26-39">  complex_tone <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">vector_envelope</span>(complex_tone,.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)</span>
+<span id="cb26-40">  </span>
+<span id="cb26-41">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(counter <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>){</span>
+<span id="cb26-42">    tone_series <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> complex_tone</span>
+<span id="cb26-43">  } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> {</span>
+<span id="cb26-44">    <span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">##smoothing</span></span>
+<span id="cb26-45">    smooth <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(complex_tone)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>.<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb26-46">    </span>
+<span id="cb26-47">    tone_series[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(smooth<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> (tone_series[(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>(smooth<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(tone_series)] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> complex_tone[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>smooth])</span>
+<span id="cb26-48">    </span>
+<span id="cb26-49">    tone_series <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(tone_series, complex_tone[(smooth<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(complex_tone)])</span>
+<span id="cb26-50">    </span>
+<span id="cb26-51">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#tone_series &lt;- c(tone_series,complex_tone)</span></span>
+<span id="cb26-52">  }</span>
+<span id="cb26-53">  </span>
+<span id="cb26-54">}</span>
+<span id="cb26-55"></span>
+<span id="cb26-56"></span>
+<span id="cb26-57"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># use tuneR to convert to wave</span></span>
+<span id="cb26-58">wave <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Wave</span>(</span>
+<span id="cb26-59">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">left =</span> tone_series,</span>
+<span id="cb26-60">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">right =</span> tone_series,</span>
+<span id="cb26-61">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">samp.rate =</span> sampling_rate,</span>
+<span id="cb26-62">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bit =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span></span>
+<span id="cb26-63">)</span>
+<span id="cb26-64"></span>
+<span id="cb26-65">sound_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C7toG7"</span></span>
+<span id="cb26-66"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">writeWave</span>(wave,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>))</span>
+<span id="cb26-67">av<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">av_audio_convert</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>),<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mp3"</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">verbose=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "/Users/mattcrump/Github/homophony.github.io/blog/25_1_25_24_r_sounds/C7toG7.mp3"</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.remove</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(sound_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p><audio controls=""> <source src="C7toG7.mp3" type="audio/wav"> </audio></p>
+<p>I think I am nearing the end of wanting to listen to things in terms of sine waves. Maybe I’ll try midi later.</p>
+</section>
+</section>
+<section id="endless-progression" class="level2">
+<h2 class="anchored" data-anchor-id="endless-progression">Endless progression</h2>
+<p>Didn’t get this far today.</p>
+<p>Goals:</p>
+<ul>
+<li>start on some chord</li>
+<li>move away from the chord in similarity terms</li>
+<li>after some steps, re-center on the current chord</li>
+</ul>
+
+
+</section>
+
+ ]]></description>
+  <category>computer music</category>
+  <category>tuneR</category>
+  <category>R music</category>
+  <guid>https://homophony.quest/blog/25_1_25_24_r_sounds/</guid>
+  <pubDate>Wed, 24 Jan 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/25_1_25_24_r_sounds/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
+<item>
   <title>Week of 1/21 - 1/27 daily practice post</title>
   <dc:creator>Matt Crump</dc:creator>
   <link>https://homophony.quest/blog/24_1_24_24_weekly_practice/</link>
@@ -182,7 +3710,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 </div>
 
 <div class="no-row-height column-margin column-container"><div class="">
-<p>Minerva robot of wisdom. binary codes. thundercat cartoon. music. music theory. conceptual. reverberation. resonance. colorful.</p>
+<p>musical pattern. music wallpaper. intense music trip. music everywhere. - Dreamshaper v7</p>
 </div></div><p>Trying out a single post to record daily practice exercises that I will continue to update throughout a week. It’s 1/24 and I will have to reconstruct what might have happened earlier this week.</p>
 <section id="section" class="level2">
 <h2 class="anchored" data-anchor-id="section">1/21</h2>
@@ -5237,48 +8765,6 @@ Fairly quick to access aspects of sound control...sensitivity adjustments are gr
   <guid>https://homophony.quest/blog/1_12_27_23_blog/</guid>
   <pubDate>Wed, 27 Dec 2023 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/1_12_27_23_blog/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Freddie Freeloader Wynton Kelly solo</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/7_12_27_23_freddie/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/7_12_27_23_freddie/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>“A small penguin wearing headphones. The penguin listens to the music from the headphones. The penguin sits in front of a piano. The penguin can imagine the musical notes in a tornado above her head.” - LCM_Dreamshaper_v7</p>
-</div></div><p>I spent most of yesterday working through Wynton Kelly’s solo on Freddie Freeloader (from Miles Davis’s Kind of Blue). My plan for this post is to talk a little bit about what I did, and what I learned.</p>
-<p>A slight detour though. It’s been very nice to have some clear time to actually practice piano, let alone enough time to break down a solo. When I was a kid the advice was to listen to recordings and learn to play from them by ear. In some cases I was able to do this (with difficulty, because I didn’t spend enough time practicing this way), but for the most part I didn’t have the recordings to listen to. Flash-forward to today and almost everything is available to stream. That’s amazing when you’re trying to learn something by ear. Not only that, but the internet is full of musicians sharing their practice tips. It’s almost overwhelming, but in a good way.</p>
-<p>For Freddie Freeloader I checked out a couple of YouTube videos before trying the solo myself: a <a href="https://www.youtube.com/watch?v=XSjWOTbL5ew">transcription video</a> and an <a href="https://www.youtube.com/watch?v=ZxfawXcpuaQ">analysis video</a>. Then I played the song a couple times before heading downstairs. Here’s the breakdown process I used this time.</p>
-<ol type="1">
-<li>Play the original recording into a track on Ableton live</li>
-<li>Cut the track so that it starts properly on the first bar</li>
-<li>Turn off “warp”, and then adjust the tempo of Ableton until the beats in the track line up properly with the bars in Ableton.</li>
-</ol>
-<p><img src="https://homophony.quest/blog/7_12_27_23_freddie/Screenshot 2023-12-27 at 7.56.08 AM.png" class="img-fluid"></p>
-<p>The purple track is the original recording. The selected area is the first two bars, and it is possible to loop the selection and/or slow it down without changing the pitch (by turning warp back on).</p>
-<p>I wasn’t particularly interested in learning the solo to play it note for note straight through. But, I was interested in trying out each little part and thinking about how the notes were used as phrases.</p>
-<p>So, I worked in sections of two bars, looped each section, then played over top on the Fender Rhodes until I thought I had the line. The blue track are my 2 bar recordings on the Rhodes.</p>
-<p>I didn’t have time to get through the whole solo, just the first 12 bars, and it got a little messy at the end. Oh well. Had lots of fun.</p>
-<p><audio controls=""> <source src="Freddie_solo.mp3" type="audio/wav"> </audio></p>
-<p>Practice notes: I ended up practicing the first phrase through the circle of fifths this morning.</p>
-<p><audio controls=""> <source src="freddie_phrase.mp3" type="audio/wav"> </audio></p>
-
-
-
- ]]></description>
-  <category>practice</category>
-  <guid>https://homophony.quest/blog/7_12_27_23_freddie/</guid>
-  <pubDate>Wed, 27 Dec 2023 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/7_12_27_23_freddie/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
