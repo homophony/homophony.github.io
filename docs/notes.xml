@@ -14,8 +14,782 @@
 <title>Homophony</title>
 <link>https://homophony.quest/notes.html</link>
 </image>
-<generator>quarto-1.4.547</generator>
-<lastBuildDate>Wed, 24 Jan 2024 05:00:00 GMT</lastBuildDate>
+<generator>quarto-1.4.549</generator>
+<lastBuildDate>Fri, 26 Jan 2024 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>Steps toward visualizing chord spaces</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/26_1_26_24_space_vis/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> set_seed</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Image</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> random</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ssl</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#locate library</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mps"</span>)</span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"max"</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"synthesizer floating in space. 80s cartoon. retro."</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>):</span>
+<span id="cb1-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]:</span>
+<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span></span>
+<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-29">    set_seed(seed)</span>
+<span id="cb1-30">    </span>
+<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>num_steps)</span>
+<span id="cb1-32">    </span>
+<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpeg"</span></span>
+<span id="cb1-34">    </span>
+<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/26_1_26_24_space_vis/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>synthesizer floating in space. 80s cartoon. retro. - Dreamshaper v7</p>
+</div></div><p>No time today for much explanation. Just some code that produces a visual. Lot’s of things to change up here later.</p>
+<ul>
+<li>create feature vectors for chords</li>
+<li>calculate similarity matrix</li>
+<li>find a multi-dimensional scaling solution to plot the chord names in 2-d</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb2-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># pre-processing to get the chord vectors</span></span>
+<span id="cb2-3"></span>
+<span id="cb2-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># load chord vectors</span></span>
+<span id="cb2-5">c_chord_excel <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> rio<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">import</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"chord_vectors.xlsx"</span>)</span>
+<span id="cb2-6"></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># grab feature vectors</span></span>
+<span id="cb2-8">c_chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.matrix</span>(c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>])</span>
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># assign row names to the third column containing chord names</span></span>
+<span id="cb2-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(c_chord_matrix) <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>]</span>
+<span id="cb2-12"></span>
+<span id="cb2-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># define all keys</span></span>
+<span id="cb2-14">keys <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Db"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Eb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Gb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Ab"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B"</span>)</span>
+<span id="cb2-15"></span>
+<span id="cb2-16"></span>
+<span id="cb2-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># the excel sheet only has chords in C</span></span>
+<span id="cb2-18"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># loop through the keys, permute the matrix to get the chords in the next key</span></span>
+<span id="cb2-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add the permuted matrix to new rows in the overall chord_matrix</span></span>
+<span id="cb2-20"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(keys)) {</span>
+<span id="cb2-21"></span>
+<span id="cb2-22">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> (i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) {</span>
+<span id="cb2-23">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># initialize chord_matrix with C matrix</span></span>
+<span id="cb2-24">    chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> c_chord_matrix</span>
+<span id="cb2-25"></span>
+<span id="cb2-26">  } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> {</span>
+<span id="cb2-27">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#permute the matrix as a function of iterator</span></span>
+<span id="cb2-28">    new_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cbind</span>(c_chord_matrix[, (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>i)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>],c_chord_matrix[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>i)] )</span>
+<span id="cb2-29"></span>
+<span id="cb2-30">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># rename the rows with the new key</span></span>
+<span id="cb2-31">    new_names <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gsub</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>, keys[i], c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>])</span>
+<span id="cb2-32">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(new_matrix) <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> new_names</span>
+<span id="cb2-33"></span>
+<span id="cb2-34">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># append the new_matrix to chord_matrix</span></span>
+<span id="cb2-35">    chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbind</span>(chord_matrix,new_matrix)</span>
+<span id="cb2-36"></span>
+<span id="cb2-37">  }</span>
+<span id="cb2-38">}</span>
+<span id="cb2-39"></span>
+<span id="cb2-40">chord_properties <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(</span>
+<span id="cb2-41">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(c_chord_excel<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>type,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(keys)),</span>
+<span id="cb2-42">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">key =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(keys, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">each =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(c_chord_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]),</span>
+<span id="cb2-43">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">chord_names  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(chord_matrix),</span>
+<span id="cb2-44">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">synonyms =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>),</span>
+<span id="cb2-45">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">database_chord =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span></span>
+<span id="cb2-46">)</span>
+<span id="cb2-47"></span>
+<span id="cb2-48">first_order <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t</span>(chord_matrix))</span>
+<span id="cb2-49">second_order <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(first_order)</span>
+<span id="cb2-50"></span>
+<span id="cb2-51"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># find repeats and build synonym list</span></span>
+<span id="cb2-52">repeat_indices <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb2-53"></span>
+<span id="cb2-54">first_occurrence <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb2-55"></span>
+<span id="cb2-56"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(chord_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]){</span>
+<span id="cb2-57">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># get the current row</span></span>
+<span id="cb2-58">  evaluate_row <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> first_order[i,]</span>
+<span id="cb2-59"></span>
+<span id="cb2-60">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># don't count the current item as a repeat</span></span>
+<span id="cb2-61">  evaluate_row[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb2-62"></span>
+<span id="cb2-63">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># repeats are the ids for any other 1s found</span></span>
+<span id="cb2-64">  repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(evaluate_row <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> )</span>
+<span id="cb2-65"></span>
+<span id="cb2-66">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(repeats) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>){</span>
+<span id="cb2-67">  }</span>
+<span id="cb2-68"></span>
+<span id="cb2-69">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(repeats) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>){</span>
+<span id="cb2-70">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#add to list of repeat items</span></span>
+<span id="cb2-71">    repeat_indices <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(repeat_indices,repeats)</span>
+<span id="cb2-72"></span>
+<span id="cb2-73">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add synonyms</span></span>
+<span id="cb2-74">    chord_properties<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>synonyms[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">synonyms =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(chord_matrix)[repeats])</span>
+<span id="cb2-75">  }</span>
+<span id="cb2-76"></span>
+<span id="cb2-77">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> first_occurrence <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>){</span>
+<span id="cb2-78">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> repeat_indices <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>){</span>
+<span id="cb2-79">      first_occurrence <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(first_occurrence,i)</span>
+<span id="cb2-80">      chord_properties<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>database_chord[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb2-81">    }</span>
+<span id="cb2-82">  }</span>
+<span id="cb2-83">}</span>
+<span id="cb2-84"></span>
+<span id="cb2-85">chord_properties <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_properties <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-86">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">num_notes =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rowSums</span>(chord_matrix),</span>
+<span id="cb2-87">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">id =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(chord_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>])</span>
+<span id="cb2-88"></span>
+<span id="cb2-89"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># keep only unique chord, recompute similarities</span></span>
+<span id="cb2-90">chord_matrix_no_repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[first_occurrence,]</span>
+<span id="cb2-91">first_order_no_repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t</span>(chord_matrix_no_repeats))</span>
+<span id="cb2-92">second_order_no_repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(first_order_no_repeats)</span>
+<span id="cb2-93"></span>
+<span id="cb2-94"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># remove scales and individual notes</span></span>
+<span id="cb2-95">only_chords <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_properties <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-96">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(type<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"scale"</span>,</span>
+<span id="cb2-97">         type<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"key"</span>,</span>
+<span id="cb2-98">         database_chord <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb2-99"></span>
+<span id="cb2-100">first_order_chords <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> first_order_no_repeats[only_chords<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chord_names,</span>
+<span id="cb2-101">                                               only_chords<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chord_names]</span>
+<span id="cb2-102">second_order_chords <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> second_order_no_repeats[only_chords<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chord_names,</span>
+<span id="cb2-103">                                               only_chords<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chord_names]</span></code></pre></div>
+</details>
+</div>
+<p>First-order similarity chord-space using 1-hot vectors.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggrepel)</span>
+<span id="cb3-3"></span>
+<span id="cb3-4">mds_first_order <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cmdscale</span>((first_order<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))</span>
+<span id="cb3-5">mds_first_order <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_tibble</span>(mds_first_order) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cbind</span>(chord_properties)</span>
+<span id="cb3-7"></span>
+<span id="cb3-8">mds_first_order <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> mds_first_order <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">key =</span> forcats<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fct_relevel</span>(key,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Eb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Ab"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Db"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Gb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(type <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"scale"</span>)</span>
+<span id="cb3-11"></span>
+<span id="cb3-12">p1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(mds_first_order, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(V1, V2, </span>
+<span id="cb3-13">                                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> chord_names,</span>
+<span id="cb3-14">                                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> key))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb3-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>()<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text_repel</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max.overlaps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-17">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_void</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">base_size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>)</span>
+<span id="cb3-18">p1</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/26_1_26_24_space_vis/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="3840"></p>
+</figure>
+</div>
+</div>
+</div>
+
+
+
+ ]]></description>
+  <category>chord similarity</category>
+  <category>datavis</category>
+  <guid>https://homophony.quest/blog/26_1_26_24_space_vis/</guid>
+  <pubDate>Fri, 26 Jan 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/26_1_26_24_space_vis/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Listening to complex tones using sine waves and toneR</title>
   <dc:creator>Matt Crump</dc:creator>
@@ -2680,27 +3454,17 @@ font-style: inherit;">print</span>(progression)</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><span class="do" style="color: #5E5E5E;
-background-color: null;
-font-style: italic;">###################</span></span>
-<span id="cb24-2"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># load chord vectors and pre-process</span></span>
-<span id="cb24-3"><span class="do" style="color: #5E5E5E;
-background-color: null;
-font-style: italic;">###################</span></span>
-<span id="cb24-4"></span>
-<span id="cb24-5"><span class="fu" style="color: #4758AB;
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(tidyverse)</span>
-<span id="cb24-6"><span class="co" style="color: #5E5E5E;
+<span id="cb24-2"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># pre-processing to get the chord vectors</span></span>
-<span id="cb24-7"></span>
-<span id="cb24-8"><span class="co" style="color: #5E5E5E;
+<span id="cb24-3"></span>
+<span id="cb24-4"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># load chord vectors</span></span>
-<span id="cb24-9">c_chord_excel <span class="ot" style="color: #003B4F;
+<span id="cb24-5">c_chord_excel <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> rio<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -2709,11 +3473,11 @@ background-color: null;
 font-style: inherit;">import</span>(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"chord_vectors.xlsx"</span>)</span>
-<span id="cb24-10"></span>
-<span id="cb24-11"><span class="co" style="color: #5E5E5E;
+<span id="cb24-6"></span>
+<span id="cb24-7"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># grab feature vectors</span></span>
-<span id="cb24-12">c_chord_matrix <span class="ot" style="color: #003B4F;
+<span id="cb24-8">c_chord_matrix <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -2724,22 +3488,22 @@ background-color: null;
 font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">15</span>])</span>
-<span id="cb24-13"></span>
-<span id="cb24-14"><span class="co" style="color: #5E5E5E;
+<span id="cb24-9"></span>
+<span id="cb24-10"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># assign row names to the third column containing chord names</span></span>
-<span id="cb24-15"><span class="fu" style="color: #4758AB;
+<span id="cb24-11"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">row.names</span>(c_chord_matrix) <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> c_chord_excel[,<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">3</span>]</span>
-<span id="cb24-16"></span>
-<span id="cb24-17"><span class="co" style="color: #5E5E5E;
+<span id="cb24-12"></span>
+<span id="cb24-13"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># define all keys</span></span>
-<span id="cb24-18">keys <span class="ot" style="color: #003B4F;
+<span id="cb24-14">keys <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -2768,18 +3532,18 @@ background-color: null;
 font-style: inherit;">"Bb"</span>,<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"B"</span>)</span>
-<span id="cb24-19"></span>
-<span id="cb24-20"></span>
-<span id="cb24-21"><span class="co" style="color: #5E5E5E;
+<span id="cb24-15"></span>
+<span id="cb24-16"></span>
+<span id="cb24-17"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># the excel sheet only has chords in C</span></span>
-<span id="cb24-22"><span class="co" style="color: #5E5E5E;
+<span id="cb24-18"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># loop through the keys, permute the matrix to get the chords in the next key</span></span>
-<span id="cb24-23"><span class="co" style="color: #5E5E5E;
+<span id="cb24-19"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># add the permuted matrix to new rows in the overall chord_matrix</span></span>
-<span id="cb24-24"><span class="cf" style="color: #003B4F;
+<span id="cb24-20"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
 background-color: null;
@@ -2790,28 +3554,28 @@ background-color: null;
 font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">length</span>(keys)) {</span>
-<span id="cb24-25">  </span>
-<span id="cb24-26">  <span class="cf" style="color: #003B4F;
+<span id="cb24-21"></span>
+<span id="cb24-22">  <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span> (i <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>) {</span>
-<span id="cb24-27">    <span class="co" style="color: #5E5E5E;
+<span id="cb24-23">    <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># initialize chord_matrix with C matrix</span></span>
-<span id="cb24-28">    chord_matrix <span class="ot" style="color: #003B4F;
+<span id="cb24-24">    chord_matrix <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> c_chord_matrix</span>
-<span id="cb24-29">    </span>
-<span id="cb24-30">  } <span class="cf" style="color: #003B4F;
+<span id="cb24-25"></span>
+<span id="cb24-26">  } <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">else</span> {</span>
-<span id="cb24-31">    <span class="co" style="color: #5E5E5E;
+<span id="cb24-27">    <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#permute the matrix as a function of iterator</span></span>
-<span id="cb24-32">    new_matrix <span class="ot" style="color: #003B4F;
+<span id="cb24-28">    new_matrix <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -2832,11 +3596,11 @@ background-color: null;
 font-style: inherit;">13</span><span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">-</span>i)] )</span>
-<span id="cb24-33">    </span>
-<span id="cb24-34">    <span class="co" style="color: #5E5E5E;
+<span id="cb24-29"></span>
+<span id="cb24-30">    <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># rename the rows with the new key</span></span>
-<span id="cb24-35">    new_names <span class="ot" style="color: #003B4F;
+<span id="cb24-31">    new_names <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -2845,30 +3609,30 @@ background-color: null;
 font-style: inherit;">"C"</span>, keys[i], c_chord_excel[,<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">3</span>])</span>
-<span id="cb24-36">    <span class="fu" style="color: #4758AB;
+<span id="cb24-32">    <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">row.names</span>(new_matrix) <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> new_names</span>
-<span id="cb24-37">    </span>
-<span id="cb24-38">    <span class="co" style="color: #5E5E5E;
+<span id="cb24-33"></span>
+<span id="cb24-34">    <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># append the new_matrix to chord_matrix</span></span>
-<span id="cb24-39">    chord_matrix <span class="ot" style="color: #003B4F;
+<span id="cb24-35">    chord_matrix <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">rbind</span>(chord_matrix,new_matrix)</span>
-<span id="cb24-40">  </span>
-<span id="cb24-41">    }</span>
-<span id="cb24-42">}</span>
-<span id="cb24-43"></span>
-<span id="cb24-44">chord_properties <span class="ot" style="color: #003B4F;
+<span id="cb24-36"></span>
+<span id="cb24-37">  }</span>
+<span id="cb24-38">}</span>
+<span id="cb24-39"></span>
+<span id="cb24-40">chord_properties <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">tibble</span>(</span>
-<span id="cb24-45">  <span class="at" style="color: #657422;
+<span id="cb24-41">  <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">type =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -2877,7 +3641,7 @@ background-color: null;
 font-style: inherit;">$</span>type,<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">length</span>(keys)),</span>
-<span id="cb24-46">  <span class="at" style="color: #657422;
+<span id="cb24-42">  <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">key =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -2888,46 +3652,51 @@ background-color: null;
 font-style: inherit;">dim</span>(c_chord_matrix)[<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>]),</span>
-<span id="cb24-47">  <span class="at" style="color: #657422;
+<span id="cb24-43">  <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">chord_names  =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">row.names</span>(chord_matrix),</span>
-<span id="cb24-48">  <span class="at" style="color: #657422;
+<span id="cb24-44">  <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">synonyms =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">list</span>(<span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">NA</span>),</span>
-<span id="cb24-49">  <span class="at" style="color: #657422;
+<span id="cb24-45">  <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">database_chord =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">FALSE</span></span>
-<span id="cb24-50">)</span>
-<span id="cb24-51"></span>
-<span id="cb24-52"><span class="co" style="color: #5E5E5E;
+<span id="cb24-46">)</span>
+<span id="cb24-47"></span>
+<span id="cb24-48">first_order <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t</span>(chord_matrix))</span>
+<span id="cb24-49"></span>
+<span id="cb24-50"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># find repeats and build synonym list</span></span>
-<span id="cb24-53">repeat_indices <span class="ot" style="color: #003B4F;
+<span id="cb24-51">repeat_indices <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">c</span>()</span>
-<span id="cb24-54">chord_names <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list</span>()</span>
-<span id="cb24-55"></span>
-<span id="cb24-56">first_occurrence <span class="ot" style="color: #003B4F;
+<span id="cb24-52"></span>
+<span id="cb24-53">first_occurrence <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">c</span>()</span>
-<span id="cb24-57"></span>
-<span id="cb24-58"><span class="cf" style="color: #003B4F;
+<span id="cb24-54"></span>
+<span id="cb24-55"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
 background-color: null;
@@ -2937,29 +3706,29 @@ font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">dim</span>(first_order)[<span class="dv" style="color: #AD0000;
+font-style: inherit;">dim</span>(chord_matrix)[<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>]){</span>
-<span id="cb24-59">  <span class="co" style="color: #5E5E5E;
+<span id="cb24-56">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># get the current row</span></span>
-<span id="cb24-60">  evaluate_row <span class="ot" style="color: #003B4F;
+<span id="cb24-57">  evaluate_row <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> first_order[i,]</span>
-<span id="cb24-61">  </span>
-<span id="cb24-62">  <span class="co" style="color: #5E5E5E;
+<span id="cb24-58"></span>
+<span id="cb24-59">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># don't count the current item as a repeat</span></span>
-<span id="cb24-63">  evaluate_row[i] <span class="ot" style="color: #003B4F;
+<span id="cb24-60">  evaluate_row[i] <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span></span>
-<span id="cb24-64">  </span>
-<span id="cb24-65">  <span class="co" style="color: #5E5E5E;
+<span id="cb24-61"></span>
+<span id="cb24-62">  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># repeats are the ids for any other 1s found</span></span>
-<span id="cb24-66">  repeats <span class="ot" style="color: #003B4F;
+<span id="cb24-63">  repeats <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -2968,8 +3737,8 @@ background-color: null;
 font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span> )</span>
-<span id="cb24-67">  </span>
-<span id="cb24-68">  <span class="cf" style="color: #003B4F;
+<span id="cb24-64"></span>
+<span id="cb24-65">  <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -2978,9 +3747,9 @@ background-color: null;
 font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span>){</span>
-<span id="cb24-69">  }</span>
-<span id="cb24-70">  </span>
-<span id="cb24-71">  <span class="cf" style="color: #003B4F;
+<span id="cb24-66">  }</span>
+<span id="cb24-67"></span>
+<span id="cb24-68">  <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -2989,19 +3758,19 @@ background-color: null;
 font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span>){</span>
-<span id="cb24-72">    <span class="co" style="color: #5E5E5E;
+<span id="cb24-69">    <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#add to list of repeat items</span></span>
-<span id="cb24-73">    repeat_indices <span class="ot" style="color: #003B4F;
+<span id="cb24-70">    repeat_indices <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">c</span>(repeat_indices,repeats)</span>
-<span id="cb24-74">    </span>
-<span id="cb24-75">    <span class="co" style="color: #5E5E5E;
+<span id="cb24-71"></span>
+<span id="cb24-72">    <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># add synonyms</span></span>
-<span id="cb24-76">    chord_properties<span class="sc" style="color: #5E5E5E;
+<span id="cb24-73">    chord_properties<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">$</span>synonyms[i] <span class="ot" style="color: #003B4F;
 background-color: null;
@@ -3011,10 +3780,10 @@ font-style: inherit;">list</span>(<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">synonyms =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">row.names</span>(first_order)[repeats])</span>
-<span id="cb24-77">  }</span>
-<span id="cb24-78">  </span>
-<span id="cb24-79">   <span class="cf" style="color: #003B4F;
+font-style: inherit;">row.names</span>(chord_matrix)[repeats])</span>
+<span id="cb24-74">  }</span>
+<span id="cb24-75"></span>
+<span id="cb24-76">  <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -3023,7 +3792,7 @@ background-color: null;
 font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">FALSE</span>){</span>
-<span id="cb24-80">     <span class="cf" style="color: #003B4F;
+<span id="cb24-77">    <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -3032,29 +3801,29 @@ background-color: null;
 font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">FALSE</span>){</span>
-<span id="cb24-81">       first_occurrence <span class="ot" style="color: #003B4F;
+<span id="cb24-78">      first_occurrence <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">c</span>(first_occurrence,i)</span>
-<span id="cb24-82">       chord_properties<span class="sc" style="color: #5E5E5E;
+<span id="cb24-79">      chord_properties<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">$</span>database_chord[i] <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span></span>
-<span id="cb24-83">     }</span>
-<span id="cb24-84">  }</span>
-<span id="cb24-85">}</span>
-<span id="cb24-86"></span>
-<span id="cb24-87"><span class="co" style="color: #5E5E5E;
+<span id="cb24-80">    }</span>
+<span id="cb24-81">  }</span>
+<span id="cb24-82">}</span>
+<span id="cb24-83"></span>
+<span id="cb24-84"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># keep only unique chord, recompute similarities</span></span>
-<span id="cb24-88">chord_matrix_no_repeats <span class="ot" style="color: #003B4F;
+<span id="cb24-85">chord_matrix_no_repeats <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> chord_matrix[first_occurrence,]</span>
-<span id="cb24-89">first_order_no_repeats <span class="ot" style="color: #003B4F;
+<span id="cb24-86">first_order_no_repeats <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -3063,76 +3832,76 @@ background-color: null;
 font-style: inherit;">cosine</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">t</span>(chord_matrix_no_repeats))</span>
-<span id="cb24-90">second_order_no_repeats <span class="ot" style="color: #003B4F;
+<span id="cb24-87">second_order_no_repeats <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">cosine</span>(first_order_no_repeats)</span>
-<span id="cb24-91"></span>
-<span id="cb24-92"><span class="co" style="color: #5E5E5E;
+<span id="cb24-88"></span>
+<span id="cb24-89"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># remove scales and individual notes</span></span>
-<span id="cb24-93">only_chords <span class="ot" style="color: #003B4F;
+<span id="cb24-90">only_chords <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> chord_properties <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb24-94">  <span class="fu" style="color: #4758AB;
+<span id="cb24-91">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">filter</span>(type<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">!=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"scale"</span>,</span>
-<span id="cb24-95">         type<span class="sc" style="color: #5E5E5E;
+<span id="cb24-92">         type<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">!=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"key"</span>,</span>
-<span id="cb24-96">         database_chord <span class="sc" style="color: #5E5E5E;
+<span id="cb24-93">         database_chord <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>)</span>
-<span id="cb24-97"></span>
-<span id="cb24-98">second_order_chords <span class="ot" style="color: #003B4F;
+<span id="cb24-94"></span>
+<span id="cb24-95">second_order_chords <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> second_order_no_repeats[only_chords<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">$</span>chord_names,</span>
-<span id="cb24-99">                                               only_chords<span class="sc" style="color: #5E5E5E;
+<span id="cb24-96">                                               only_chords<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">$</span>chord_names]</span>
-<span id="cb24-100"></span>
-<span id="cb24-101"><span class="do" style="color: #5E5E5E;
+<span id="cb24-97"></span>
+<span id="cb24-98"><span class="do" style="color: #5E5E5E;
 background-color: null;
 font-style: italic;">#################################</span></span>
-<span id="cb24-102"><span class="co" style="color: #5E5E5E;
+<span id="cb24-99"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># FUNCTIONS</span></span>
-<span id="cb24-103"><span class="do" style="color: #5E5E5E;
+<span id="cb24-100"><span class="do" style="color: #5E5E5E;
 background-color: null;
 font-style: italic;">#################################</span></span>
-<span id="cb24-104"></span>
-<span id="cb24-105">generate_intermediate_chords <span class="ot" style="color: #003B4F;
+<span id="cb24-101"></span>
+<span id="cb24-102">generate_intermediate_chords <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">function</span>(start,</span>
-<span id="cb24-106">                                         target,</span>
-<span id="cb24-107">                                         steps,</span>
-<span id="cb24-108">                                         chord_similarity_matrix</span>
-<span id="cb24-109">                                         ){</span>
-<span id="cb24-110">  ordered_similarities <span class="ot" style="color: #003B4F;
+<span id="cb24-103">                                         target,</span>
+<span id="cb24-104">                                         steps,</span>
+<span id="cb24-105">                                         chord_similarity_matrix</span>
+<span id="cb24-106">){</span>
+<span id="cb24-107">  ordered_similarities <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">sort</span>(chord_similarity_matrix[start,],<span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">decreasing =</span>T)</span>
-<span id="cb24-111">  target_id <span class="ot" style="color: #003B4F;
+<span id="cb24-108">  target_id <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -3141,7 +3910,7 @@ background-color: null;
 font-style: inherit;">names</span>(ordered_similarities) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">==</span> target)</span>
-<span id="cb24-112">  progression <span class="ot" style="color: #003B4F;
+<span id="cb24-109">  progression <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> ordered_similarities[<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -3156,12 +3925,12 @@ background-color: null;
 font-style: inherit;">2</span><span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span>steps ))]</span>
-<span id="cb24-113">  <span class="fu" style="color: #4758AB;
+<span id="cb24-110">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">return</span>(progression)</span>
-<span id="cb24-114">}</span>
-<span id="cb24-115"></span>
-<span id="cb24-116"><span class="fu" style="color: #4758AB;
+<span id="cb24-111">}</span>
+<span id="cb24-112"></span>
+<span id="cb24-113"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">generate_intermediate_chords</span>(<span class="st" style="color: #20794D;
 background-color: null;
@@ -3181,6 +3950,7 @@ font-style: inherit;">3</span>, second_order_chords)</span></code></pre></div>
 <p>That’s good enough for now. I have a bunch more things I’d want to add to this function</p>
 <ul>
 <li>add option to print more choices (near neighbors)</li>
+<li>add option to choose chords with X number of notes</li>
 </ul>
 <section id="listening-to-a-progression" class="level3">
 <h3 class="anchored" data-anchor-id="listening-to-a-progression">listening to a progression</h3>
@@ -3746,6 +4516,10 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 </ul>
 <p>I didn’t make too many mistakes, but I was more rusty at this then I thought I would be. I’m still slow on Db and Ab.</p>
 <p>Starting on the different inversions is interesting. When I’m really into a jam, I don’t think about what inversions to play and they just happen (on a good day). But, in this case, I’m not used to deliberately trying to play a specific triad in a specific inversion. Playing the second inversion was hardest for some reason.</p>
+</section>
+<section id="section-4" class="level2">
+<h2 class="anchored" data-anchor-id="section-4">1/25</h2>
+<p>Found a lead sheet for Nate Smith’s Retold. Love this song. Challenging 9/8 rhythm. Messed about with this for a while.</p>
 
 
 </section>
@@ -8744,27 +9518,6 @@ Fairly quick to access aspects of sound control...sensitivity adjustments are gr
   <guid>https://homophony.quest/blog/8_12_27_23_quantic_rain/</guid>
   <pubDate>Thu, 28 Dec 2023 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/8_12_27_23_quantic_rain/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Blogging for music motivation</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/1_12_27_23_blog/</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>I had some time at the end of my semester to play piano more than usual. This semester that meant I actually played the piano, instead of not playing the piano.</p>
-<p>Clearly I need to make time for more piano. I’m hoping this blog will keep me somewhat organized and motivated to stay on target.</p>
-<p>The blog is built with <a href="https://quarto.org">quarto</a>, and this post is just changing the structure a little bit so that each post is it’s own post, rather than a bunch of posts on a single page.</p>
-
-
-
- ]]></description>
-  <category>quarto</category>
-  <guid>https://homophony.quest/blog/1_12_27_23_blog/</guid>
-  <pubDate>Wed, 27 Dec 2023 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/1_12_27_23_blog/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>

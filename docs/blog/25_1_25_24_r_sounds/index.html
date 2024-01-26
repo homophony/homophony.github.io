@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.547">
+<meta name="generator" content="quarto-1.4.549">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -979,122 +979,119 @@ C melodic minor      Em (add 9)
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="do">###################</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># load chord vectors and pre-process</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="do">###################</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="co"># pre-processing to get the chord vectors</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co"># load chord vectors</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>c_chord_excel <span class="ot">&lt;-</span> rio<span class="sc">::</span><span class="fu">import</span>(<span class="st">"chord_vectors.xlsx"</span>)</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="co"># grab feature vectors</span></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>c_chord_matrix <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(c_chord_excel[,<span class="dv">4</span><span class="sc">:</span><span class="dv">15</span>])</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="co"># assign row names to the third column containing chord names</span></span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(c_chord_matrix) <span class="ot">&lt;-</span> c_chord_excel[,<span class="dv">3</span>]</span>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># pre-processing to get the chord vectors</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># load chord vectors</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>c_chord_excel <span class="ot">&lt;-</span> rio<span class="sc">::</span><span class="fu">import</span>(<span class="st">"chord_vectors.xlsx"</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co"># grab feature vectors</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>c_chord_matrix <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(c_chord_excel[,<span class="dv">4</span><span class="sc">:</span><span class="dv">15</span>])</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="co"># assign row names to the third column containing chord names</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(c_chord_matrix) <span class="ot">&lt;-</span> c_chord_excel[,<span class="dv">3</span>]</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="co"># define all keys</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>keys <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"C"</span>,<span class="st">"Db"</span>,<span class="st">"D"</span>,<span class="st">"Eb"</span>,<span class="st">"E"</span>,<span class="st">"F"</span>,<span class="st">"Gb"</span>,<span class="st">"G"</span>,<span class="st">"Ab"</span>,<span class="st">"A"</span>,<span class="st">"Bb"</span>,<span class="st">"B"</span>)</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="co"># define all keys</span></span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>keys <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"C"</span>,<span class="st">"Db"</span>,<span class="st">"D"</span>,<span class="st">"Eb"</span>,<span class="st">"E"</span>,<span class="st">"F"</span>,<span class="st">"Gb"</span>,<span class="st">"G"</span>,<span class="st">"Ab"</span>,<span class="st">"A"</span>,<span class="st">"Bb"</span>,<span class="st">"B"</span>)</span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a><span class="co"># the excel sheet only has chords in C</span></span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a><span class="co"># loop through the keys, permute the matrix to get the chords in the next key</span></span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a><span class="co"># add the permuted matrix to new rows in the overall chord_matrix</span></span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(keys)) {</span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (i <span class="sc">==</span> <span class="dv">1</span>) {</span>
-<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># initialize chord_matrix with C matrix</span></span>
-<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>    chord_matrix <span class="ot">&lt;-</span> c_chord_matrix</span>
-<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>    <span class="co">#permute the matrix as a function of iterator</span></span>
-<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>    new_matrix <span class="ot">&lt;-</span> <span class="fu">cbind</span>(c_chord_matrix[, (<span class="dv">14</span><span class="sc">-</span>i)<span class="sc">:</span><span class="dv">12</span>],c_chord_matrix[, <span class="dv">1</span><span class="sc">:</span>(<span class="dv">13</span><span class="sc">-</span>i)] )</span>
-<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># rename the rows with the new key</span></span>
-<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>    new_names <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"C"</span>, keys[i], c_chord_excel[,<span class="dv">3</span>])</span>
-<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>    <span class="fu">row.names</span>(new_matrix) <span class="ot">&lt;-</span> new_names</span>
-<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># append the new_matrix to chord_matrix</span></span>
-<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>    chord_matrix <span class="ot">&lt;-</span> <span class="fu">rbind</span>(chord_matrix,new_matrix)</span>
-<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>chord_properties <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">rep</span>(c_chord_excel<span class="sc">$</span>type,<span class="fu">length</span>(keys)),</span>
-<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">key =</span> <span class="fu">rep</span>(keys, <span class="at">each =</span> <span class="fu">dim</span>(c_chord_matrix)[<span class="dv">1</span>]),</span>
-<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">chord_names  =</span> <span class="fu">row.names</span>(chord_matrix),</span>
-<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">synonyms =</span> <span class="fu">list</span>(<span class="cn">NA</span>),</span>
-<span id="cb24-49"><a href="#cb24-49" aria-hidden="true" tabindex="-1"></a>  <span class="at">database_chord =</span> <span class="cn">FALSE</span></span>
-<span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-52"><a href="#cb24-52" aria-hidden="true" tabindex="-1"></a><span class="co"># find repeats and build synonym list</span></span>
-<span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a>repeat_indices <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a>chord_names <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb24-55"><a href="#cb24-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-56"><a href="#cb24-56" aria-hidden="true" tabindex="-1"></a>first_occurrence <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb24-57"><a href="#cb24-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-58"><a href="#cb24-58" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(first_order)[<span class="dv">1</span>]){</span>
-<span id="cb24-59"><a href="#cb24-59" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get the current row</span></span>
-<span id="cb24-60"><a href="#cb24-60" aria-hidden="true" tabindex="-1"></a>  evaluate_row <span class="ot">&lt;-</span> first_order[i,]</span>
-<span id="cb24-61"><a href="#cb24-61" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-62"><a href="#cb24-62" aria-hidden="true" tabindex="-1"></a>  <span class="co"># don't count the current item as a repeat</span></span>
-<span id="cb24-63"><a href="#cb24-63" aria-hidden="true" tabindex="-1"></a>  evaluate_row[i] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb24-64"><a href="#cb24-64" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-65"><a href="#cb24-65" aria-hidden="true" tabindex="-1"></a>  <span class="co"># repeats are the ids for any other 1s found</span></span>
-<span id="cb24-66"><a href="#cb24-66" aria-hidden="true" tabindex="-1"></a>  repeats <span class="ot">&lt;-</span> <span class="fu">which</span>(evaluate_row <span class="sc">==</span> <span class="dv">1</span> )</span>
-<span id="cb24-67"><a href="#cb24-67" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-68"><a href="#cb24-68" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(repeats) <span class="sc">==</span> <span class="dv">0</span>){</span>
-<span id="cb24-69"><a href="#cb24-69" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb24-70"><a href="#cb24-70" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-71"><a href="#cb24-71" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(repeats) <span class="sc">&gt;</span> <span class="dv">0</span>){</span>
-<span id="cb24-72"><a href="#cb24-72" aria-hidden="true" tabindex="-1"></a>    <span class="co">#add to list of repeat items</span></span>
-<span id="cb24-73"><a href="#cb24-73" aria-hidden="true" tabindex="-1"></a>    repeat_indices <span class="ot">&lt;-</span> <span class="fu">c</span>(repeat_indices,repeats)</span>
-<span id="cb24-74"><a href="#cb24-74" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb24-75"><a href="#cb24-75" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add synonyms</span></span>
-<span id="cb24-76"><a href="#cb24-76" aria-hidden="true" tabindex="-1"></a>    chord_properties<span class="sc">$</span>synonyms[i] <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">synonyms =</span> <span class="fu">row.names</span>(first_order)[repeats])</span>
-<span id="cb24-77"><a href="#cb24-77" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb24-78"><a href="#cb24-78" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb24-79"><a href="#cb24-79" aria-hidden="true" tabindex="-1"></a>   <span class="cf">if</span>(i <span class="sc">%in%</span> first_occurrence <span class="sc">==</span> <span class="cn">FALSE</span>){</span>
-<span id="cb24-80"><a href="#cb24-80" aria-hidden="true" tabindex="-1"></a>     <span class="cf">if</span>(i <span class="sc">%in%</span> repeat_indices <span class="sc">==</span> <span class="cn">FALSE</span>){</span>
-<span id="cb24-81"><a href="#cb24-81" aria-hidden="true" tabindex="-1"></a>       first_occurrence <span class="ot">&lt;-</span> <span class="fu">c</span>(first_occurrence,i)</span>
-<span id="cb24-82"><a href="#cb24-82" aria-hidden="true" tabindex="-1"></a>       chord_properties<span class="sc">$</span>database_chord[i] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb24-83"><a href="#cb24-83" aria-hidden="true" tabindex="-1"></a>     }</span>
-<span id="cb24-84"><a href="#cb24-84" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb24-85"><a href="#cb24-85" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb24-86"><a href="#cb24-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-87"><a href="#cb24-87" aria-hidden="true" tabindex="-1"></a><span class="co"># keep only unique chord, recompute similarities</span></span>
-<span id="cb24-88"><a href="#cb24-88" aria-hidden="true" tabindex="-1"></a>chord_matrix_no_repeats <span class="ot">&lt;-</span> chord_matrix[first_occurrence,]</span>
-<span id="cb24-89"><a href="#cb24-89" aria-hidden="true" tabindex="-1"></a>first_order_no_repeats <span class="ot">&lt;-</span> lsa<span class="sc">::</span><span class="fu">cosine</span>(<span class="fu">t</span>(chord_matrix_no_repeats))</span>
-<span id="cb24-90"><a href="#cb24-90" aria-hidden="true" tabindex="-1"></a>second_order_no_repeats <span class="ot">&lt;-</span> lsa<span class="sc">::</span><span class="fu">cosine</span>(first_order_no_repeats)</span>
-<span id="cb24-91"><a href="#cb24-91" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-92"><a href="#cb24-92" aria-hidden="true" tabindex="-1"></a><span class="co"># remove scales and individual notes</span></span>
-<span id="cb24-93"><a href="#cb24-93" aria-hidden="true" tabindex="-1"></a>only_chords <span class="ot">&lt;-</span> chord_properties <span class="sc">%&gt;%</span></span>
-<span id="cb24-94"><a href="#cb24-94" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type<span class="sc">!=</span><span class="st">"scale"</span>,</span>
-<span id="cb24-95"><a href="#cb24-95" aria-hidden="true" tabindex="-1"></a>         type<span class="sc">!=</span><span class="st">"key"</span>,</span>
-<span id="cb24-96"><a href="#cb24-96" aria-hidden="true" tabindex="-1"></a>         database_chord <span class="sc">==</span> <span class="cn">TRUE</span>)</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="co"># the excel sheet only has chords in C</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a><span class="co"># loop through the keys, permute the matrix to get the chords in the next key</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a><span class="co"># add the permuted matrix to new rows in the overall chord_matrix</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(keys)) {</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (i <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># initialize chord_matrix with C matrix</span></span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    chord_matrix <span class="ot">&lt;-</span> c_chord_matrix</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>    <span class="co">#permute the matrix as a function of iterator</span></span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>    new_matrix <span class="ot">&lt;-</span> <span class="fu">cbind</span>(c_chord_matrix[, (<span class="dv">14</span><span class="sc">-</span>i)<span class="sc">:</span><span class="dv">12</span>],c_chord_matrix[, <span class="dv">1</span><span class="sc">:</span>(<span class="dv">13</span><span class="sc">-</span>i)] )</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># rename the rows with the new key</span></span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>    new_names <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"C"</span>, keys[i], c_chord_excel[,<span class="dv">3</span>])</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">row.names</span>(new_matrix) <span class="ot">&lt;-</span> new_names</span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># append the new_matrix to chord_matrix</span></span>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>    chord_matrix <span class="ot">&lt;-</span> <span class="fu">rbind</span>(chord_matrix,new_matrix)</span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>chord_properties <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">rep</span>(c_chord_excel<span class="sc">$</span>type,<span class="fu">length</span>(keys)),</span>
+<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">key =</span> <span class="fu">rep</span>(keys, <span class="at">each =</span> <span class="fu">dim</span>(c_chord_matrix)[<span class="dv">1</span>]),</span>
+<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">chord_names  =</span> <span class="fu">row.names</span>(chord_matrix),</span>
+<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">synonyms =</span> <span class="fu">list</span>(<span class="cn">NA</span>),</span>
+<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">database_chord =</span> <span class="cn">FALSE</span></span>
+<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a>first_order <span class="ot">&lt;-</span> lsa<span class="sc">::</span><span class="fu">cosine</span>(<span class="fu">t</span>(chord_matrix))</span>
+<span id="cb24-49"><a href="#cb24-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a><span class="co"># find repeats and build synonym list</span></span>
+<span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a>repeat_indices <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb24-52"><a href="#cb24-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a>first_occurrence <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-55"><a href="#cb24-55" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(chord_matrix)[<span class="dv">1</span>]){</span>
+<span id="cb24-56"><a href="#cb24-56" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get the current row</span></span>
+<span id="cb24-57"><a href="#cb24-57" aria-hidden="true" tabindex="-1"></a>  evaluate_row <span class="ot">&lt;-</span> first_order[i,]</span>
+<span id="cb24-58"><a href="#cb24-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-59"><a href="#cb24-59" aria-hidden="true" tabindex="-1"></a>  <span class="co"># don't count the current item as a repeat</span></span>
+<span id="cb24-60"><a href="#cb24-60" aria-hidden="true" tabindex="-1"></a>  evaluate_row[i] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb24-61"><a href="#cb24-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-62"><a href="#cb24-62" aria-hidden="true" tabindex="-1"></a>  <span class="co"># repeats are the ids for any other 1s found</span></span>
+<span id="cb24-63"><a href="#cb24-63" aria-hidden="true" tabindex="-1"></a>  repeats <span class="ot">&lt;-</span> <span class="fu">which</span>(evaluate_row <span class="sc">==</span> <span class="dv">1</span> )</span>
+<span id="cb24-64"><a href="#cb24-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-65"><a href="#cb24-65" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(repeats) <span class="sc">==</span> <span class="dv">0</span>){</span>
+<span id="cb24-66"><a href="#cb24-66" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb24-67"><a href="#cb24-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-68"><a href="#cb24-68" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(repeats) <span class="sc">&gt;</span> <span class="dv">0</span>){</span>
+<span id="cb24-69"><a href="#cb24-69" aria-hidden="true" tabindex="-1"></a>    <span class="co">#add to list of repeat items</span></span>
+<span id="cb24-70"><a href="#cb24-70" aria-hidden="true" tabindex="-1"></a>    repeat_indices <span class="ot">&lt;-</span> <span class="fu">c</span>(repeat_indices,repeats)</span>
+<span id="cb24-71"><a href="#cb24-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-72"><a href="#cb24-72" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add synonyms</span></span>
+<span id="cb24-73"><a href="#cb24-73" aria-hidden="true" tabindex="-1"></a>    chord_properties<span class="sc">$</span>synonyms[i] <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">synonyms =</span> <span class="fu">row.names</span>(chord_matrix)[repeats])</span>
+<span id="cb24-74"><a href="#cb24-74" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb24-75"><a href="#cb24-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-76"><a href="#cb24-76" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(i <span class="sc">%in%</span> first_occurrence <span class="sc">==</span> <span class="cn">FALSE</span>){</span>
+<span id="cb24-77"><a href="#cb24-77" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(i <span class="sc">%in%</span> repeat_indices <span class="sc">==</span> <span class="cn">FALSE</span>){</span>
+<span id="cb24-78"><a href="#cb24-78" aria-hidden="true" tabindex="-1"></a>      first_occurrence <span class="ot">&lt;-</span> <span class="fu">c</span>(first_occurrence,i)</span>
+<span id="cb24-79"><a href="#cb24-79" aria-hidden="true" tabindex="-1"></a>      chord_properties<span class="sc">$</span>database_chord[i] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb24-80"><a href="#cb24-80" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb24-81"><a href="#cb24-81" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb24-82"><a href="#cb24-82" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-83"><a href="#cb24-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-84"><a href="#cb24-84" aria-hidden="true" tabindex="-1"></a><span class="co"># keep only unique chord, recompute similarities</span></span>
+<span id="cb24-85"><a href="#cb24-85" aria-hidden="true" tabindex="-1"></a>chord_matrix_no_repeats <span class="ot">&lt;-</span> chord_matrix[first_occurrence,]</span>
+<span id="cb24-86"><a href="#cb24-86" aria-hidden="true" tabindex="-1"></a>first_order_no_repeats <span class="ot">&lt;-</span> lsa<span class="sc">::</span><span class="fu">cosine</span>(<span class="fu">t</span>(chord_matrix_no_repeats))</span>
+<span id="cb24-87"><a href="#cb24-87" aria-hidden="true" tabindex="-1"></a>second_order_no_repeats <span class="ot">&lt;-</span> lsa<span class="sc">::</span><span class="fu">cosine</span>(first_order_no_repeats)</span>
+<span id="cb24-88"><a href="#cb24-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-89"><a href="#cb24-89" aria-hidden="true" tabindex="-1"></a><span class="co"># remove scales and individual notes</span></span>
+<span id="cb24-90"><a href="#cb24-90" aria-hidden="true" tabindex="-1"></a>only_chords <span class="ot">&lt;-</span> chord_properties <span class="sc">%&gt;%</span></span>
+<span id="cb24-91"><a href="#cb24-91" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type<span class="sc">!=</span><span class="st">"scale"</span>,</span>
+<span id="cb24-92"><a href="#cb24-92" aria-hidden="true" tabindex="-1"></a>         type<span class="sc">!=</span><span class="st">"key"</span>,</span>
+<span id="cb24-93"><a href="#cb24-93" aria-hidden="true" tabindex="-1"></a>         database_chord <span class="sc">==</span> <span class="cn">TRUE</span>)</span>
+<span id="cb24-94"><a href="#cb24-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-95"><a href="#cb24-95" aria-hidden="true" tabindex="-1"></a>second_order_chords <span class="ot">&lt;-</span> second_order_no_repeats[only_chords<span class="sc">$</span>chord_names,</span>
+<span id="cb24-96"><a href="#cb24-96" aria-hidden="true" tabindex="-1"></a>                                               only_chords<span class="sc">$</span>chord_names]</span>
 <span id="cb24-97"><a href="#cb24-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-98"><a href="#cb24-98" aria-hidden="true" tabindex="-1"></a>second_order_chords <span class="ot">&lt;-</span> second_order_no_repeats[only_chords<span class="sc">$</span>chord_names,</span>
-<span id="cb24-99"><a href="#cb24-99" aria-hidden="true" tabindex="-1"></a>                                               only_chords<span class="sc">$</span>chord_names]</span>
-<span id="cb24-100"><a href="#cb24-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-101"><a href="#cb24-101" aria-hidden="true" tabindex="-1"></a><span class="do">#################################</span></span>
-<span id="cb24-102"><a href="#cb24-102" aria-hidden="true" tabindex="-1"></a><span class="co"># FUNCTIONS</span></span>
-<span id="cb24-103"><a href="#cb24-103" aria-hidden="true" tabindex="-1"></a><span class="do">#################################</span></span>
-<span id="cb24-104"><a href="#cb24-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-105"><a href="#cb24-105" aria-hidden="true" tabindex="-1"></a>generate_intermediate_chords <span class="ot">&lt;-</span> <span class="cf">function</span>(start,</span>
-<span id="cb24-106"><a href="#cb24-106" aria-hidden="true" tabindex="-1"></a>                                         target,</span>
-<span id="cb24-107"><a href="#cb24-107" aria-hidden="true" tabindex="-1"></a>                                         steps,</span>
-<span id="cb24-108"><a href="#cb24-108" aria-hidden="true" tabindex="-1"></a>                                         chord_similarity_matrix</span>
-<span id="cb24-109"><a href="#cb24-109" aria-hidden="true" tabindex="-1"></a>                                         ){</span>
-<span id="cb24-110"><a href="#cb24-110" aria-hidden="true" tabindex="-1"></a>  ordered_similarities <span class="ot">&lt;-</span> <span class="fu">sort</span>(chord_similarity_matrix[start,],<span class="at">decreasing =</span>T)</span>
-<span id="cb24-111"><a href="#cb24-111" aria-hidden="true" tabindex="-1"></a>  target_id <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">names</span>(ordered_similarities) <span class="sc">==</span> target)</span>
-<span id="cb24-112"><a href="#cb24-112" aria-hidden="true" tabindex="-1"></a>  progression <span class="ot">&lt;-</span> ordered_similarities[<span class="fu">floor</span>(<span class="fu">seq</span>(<span class="dv">1</span>,target_id,<span class="at">length.out =</span> <span class="dv">2</span><span class="sc">+</span>steps ))]</span>
-<span id="cb24-113"><a href="#cb24-113" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(progression)</span>
-<span id="cb24-114"><a href="#cb24-114" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb24-115"><a href="#cb24-115" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-116"><a href="#cb24-116" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_intermediate_chords</span>(<span class="st">"C7"</span>,<span class="st">"G7"</span>, <span class="at">steps =</span> <span class="dv">3</span>, second_order_chords)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb24-98"><a href="#cb24-98" aria-hidden="true" tabindex="-1"></a><span class="do">#################################</span></span>
+<span id="cb24-99"><a href="#cb24-99" aria-hidden="true" tabindex="-1"></a><span class="co"># FUNCTIONS</span></span>
+<span id="cb24-100"><a href="#cb24-100" aria-hidden="true" tabindex="-1"></a><span class="do">#################################</span></span>
+<span id="cb24-101"><a href="#cb24-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-102"><a href="#cb24-102" aria-hidden="true" tabindex="-1"></a>generate_intermediate_chords <span class="ot">&lt;-</span> <span class="cf">function</span>(start,</span>
+<span id="cb24-103"><a href="#cb24-103" aria-hidden="true" tabindex="-1"></a>                                         target,</span>
+<span id="cb24-104"><a href="#cb24-104" aria-hidden="true" tabindex="-1"></a>                                         steps,</span>
+<span id="cb24-105"><a href="#cb24-105" aria-hidden="true" tabindex="-1"></a>                                         chord_similarity_matrix</span>
+<span id="cb24-106"><a href="#cb24-106" aria-hidden="true" tabindex="-1"></a>){</span>
+<span id="cb24-107"><a href="#cb24-107" aria-hidden="true" tabindex="-1"></a>  ordered_similarities <span class="ot">&lt;-</span> <span class="fu">sort</span>(chord_similarity_matrix[start,],<span class="at">decreasing =</span>T)</span>
+<span id="cb24-108"><a href="#cb24-108" aria-hidden="true" tabindex="-1"></a>  target_id <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">names</span>(ordered_similarities) <span class="sc">==</span> target)</span>
+<span id="cb24-109"><a href="#cb24-109" aria-hidden="true" tabindex="-1"></a>  progression <span class="ot">&lt;-</span> ordered_similarities[<span class="fu">floor</span>(<span class="fu">seq</span>(<span class="dv">1</span>,target_id,<span class="at">length.out =</span> <span class="dv">2</span><span class="sc">+</span>steps ))]</span>
+<span id="cb24-110"><a href="#cb24-110" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(progression)</span>
+<span id="cb24-111"><a href="#cb24-111" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-112"><a href="#cb24-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-113"><a href="#cb24-113" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_intermediate_chords</span>(<span class="st">"C7"</span>,<span class="st">"G7"</span>, <span class="at">steps =</span> <span class="dv">3</span>, second_order_chords)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>       C7      Gsus  D13susb9   Em7(11)        G7 
@@ -1104,6 +1101,7 @@ C melodic minor      Em (add 9)
 <p>That’s good enough for now. I have a bunch more things I’d want to add to this function</p>
 <ul>
 <li>add option to print more choices (near neighbors)</li>
+<li>add option to choose chords with X number of notes</li>
 </ul>
 <section id="listening-to-a-progression" class="level3">
 <h3 class="anchored" data-anchor-id="listening-to-a-progression">listening to a progression</h3>

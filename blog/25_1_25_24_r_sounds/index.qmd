@@ -765,9 +765,6 @@ I need to clean up a bunch of things. Ideally, I want a function that takes a ch
 - not yet implemented, search by synonym
 
 ```{r}
-###################
-# load chord vectors and pre-process
-###################
 
 library(tidyverse)
 # pre-processing to get the chord vectors
@@ -789,23 +786,23 @@ keys <- c("C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B")
 # loop through the keys, permute the matrix to get the chords in the next key
 # add the permuted matrix to new rows in the overall chord_matrix
 for (i in 1:length(keys)) {
-  
+
   if (i == 1) {
     # initialize chord_matrix with C matrix
     chord_matrix <- c_chord_matrix
-    
+
   } else {
     #permute the matrix as a function of iterator
     new_matrix <- cbind(c_chord_matrix[, (14-i):12],c_chord_matrix[, 1:(13-i)] )
-    
+
     # rename the rows with the new key
     new_names <- gsub("C", keys[i], c_chord_excel[,3])
     row.names(new_matrix) <- new_names
-    
+
     # append the new_matrix to chord_matrix
     chord_matrix <- rbind(chord_matrix,new_matrix)
-  
-    }
+
+  }
 }
 
 chord_properties <- tibble(
@@ -816,38 +813,39 @@ chord_properties <- tibble(
   database_chord = FALSE
 )
 
+first_order <- lsa::cosine(t(chord_matrix))
+
 # find repeats and build synonym list
 repeat_indices <- c()
-chord_names <- list()
 
 first_occurrence <- c()
 
-for(i in 1:dim(first_order)[1]){
+for(i in 1:dim(chord_matrix)[1]){
   # get the current row
   evaluate_row <- first_order[i,]
-  
+
   # don't count the current item as a repeat
   evaluate_row[i] <- 0
-  
+
   # repeats are the ids for any other 1s found
   repeats <- which(evaluate_row == 1 )
-  
+
   if(length(repeats) == 0){
   }
-  
+
   if(length(repeats) > 0){
     #add to list of repeat items
     repeat_indices <- c(repeat_indices,repeats)
-    
+
     # add synonyms
-    chord_properties$synonyms[i] <- list(synonyms = row.names(first_order)[repeats])
+    chord_properties$synonyms[i] <- list(synonyms = row.names(chord_matrix)[repeats])
   }
-  
-   if(i %in% first_occurrence == FALSE){
-     if(i %in% repeat_indices == FALSE){
-       first_occurrence <- c(first_occurrence,i)
-       chord_properties$database_chord[i] <- TRUE
-     }
+
+  if(i %in% first_occurrence == FALSE){
+    if(i %in% repeat_indices == FALSE){
+      first_occurrence <- c(first_occurrence,i)
+      chord_properties$database_chord[i] <- TRUE
+    }
   }
 }
 
@@ -873,7 +871,7 @@ generate_intermediate_chords <- function(start,
                                          target,
                                          steps,
                                          chord_similarity_matrix
-                                         ){
+){
   ordered_similarities <- sort(chord_similarity_matrix[start,],decreasing =T)
   target_id <- which(names(ordered_similarities) == target)
   progression <- ordered_similarities[floor(seq(1,target_id,length.out = 2+steps ))]
@@ -887,6 +885,7 @@ generate_intermediate_chords("C7","G7", steps = 3, second_order_chords)
 That's good enough for now. I have a bunch more things I'd want to add to this function
 
 - add option to print more choices (near neighbors)
+- add option to choose chords with X number of notes
 
 ### listening to a progression
 
