@@ -118,6 +118,28 @@ Starting on the different inversions is interesting. When I'm really into a jam,
 
 Found a lead sheet for Nate Smith's Retold. Love this song. Challenging 9/8 rhythm. Messed about with this for a while.
 
+## 1/26
+
+More retold
+
+## 1/27
+
+Thinking more about symmetry, scales, chords and the circle of fifths. 
+
+- Started on C. 
+  - add G and F, the next notes going clock-wise or anti-clockwise
+    - This creates Csus, F (add 9), Gsus7 (without the iii or V)
+  - add D and Bb
+    - scale = C D F G Bb (a 5 note scale)
+  - add A and Eb
+    - scale = C D Eb F G A Bb (7 note scale)
+  - add E and Ab
+    - scale = C D Eb E F G Ab A Bb (9 note scale)
+    - messed about with building chords here
+    - Chords with C (F Bb Eb Ab) are built off the anti-clockwise circle of fifths
+    - Chords with C (G D A E) are built off the clockwise circle
+    
+
 
 
 
