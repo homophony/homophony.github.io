@@ -4541,7 +4541,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 </ul></li>
 <li>add A and Eb
 <ul>
-<li>scale = C D Eb F G A Bb (7 note scale)</li>
+<li>scale = C D Eb F G A Bb (7 note scale) Ends up as Bb major (2 fifths down from C)</li>
 </ul></li>
 <li>add E and Ab
 <ul>

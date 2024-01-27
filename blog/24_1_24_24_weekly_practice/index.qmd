@@ -132,7 +132,7 @@ Thinking more about symmetry, scales, chords and the circle of fifths.
   - add D and Bb
     - scale = C D F G Bb (a 5 note scale)
   - add A and Eb
-    - scale = C D Eb F G A Bb (7 note scale)
+    - scale = C D Eb F G A Bb (7 note scale) Ends up as Bb major (2 fifths down from C)
   - add E and Ab
     - scale = C D Eb E F G Ab A Bb (9 note scale)
     - messed about with building chords here
