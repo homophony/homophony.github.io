@@ -17,6 +17,218 @@
 <generator>quarto-1.4.549</generator>
 <lastBuildDate>Sun, 28 Jan 2024 05:00:00 GMT</lastBuildDate>
 <item>
+  <title>Week of 1/28 - 2/3 daily practice post</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/28_1_28_24_weekly_practice/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> set_seed</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Image</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> random</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ssl</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#locate library</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mps"</span>)</span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"max"</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"architecture drawing piano. constructing a piano. cartoon. retro 80s. blueprint."</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>):</span>
+<span id="cb1-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]:</span>
+<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span></span>
+<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-29">    set_seed(seed)</span>
+<span id="cb1-30">    </span>
+<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>num_steps)</span>
+<span id="cb1-32">    </span>
+<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpeg"</span></span>
+<span id="cb1-34">    </span>
+<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/28_1_28_24_weekly_practice/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>architecture drawing piano. constructing a piano. cartoon. retro 80s. blueprint. - Dreamshaper v7</p>
+</div></div><section id="section" class="level2">
+<h2 class="anchored" data-anchor-id="section">1/28</h2>
+<p>I suspect practice this week will be inspired by circle of fifths symmetry (as discussed in some previous posts) and <a href="https://homophony.quest/blog/27_1_28_24_symmetry/">concepts of chords as vectors that go in a direction in chord space</a>.</p>
+<p>Sus practice.</p>
+<ul>
+<li>Drone on a C note
+<ul>
+<li>add one note from each side of the circle of fifths (F and G)</li>
+<li>Play the C sus chord in a droney way across the keyboard spattering Cs and Fs and Gs everywhere</li>
+</ul></li>
+<li>Drone around the Circle of fifths.
+<ul>
+<li>transition to the next sus chord going clockwise (start playing G with C and D around it, then start playing D with G and A around it)</li>
+<li>do the same thing but going anti-clockwise</li>
+<li>get used to the sus</li>
+</ul></li>
+</ul>
+<p>Rotate the fifth pairs, keep the drone the same</p>
+<ul>
+<li>Drone on a C note
+<ul>
+<li>add the F G around the C note</li>
+<li>keep the C note, but start moving the other notes around the circle of the fifths.</li>
+<li>F G -&gt; C D -&gt; G A -&gt; D E -&gt; etc.</li>
+</ul></li>
+</ul>
+<p>Keep the fifth pairs the same, rotate the drone</p>
+<ul>
+<li>Drone on a C, add the F and G.
+<ul>
+<li>keep playing F and G, but rotate C through the circle of fifths</li>
+<li>CFG -&gt; FFG -&gt; BbFG -&gt; EbFG -&gt; etc.</li>
+</ul></li>
+</ul>
+<p>Throughout these exercises, try to keep track of what the note relationships are in whichever scale is considered the center.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>piano practice</category>
+  <guid>https://homophony.quest/blog/28_1_28_24_weekly_practice/</guid>
+  <pubDate>Sun, 28 Jan 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/28_1_28_24_weekly_practice/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
+<item>
   <title>Symmetry, high-dimensional chord space, the circle of fifths, and Sunday morning</title>
   <dc:creator>Matt Crump</dc:creator>
   <link>https://homophony.quest/blog/27_1_28_24_symmetry/</link>
@@ -187,6 +399,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <p>Yesterday, I managed to eke out a musical idea from this analysis that I had fun playing on the piano, and this post will attempt to describe how this idea came from the analysis, and also what the idea is.</p>
 <section id="visualizing-chord-space" class="level2">
 <h2 class="anchored" data-anchor-id="visualizing-chord-space">Visualizing chord space</h2>
+<p>Skipping over some details, I computed the cosine similarity between every chord in my database and every other chord. This results in a 756 x756 similarity matrix. With a few tricks (multi-dimensional scaling in this case) it’s possible to visualize the similarity relationships between chords in a 2-dimensional space. If I add all the chords into the visualization it get’s too hard to read. Here’s an example with several chords taken out to make it easier to look at it.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
@@ -808,8 +1021,55 @@ font-style: inherit;">theme_classic</span>()</span>
 </div>
 </div>
 </div>
+<p>The circle of fifths pops out right away. I put slightly larger dots on the location where individual notes are located in the space. At the bottom is the C note, and then going anti-clockwise we find F, Bb, Eb etc., and going clockwise we get G, D, A, etc.</p>
+</section>
+<section id="chord-location-based-on-note-vectors" class="level2">
+<h2 class="anchored" data-anchor-id="chord-location-based-on-note-vectors">Chord location based on note vectors</h2>
+<p>Each of the chords and notes is a point in the multi-dimensional chord space, represented here in a compressed 2-d form. Each point is also a vector representing a direction from the origin. For example, the next graph draws lines from the origin to the C, E, and G notes, showing their respective directions in the space. These notes make up a C major triad, and it is worth considering how the vectors for the individual notes relate to the vector for the chord.</p>
+<p><img src="https://homophony.quest/blog/27_1_28_24_symmetry/images/Cmajor.jpg" class="img-fluid"></p>
+<p>The C major triad vector is an equally weighted average of the sum of it’s note vectors. The point is roughly in the middle of the triangle between G, C, and E. Drawing a line from the origin to that point is where we find the C major triad.</p>
+<p>I’ve been looking for musical implications from this graph that offer new (to me) perspectives. Here’s what I’ve come up with so far.</p>
+</section>
+<section id="symmetrical-3-note-scale" class="level2">
+<h2 class="anchored" data-anchor-id="symmetrical-3-note-scale">Symmetrical 3 note scale</h2>
+<p>I’m starting on a C note, and playing Cs across the piano as a kind of drone note. Let’s say this establishes a tonal center in C. And, without any more information, I’m heading in the C direction in musical space.</p>
+<p>But, let’s say I want to branch out and add more notes, but also keep the tonal center on C. In the next several graphs I do this in steps by adding an additional note from the circle of fifths, in both directions, to preserve symmetry.</p>
+<p>For example, the next graph creates a simple 3 note scale by adding the G and F notes.</p>
+<p><img src="https://homophony.quest/blog/27_1_28_24_symmetry/images/3_note-01.jpg" class="img-fluid"></p>
+<p>Playing a drone C on the piano, and sprinkling in Gs and Fs sounds fun and very “major fifthy”. The CFG triad is a Csus chord (and the Csus chord is located where it should based on it’s constituent note elements). You also get a paired down Gsus7 (GCF) and Fadd9 (FCG) in this scale. The symmetry is fun in that you add notes, but are still going in the same direction.</p>
+<p>As I’m playing this type of thing on the piano, and thinking about every note as adding to an accumulating performance vector in chord space, I would have to play these notes (especially F and G) equally frequently to preserve the C direction. If I started playing more Fs, then I would be tilting the performance vector a little bit toward the F note. Musically, this seems like an invitation to start exploring the anti-clockwise direction in terms of the circle of fifths. For example, I could sneak in a Bb, which is the next note past F. This brings in C7sus vibes.</p>
+</section>
+<section id="symmetrical-5-note-scale" class="level2">
+<h2 class="anchored" data-anchor-id="symmetrical-5-note-scale">Symmetrical 5 note scale</h2>
+<p>I’m playing Csus (CFG) around the piano and want to two more notes to make it interesting. But, for now, let’s keep it symmetrical. So, I add D and Bb.</p>
+<p><img src="https://homophony.quest/blog/27_1_28_24_symmetry/images/5_note-01.jpg" class="img-fluid"></p>
+<p>Now I’m having fun droning on C, and sprinkling in F Bb and D G everywhere. The 5 note scale works as a C chord = C9sus (C D9 Fsus GV Bb7), or a Gm7sus chord (and more for the other notes). But, let’s keep going with the idea of adding more notes and keeping the direction symmetrical about C.</p>
+</section>
+<section id="note-symmetrical-scale" class="level2">
+<h2 class="anchored" data-anchor-id="note-symmetrical-scale">7 note symmetrical scale</h2>
+<p>Adding the next two notes (A and Eb), we get a 7 note scale. This scale is centered on C in terms of equal weighting the other notes on either side of the circle of fifths.</p>
+<p><img src="https://homophony.quest/blog/27_1_28_24_symmetry/images/7_note-01.jpg" class="img-fluid"></p>
+<p>Arranging the notes starting on C, gives: C D Eb F G A Bb, which is the same as a C dorian scale. Or, if I was hammering away on a Bb as the drone note to establish Bb as the tonal center, and then used these same notes (even though they are not symmetrical around Bb), we get the Bb major scale (ionian).</p>
+<p>Dare we go to a 9 note scale?</p>
+</section>
+<section id="note-symmetrical-scale-1" class="level2">
+<h2 class="anchored" data-anchor-id="note-symmetrical-scale-1">9 note symmetrical scale</h2>
+<p>Let’s do it by adding the E and Ab.</p>
+<p><img src="https://homophony.quest/blog/27_1_28_24_symmetry/images/9_note.jpg" class="img-fluid"></p>
+<p>This is a really fun scale to mess around with, and it’s what I’m spending time on right now.</p>
+<p>It’s big and harmonically rich, and helps me connect to understanding chords as compound vectors that go off in some direction in the circle of fifths.</p>
+<p>For example, I could play a 5 note C chord with CDFGBb, this type of chord is symmetrical about C.</p>
+<p>Which chords would I play for each note in the scale? There are options here, but let’s say I start with C Eb F Ab Bb (Cm7sus#5). This chord works, but it’s direction is centered about Bb. To keep a balance around C, I might want the next chord to shoot off on the other side of the circle of fifths. So, to play D, I could do EA D GC (D7sus (add 13)).</p>
+<p>Following that pattern, every other note has a chord that alternates between groups of notes from either side of the circle of fifths (about C).</p>
+<section id="chords-as-adding-fifths" class="level3">
+<h3 class="anchored" data-anchor-id="chords-as-adding-fifths">Chords as adding fifths</h3>
+<p>Another little practice I am doing is trying to get used to thinking of the above chords as adding notes in terms of the circle of fifths.</p>
+<p>For example, I’ll play a C, and think let’s add fifths symmetrically, so that means add FG, and then add BbD. Or, let’s say I want to go more minor, that would be playing a C and adding more fifths on the anti-clockwise side. C FBb G, or go further C FBb Eb G.</p>
+<p>When I play these chords I’m also playing them as arpeggios, but playing the notes in terms of the circle of fifths. This brings a sense of direction, and control over direction. Even with something simple like a triad with C, F, and G. I’ll start with C, and I could go F to G, or G to F. The first choice seems to nudge the feeling to one side or the other of the circle of fifths.</p>
+<p>I’m assuming that if I practice chords this way I’ll get better at sensing which direction I’m headed in, and what kind of tension is being built when the direction is ambiguous.</p>
 
 
+</section>
 </section>
 
  ]]></description>
@@ -10269,35 +10529,6 @@ Fairly quick to access aspects of sound control...sensitivity adjustments are gr
   <guid>https://homophony.quest/blog/10_12_30_23_Quantum_Freeloader/</guid>
   <pubDate>Sat, 30 Dec 2023 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/10_12_30_23_Quantum_Freeloader/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Breaking out of the 4 bar drum loop</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/9_12_29_23_morethan4/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/9_12_29_23_morethan4/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>A tape cassette robot playing a drum kit. Massive speakers in the background. Super funky beats - LCM_Dreamshaper_v7</p>
-</div></div><p>I have a really lazy habit with drum beats that I need to fix. It goes something like this: make a 4 bar beat, loop it, jam endlessly inside a 4 bar beat that gets boring and has no fills.</p>
-<p>Yesterday I had some fun recreating a 4 bar beat from Quantic’s “Life in the Rain”. Today, the plan is to make this into a 12-bar beat with a reasonable amount of variation and some simple fills.</p>
-<p>…Does some things in Ableton that didn’t take that long…Should do this kind of thing more often. Now I have a 12-bar drum part with a decent amount of variation. But, it’s on my upstairs computer and I need to get this into a new project on my downstairs computer. I’ve been using Ableton since forever and I don’t think I’ve ever tried to copy or import a midi track from one project to another. It must be possible. Going to play some music over these drums.</p>
-
-
-
- ]]></description>
-  <category>practice</category>
-  <guid>https://homophony.quest/blog/9_12_29_23_morethan4/</guid>
-  <pubDate>Fri, 29 Dec 2023 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/9_12_29_23_morethan4/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>

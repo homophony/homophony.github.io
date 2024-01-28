@@ -1,0 +1,113 @@
+---
+title: "Week of 1/28 - 2/3 daily practice post "
+author: "Matt Crump"
+date: 1/28/24
+description: "Keeping track of small practice exercises"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - piano practice
+execute: 
+  echo: true
+  message: false
+  warning: false
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "architecture drawing piano. constructing a piano. cartoon. retro 80s. blueprint."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+architecture drawing piano. constructing a piano. cartoon. retro 80s. blueprint. - Dreamshaper v7
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+## 1/28
+
+I suspect practice this week will be inspired by circle of fifths symmetry (as discussed in some previous posts) and [concepts of chords as vectors that go in a direction in chord space](https://homophony.quest/blog/27_1_28_24_symmetry/).
+
+Sus practice.
+
+- Drone on a C note
+  - add one note from each side of the circle of fifths (F and G)
+  - Play the C sus chord in a droney way across the keyboard spattering Cs and Fs and Gs everywhere
+- Drone around the Circle of fifths.
+  - transition to the next sus chord going clockwise (start playing G with C and D around it, then start playing D with G and A around it)
+  - do the same thing but going anti-clockwise
+  - get used to the sus
+  
+Rotate the fifth pairs, keep the drone the same
+
+- Drone on a C note
+  - add the F G around the C note
+  - keep the C note, but start moving the other notes around the circle of the fifths.
+  - F G -> C D -> G A -> D E -> etc.
+  
+Keep the fifth pairs the same, rotate the drone
+
+- Drone on a C, add the F and G.
+  - keep playing F and G, but rotate C through the circle of fifths
+  - CFG -> FFG -> BbFG -> EbFG -> etc.
+  
+Throughout these exercises, try to keep track of what the note relationships are in whichever scale is considered the center.
+  
+
+
+

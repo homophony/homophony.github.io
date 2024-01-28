@@ -265,7 +265,7 @@ Arranging the notes starting on C, gives: C D Eb F G A Bb, which is the same as 
 
 Dare we go to a 9 note scale?
 
-## 9 note symmetrical scale 
+## 9 note symmetrical scale
 
 Let's do it by adding the E and Ab.
 
@@ -273,7 +273,7 @@ Let's do it by adding the E and Ab.
 
 This is a really fun scale to mess around with, and it's what I'm spending time on right now.
 
-It's a big and harmonically rich, and helps me connect to understanding chords as compound vectors that go off in some direction in the circle of fifths.
+It's big and harmonically rich, and helps me connect to understanding chords as compound vectors that go off in some direction in the circle of fifths.
 
 For example, I could play a 5 note C chord with CDFGBb, this type of chord is symmetrical about C.
 
