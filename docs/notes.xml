@@ -15,7 +15,3480 @@
 <link>https://homophony.quest/notes.html</link>
 </image>
 <generator>quarto-1.4.549</generator>
-<lastBuildDate>Sun, 28 Jan 2024 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 29 Jan 2024 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>C major scale analysis</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/29_1_29_24_cmajor/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> set_seed</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Image</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> random</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ssl</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#locate library</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mps"</span>)</span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"max"</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Letter C. Brought to you by the letter C. C. Sesame Street. Muppets."</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>):</span>
+<span id="cb1-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]:</span>
+<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span></span>
+<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-29">    set_seed(seed)</span>
+<span id="cb1-30">    </span>
+<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>num_steps)</span>
+<span id="cb1-32">    </span>
+<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpeg"</span></span>
+<span id="cb1-34">    </span>
+<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/29_1_29_24_cmajor/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Letter C. Brought to you by the letter C. C. Sesame Street. Muppets. - Dreamshaper v7</p>
+</div></div><p>I’ve been representing chords as vectors and plotting them in 2-dimensional space to visualize similarity relationships.</p>
+<p>Some of the graphs in previous posts are very busy to look at, and it is difficult for me to appreciate what is going on. This post is about interpreting something very familiar, the C major scale, in terms of that similarity space.</p>
+<p>In two dimensions, the multi-dimensional scaling algorithm positions notes in terms of the circle of fifths. So, this analysis is similar to what you would get thinking about the C major scale using the circle of fifths. The major difference is the idea of “vectors” that go in a particular direction.</p>
+<p>Without further ado, here is a plot of all the notes, all of the notes in the C major scale, and the triad chords from the C major scale.</p>
+<section id="c-major-scale-components-in-vector-space" class="level2">
+<h2 class="anchored" data-anchor-id="c-major-scale-components-in-vector-space">C major scale components in vector space</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb2-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># pre-processing to get the chord vectors</span></span>
+<span id="cb2-3"></span>
+<span id="cb2-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># load chord vectors</span></span>
+<span id="cb2-5">c_chord_excel <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> rio<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">import</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"chord_vectors.xlsx"</span>)</span>
+<span id="cb2-6"></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># grab feature vectors</span></span>
+<span id="cb2-8">c_chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.matrix</span>(c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">15</span>])</span>
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># assign row names to the third column containing chord names</span></span>
+<span id="cb2-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(c_chord_matrix) <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>]</span>
+<span id="cb2-12"></span>
+<span id="cb2-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># define all keys</span></span>
+<span id="cb2-14">keys <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Db"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Eb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Gb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Ab"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B"</span>)</span>
+<span id="cb2-15"></span>
+<span id="cb2-16"></span>
+<span id="cb2-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># the excel sheet only has chords in C</span></span>
+<span id="cb2-18"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># loop through the keys, permute the matrix to get the chords in the next key</span></span>
+<span id="cb2-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add the permuted matrix to new rows in the overall chord_matrix</span></span>
+<span id="cb2-20"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(keys)) {</span>
+<span id="cb2-21"></span>
+<span id="cb2-22">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> (i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) {</span>
+<span id="cb2-23">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># initialize chord_matrix with C matrix</span></span>
+<span id="cb2-24">    chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> c_chord_matrix</span>
+<span id="cb2-25"></span>
+<span id="cb2-26">  } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> {</span>
+<span id="cb2-27">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#permute the matrix as a function of iterator</span></span>
+<span id="cb2-28">    new_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cbind</span>(c_chord_matrix[, (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">14</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>i)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>],c_chord_matrix[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span>i)] )</span>
+<span id="cb2-29"></span>
+<span id="cb2-30">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># rename the rows with the new key</span></span>
+<span id="cb2-31">    new_names <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gsub</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>, keys[i], c_chord_excel[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>])</span>
+<span id="cb2-32">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(new_matrix) <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> new_names</span>
+<span id="cb2-33"></span>
+<span id="cb2-34">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># append the new_matrix to chord_matrix</span></span>
+<span id="cb2-35">    chord_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbind</span>(chord_matrix,new_matrix)</span>
+<span id="cb2-36"></span>
+<span id="cb2-37">  }</span>
+<span id="cb2-38">}</span>
+<span id="cb2-39"></span>
+<span id="cb2-40">chord_properties <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(</span>
+<span id="cb2-41">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(c_chord_excel<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>type,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(keys)),</span>
+<span id="cb2-42">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">key =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(keys, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">each =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(c_chord_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]),</span>
+<span id="cb2-43">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">chord_names  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(chord_matrix),</span>
+<span id="cb2-44">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">synonyms =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>),</span>
+<span id="cb2-45">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">database_chord =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span></span>
+<span id="cb2-46">)</span>
+<span id="cb2-47"></span>
+<span id="cb2-48">first_order <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t</span>(chord_matrix))</span>
+<span id="cb2-49"></span>
+<span id="cb2-50"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># find repeats and build synonym list</span></span>
+<span id="cb2-51">repeat_indices <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb2-52"></span>
+<span id="cb2-53">first_occurrence <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>()</span>
+<span id="cb2-54"></span>
+<span id="cb2-55"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(chord_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]){</span>
+<span id="cb2-56">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># get the current row</span></span>
+<span id="cb2-57">  evaluate_row <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> first_order[i,]</span>
+<span id="cb2-58"></span>
+<span id="cb2-59">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># don't count the current item as a repeat</span></span>
+<span id="cb2-60">  evaluate_row[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb2-61"></span>
+<span id="cb2-62">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># repeats are the ids for any other 1s found</span></span>
+<span id="cb2-63">  repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(evaluate_row <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> )</span>
+<span id="cb2-64"></span>
+<span id="cb2-65">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(repeats) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>){</span>
+<span id="cb2-66">  }</span>
+<span id="cb2-67"></span>
+<span id="cb2-68">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(repeats) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>){</span>
+<span id="cb2-69">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#add to list of repeat items</span></span>
+<span id="cb2-70">    repeat_indices <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(repeat_indices,repeats)</span>
+<span id="cb2-71"></span>
+<span id="cb2-72">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add synonyms</span></span>
+<span id="cb2-73">    chord_properties<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>synonyms[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">synonyms =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">row.names</span>(chord_matrix)[repeats])</span>
+<span id="cb2-74">  }</span>
+<span id="cb2-75"></span>
+<span id="cb2-76">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> first_occurrence <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>){</span>
+<span id="cb2-77">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> repeat_indices <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>){</span>
+<span id="cb2-78">      first_occurrence <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(first_occurrence,i)</span>
+<span id="cb2-79">      chord_properties<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>database_chord[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb2-80">    }</span>
+<span id="cb2-81">  }</span>
+<span id="cb2-82">}</span>
+<span id="cb2-83"></span>
+<span id="cb2-84">chord_properties <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_properties <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-85">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">num_notes =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rowSums</span>(chord_matrix),</span>
+<span id="cb2-86">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">id =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(chord_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>])</span>
+<span id="cb2-87"></span>
+<span id="cb2-88"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># keep only unique chord, recompute similarities</span></span>
+<span id="cb2-89">chord_matrix_no_repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_matrix[first_occurrence,]</span>
+<span id="cb2-90">first_order_no_repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t</span>(chord_matrix_no_repeats))</span>
+<span id="cb2-91">second_order_no_repeats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lsa<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine</span>(first_order_no_repeats)</span>
+<span id="cb2-92"></span>
+<span id="cb2-93"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># remove scales and individual notes</span></span>
+<span id="cb2-94">only_chords <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> chord_properties <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb2-95">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(type<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"scale"</span>,</span>
+<span id="cb2-96">         type<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"key"</span>,</span>
+<span id="cb2-97">         database_chord <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb2-98"></span>
+<span id="cb2-99">first_order_chords <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> first_order_no_repeats[only_chords<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chord_names,</span>
+<span id="cb2-100">                                               only_chords<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chord_names]</span>
+<span id="cb2-101">second_order_chords <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> second_order_no_repeats[only_chords<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chord_names,</span>
+<span id="cb2-102">                                               only_chords<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chord_names]</span></code></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggrepel)</span>
+<span id="cb3-3">mds_first_order <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cmdscale</span>((first_order<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>))</span>
+<span id="cb3-4">mds_first_order <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as_tibble</span>(mds_first_order) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cbind</span>(chord_properties)</span>
+<span id="cb3-6"></span>
+<span id="cb3-7">mds_first_order <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> mds_first_order <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">key =</span> forcats<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">fct_relevel</span>(key,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Eb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Ab"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Db"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Gb"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bold_me =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">case_when</span>(key <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb3-10">                             key <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(type <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"key"</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C major triad"</span>,</span>
+<span id="cb3-12">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D minor triad"</span>,</span>
+<span id="cb3-13">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E minor triad"</span>,</span>
+<span id="cb3-14">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F major triad"</span>,</span>
+<span id="cb3-15">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G major triad"</span>,</span>
+<span id="cb3-16">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A minor triad"</span>,</span>
+<span id="cb3-17">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bdim"</span>,</span>
+<span id="cb3-18">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C major scale"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-19">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">V1 =</span> V1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb3-20">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">V2 =</span> V2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-21">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">line_V1 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">case_when</span>(chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C major triad"</span>,</span>
+<span id="cb3-22">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D minor triad"</span>,</span>
+<span id="cb3-23">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E minor triad"</span>,</span>
+<span id="cb3-24">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F major triad"</span>,</span>
+<span id="cb3-25">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G major triad"</span>,</span>
+<span id="cb3-26">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A minor triad"</span>,</span>
+<span id="cb3-27">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bdim"</span>,</span>
+<span id="cb3-28">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C major scale"</span>,</span>
+<span id="cb3-29">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C note"</span>,</span>
+<span id="cb3-30">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D note"</span>,</span>
+<span id="cb3-31">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E note"</span>,</span>
+<span id="cb3-32">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F note"</span>,</span>
+<span id="cb3-33">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G note"</span>,</span>
+<span id="cb3-34">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A note"</span>,</span>
+<span id="cb3-35">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B note"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> V1),</span>
+<span id="cb3-36">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">line_V2 =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">case_when</span>(chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C major triad"</span>,</span>
+<span id="cb3-37">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D minor triad"</span>,</span>
+<span id="cb3-38">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E minor triad"</span>,</span>
+<span id="cb3-39">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F major triad"</span>,</span>
+<span id="cb3-40">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G major triad"</span>,</span>
+<span id="cb3-41">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A minor triad"</span>,</span>
+<span id="cb3-42">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bdim"</span>,</span>
+<span id="cb3-43">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C major scale"</span>,</span>
+<span id="cb3-44">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C note"</span>,</span>
+<span id="cb3-45">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D note"</span>,</span>
+<span id="cb3-46">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E note"</span>,</span>
+<span id="cb3-47">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F note"</span>,</span>
+<span id="cb3-48">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G note"</span>,</span>
+<span id="cb3-49">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A note"</span>,</span>
+<span id="cb3-50">                                             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B note"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> V2))</span>
+<span id="cb3-51"></span>
+<span id="cb3-52">p1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(mds_first_order, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(V1, V2, </span>
+<span id="cb3-53">                                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> chord_names))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb3-54">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-55">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text_repel</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max.overlaps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-56">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb3-57">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb3-58">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb3-59">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> line_V1,</span>
+<span id="cb3-60">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> line_V2,</span>
+<span id="cb3-61">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> type))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb3-62">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_classic</span>() </span>
+<span id="cb3-63">p1</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/29_1_29_24_cmajor/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>It’s morning coffee time and my goal is to make observations about the C major scale from these kinds of graphs. A big theme for this analysis is to better understand “where I am going” in chord space when playing different chords or notes. Direction is denoted in the graph using lines and arrows.</p>
+<p>The graph shows the notes in C in the order of the circle of fifths = F C G D A E B (red lines). This is different from the order of white keys on the keyboard = C D E F G A B.</p>
+<p>The 7 notes in the scale are symmetrical about the D note. The green arrow shows the vector for the C major scale, which is created by adding all of the notes together. It points in the same direction as the D note. The C major scale (Ionian) is the same as D Dorian. D Dorian has symmetrical 5th components, there are three anti-clockwise (GCF) and three clockwise (AEB). The C major scale is asymmetrical, there is only one anti-clockwise 5th (F), and 5 clockwise 5ths (GDAEB).</p>
+<p>In some sense the D dorian scale is comfortably balanced and locked into the D direction. The C scale is more off-kilter, like it is in the middle of taking step, it’s going somewhere.</p>
+</section>
+<section id="c-major-triad" class="level2">
+<h2 class="anchored" data-anchor-id="c-major-triad">C major triad</h2>
+<p>The C major triad has C, E, and G. The vector for the triad is in red. The triad vector is the average of the component vectors for C, E, and G. It’s closer to C and G, than E. The major triad is asymmetrical. It’s direction lands between a G note and a D note. C and G form a perfect fifth, and as a simultaneous pair, their potential for circular motion is ambiguous. Adding the E applies a torque in the clock-wise direction. Similarly, with CE or GE, adding the missing note in the triad twists anti-clockwise.</p>
+<p>It’s been a while since I took physics statics and dynamics…but, considering C major triad as a static body, with the elements, C, E, and G, as force vectors, does C major triad have an inherent spin? If we take the D note as the center position, the C major scale is a weighted a bit anti-clockwise from D. If we arranged everything so that D was 90 degrees, and then set up the triad, it looks like it would fall to the left. The curvy arrows represents the direction of spin.</p>
+<p>Playing more E (saying scattering Es around the piano) would add to the weight of the E vector, and apply force consistent with spinning the other way.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">Cmajor <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(mds_first_order, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(V1, V2, </span>
+<span id="cb4-2">                                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> chord_names))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb4-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text_repel</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max.overlaps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb4-6">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb4-7">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb4-8">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb4-9">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb4-11">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb4-12">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb4-13">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb4-14">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb4-16">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb4-17">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb4-18">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb4-19">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-20">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb4-21">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb4-22">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb4-23">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb4-24">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb4-25">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-26">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_curve</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb4-27">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb4-28">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">curvature =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb4-29">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb4-30">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb4-31">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>),</span>
+<span id="cb4-32">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-33">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_classic</span>()<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb4-34">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb4-35">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">plot.title =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>))</span>
+<span id="cb4-36">Cmajor</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/29_1_29_24_cmajor/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="d-minor-triad" class="level2">
+<h2 class="anchored" data-anchor-id="d-minor-triad">D minor triad</h2>
+<p>The D minor triad has D, F, and A. The vector for the triad is in red. It’s location is basically right on top of the C major triad, but it arrives here on the basis of completely different elements.</p>
+<p>Interesting that C major triad and D minor triads go in the same direction. The D minor notes are also the 9th, 11th, and 13th, notes in C extended chords.</p>
+<p>If the center point is the G note, the D minor triad appears biased to spin clock-wise.</p>
+<p>The overall pattern is similar to a major chord, 2 contiguous fifths (DA), and one that is 3 away (F). In both the major and the minor, the outlying fifth is the 3rd. However, in the minor chord, the root (D) is closer to the third, than in the major chord.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1">Dminor <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(mds_first_order, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(V1, V2, </span>
+<span id="cb5-2">                                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> chord_names))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb5-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text_repel</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max.overlaps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb5-6">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-7">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-8">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb5-9">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb5-11">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-12">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-13">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb5-14">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb5-16">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-17">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-18">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb5-19">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-20">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb5-21">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb5-22">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-23">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-24">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb5-25">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-26">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_curve</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb5-27">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb5-28">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">curvature =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb5-29">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-30">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-31">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>),</span>
+<span id="cb5-32">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-33">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_classic</span>()<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb5-34">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb5-35">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">plot.title =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>))</span>
+<span id="cb5-36">Dminor</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/29_1_29_24_cmajor/index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="g-major-and-a-minor" class="level2">
+<h2 class="anchored" data-anchor-id="g-major-and-a-minor">G major and A minor</h2>
+<p>The patterns for G major and A minor are similar to C major and D minor. The G major and A minor triads point in the same direction as each other.</p>
+<p>The G major triad is notionally centered on A, and wants to spin anti-clockwise.</p>
+<p>The A minor triad it notionally centered on D, but it wants to spin clockwise.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">Gmajor <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(mds_first_order, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(V1, V2, </span>
+<span id="cb6-2">                                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> chord_names))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb6-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text_repel</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max.overlaps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb6-6">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-7">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-8">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb6-9">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb6-11">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-12">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-13">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb6-14">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb6-16">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-17">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-18">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb6-19">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-20">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb6-21">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb6-22">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-23">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-24">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb6-25">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-26">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_curve</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb6-27">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb6-28">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">curvature =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb6-29">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-30">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-31">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>),</span>
+<span id="cb6-32">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-33">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_classic</span>()<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-34">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb6-35">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">plot.title =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>))</span>
+<span id="cb6-36"></span>
+<span id="cb6-37"></span>
+<span id="cb6-38">Aminor <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(mds_first_order, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(V1, V2, </span>
+<span id="cb6-39">                                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> chord_names))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb6-40">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-41">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text_repel</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max.overlaps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-42">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb6-43">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-44">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-45">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb6-46">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-47">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb6-48">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-49">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-50">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb6-51">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-52">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb6-53">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-54">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-55">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb6-56">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-57">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb6-58">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb6-59">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-60">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-61">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb6-62">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-63">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_curve</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb6-64">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb6-65">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">curvature =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb6-66">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-67">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb6-68">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>),</span>
+<span id="cb6-69">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-70">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_classic</span>()<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb6-71">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb6-72">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">plot.title =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>))</span>
+<span id="cb6-73"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#Aminor</span></span>
+<span id="cb6-74"></span>
+<span id="cb6-75"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(patchwork)</span>
+<span id="cb6-76"></span>
+<span id="cb6-77">Gmajor<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span>Aminor</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/29_1_29_24_cmajor/index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="1920"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="fmajor-eminor-and-bdim" class="level2">
+<h2 class="anchored" data-anchor-id="fmajor-eminor-and-bdim">Fmajor, Eminor and Bdim</h2>
+<p>There’s only three left. F major wants to spin anti-clockwise. E minor wants to spin clockwise. In terms of the other chords, F major and E minor are further from the notional center (D note), and they have a weaker orbit, compared to Cmajor/Dminor and Gmajor/Aminor, which are both closer to the center.</p>
+<p>The last chord is B diminished. It is symmetrical about the center (D note). It doesn’t have a spin, but is rather precariously balanced. The D note is keeping it centered, the other two could tip easily.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">Fmajor <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(mds_first_order, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(V1, V2, </span>
+<span id="cb7-2">                                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> chord_names))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb7-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text_repel</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max.overlaps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-6">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-7">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-8">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb7-9">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-11">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-12">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-13">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb7-14">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"A note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-16">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-17">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-18">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb7-19">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-20">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-21">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb7-22">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-23">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-24">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb7-25">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-26">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_curve</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-27">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb7-28">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">curvature =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb7-29">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-30">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-31">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>),</span>
+<span id="cb7-32">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-33">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_classic</span>()<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-34">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F major triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb7-35">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">plot.title =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>))</span>
+<span id="cb7-36"></span>
+<span id="cb7-37"></span>
+<span id="cb7-38">Eminor <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(mds_first_order, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(V1, V2, </span>
+<span id="cb7-39">                                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> chord_names))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb7-40">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-41">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text_repel</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max.overlaps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-42">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-43">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-44">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-45">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb7-46">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-47">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-48">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-49">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-50">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb7-51">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"G note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-52">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-53">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-54">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-55">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb7-56">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-57">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-58">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb7-59">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-60">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-61">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb7-62">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-63">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_curve</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-64">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb7-65">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">curvature =</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb7-66">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-67">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-68">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>),</span>
+<span id="cb7-69">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-70">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_classic</span>()<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-71">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"E minor triad"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb7-72">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">plot.title =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>))</span>
+<span id="cb7-73"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#Aminor</span></span>
+<span id="cb7-74"></span>
+<span id="cb7-75">Bdim <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(mds_first_order, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(V1, V2, </span>
+<span id="cb7-76">                                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> chord_names))<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb7-77">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-78">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text_repel</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max.overlaps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-79">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-80">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-81">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-82">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb7-83">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"B note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-84">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-85">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-86">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-87">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb7-88">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"D note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-89">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-90">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-91">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-92">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb7-93">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F note"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-94">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_segment</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrow</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">length =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unit</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cm"</span>)),</span>
+<span id="cb7-95">               <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,</span>
+<span id="cb7-96">               <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-97">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb7-98">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">xend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bdim"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V1),</span>
+<span id="cb7-99">                   <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">yend =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(mds_first_order,chord_names <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bdim"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>V2)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-100">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_classic</span>()<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb7-101">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggtitle</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bdim"</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb7-102">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">plot.title =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">40</span>))</span>
+<span id="cb7-103"></span>
+<span id="cb7-104"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(patchwork)</span>
+<span id="cb7-105"></span>
+<span id="cb7-106">Fmajor<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span>Eminor<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span>Bdim</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/29_1_29_24_cmajor/index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="2880"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="wanting-to-go-somewhere" class="level2">
+<h2 class="anchored" data-anchor-id="wanting-to-go-somewhere">Wanting to go somewhere</h2>
+<p>Sequences of chords can produce feelings of tension and resolution. For some sequences it really feels like a particular chord “wants to go” to the resolving chord.</p>
+<p>The above analysis of triad vectors puts a “spin” on each chord vector, showing which way the chord may want to spin in terms of the circle of fifths. Perhaps this is useful in terms of thinking about movement between chords.</p>
+</section>
+<section id="ii-v-i" class="level2">
+<h2 class="anchored" data-anchor-id="ii-v-i">ii-V-i</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">Dminor<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span>Gmajor<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span>Cmajor</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/29_1_29_24_cmajor/index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="2880"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>ii-V-i progressions are super common. The progression is consistent with the spin of these chords. D minor wants to go clockwise, and is met by a G major triad. G major triad wants to anti-clockwise, is met by a C major triad.</p>
+<p>ii-VI is an option too, but the A minor wants to keep spinning clockwise to E minor, and E minor wants to keep spinning in the same direction. However, there are no more chords in the clockwise direction, and spinning out more would quickly deteriorate the key center. E minor doesn’t “want to go” to F major, but going there is a good option for restoring balance to the center.</p>
+</section>
+<section id="c-chord-charts" class="level2">
+<h2 class="anchored" data-anchor-id="c-chord-charts">C chord charts</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">(Cmajor <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> Fmajor <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> Gmajor) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> (Dminor<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> Eminor <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> Aminor) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> (Bdim <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot_spacer</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot_spacer</span>())</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/29_1_29_24_cmajor/index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="2880"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="general-conclusions" class="level2">
+<h2 class="anchored" data-anchor-id="general-conclusions">General conclusions</h2>
+<p>Here are some of my general conclusions.</p>
+<p>A scale of notes, like C major scale, is a compound vector that has a direction in chord space. For example, C major happens to be centered on the D note, and goes in that direction. The triads for this scale reinforce the direction of the scale, as their individual chord vectors are arranged symmetrically about the same key center.</p>
+<p>Individual chords may have natural rotational motion with respect to the key center of the scale. The major chords want to spin anti-clockwise, and the minor chords want to spin clockwise. The diminished chord doesn’t have a spin.</p>
+<p>The spin of an individual chord can suggest a chord-progression. For example, D minor spins toward G major. G major spins back toward C major. These, oscillations are also symmetrical about the key center.</p>
+<p>The well-formedness of the key center can suggest a chord-progression. For example, E minor spins out of C major scale, but can be counter-balanced by F major triad.</p>
+</section>
+<section id="performance-vector-concept" class="level2">
+<h2 class="anchored" data-anchor-id="performance-vector-concept">Performance vector concept</h2>
+<p>This is a short digression. I’m thinking about applying these ideas to my playing. Let’s I’m going to improvise in the C major scale, using only the notes from the C major scale. And, let’s also say that I want to have my performance maintain symmetry about the key center (D note).</p>
+<p>From the chord vector space perspective, every time I play a note I am adding another feature into my “performance vector”. I’m thinking of this as a single vector that aggregates all the notes I play. If I played all the notes of the C major scale once, the performance vector would equal the “C major scale” vector shown in the first graph.</p>
+<p>If I then started playing a lot more Es and As, I would add more E and A features into the vector, and in that moment the direction of the vector would tilt away from center, in the clockwise direction. If I wanted to re-balance, I could play notes on the anti-clockwise side of D.</p>
+<p>Overall, it seems interesting to think about how chord-progressions and note choices in the context of improvisation add to the performance vector, and either keep it on target, spin it away (creating tension), or spin it back (creating resolution?).</p>
+<p>That’s it for now. Maybe I’ll add the 7th chords another day.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>chord similarity</category>
+  <category>datavis</category>
+  <category>circle of fifths</category>
+  <category>music theory</category>
+  <category>rstats</category>
+  <category>C major scale</category>
+  <category>movement</category>
+  <guid>https://homophony.quest/blog/29_1_29_24_cmajor/</guid>
+  <pubDate>Mon, 29 Jan 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/29_1_29_24_cmajor/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Week of 1/28 - 2/3 daily practice post</title>
   <dc:creator>Matt Crump</dc:creator>
@@ -10498,39 +13971,6 @@ Fairly quick to access aspects of sound control...sensitivity adjustments are gr
   <guid>https://homophony.quest/blog/11_1_7_24_saddle/</guid>
   <pubDate>Sat, 06 Jan 2024 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/11_1_7_24_saddle/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Quantum Freeloader</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/10_12_30_23_Quantum_Freeloader/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/10_12_30_23_Quantum_Freeloader/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Tape cassette robot shooting lasers of music at a concert with massive speakers and a universe in the sky. - LCM_Dreamshaper_v7</p>
-</div></div><p><audio controls=""> <source src="Quantum_freeloader_take_1_01.mp3" type="audio/wav"> </audio></p>
-<p>This is a mash-up of a few things I’ve been working on and covered in previous posts.</p>
-<ol type="1">
-<li><p>I spent some time learning solo parts from Wynton Kelly’s piano solo on Miles Davis’ Freddie Freeloader</p></li>
-<li><p>I did some beat recreation from Quantic’s Life in the Rain. This ended up as a midi track with lots of added notes and modified note probabilities to make the beat have more natural and interesting variation.</p></li>
-</ol>
-<p>The track is in the style of Freddie Freeloader. The chords and melody are different, but they are still variations of the general idea.</p>
-
-
-
- ]]></description>
-  <category>practice</category>
-  <guid>https://homophony.quest/blog/10_12_30_23_Quantum_Freeloader/</guid>
-  <pubDate>Sat, 30 Dec 2023 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/10_12_30_23_Quantum_Freeloader/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
