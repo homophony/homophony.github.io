@@ -85,29 +85,29 @@ I suspect practice this week will be inspired by circle of fifths symmetry (as d
 
 Sus practice.
 
-- Drone on a C note
-  - add one note from each side of the circle of fifths (F and G)
-  - Play the C sus chord in a droney way across the keyboard spattering Cs and Fs and Gs everywhere
-- Drone around the Circle of fifths.
-  - transition to the next sus chord going clockwise (start playing G with C and D around it, then start playing D with G and A around it)
-  - do the same thing but going anti-clockwise
-  - get used to the sus
-  
+-   Drone on a C note
+    -   add one note from each side of the circle of fifths (F and G)
+    -   Play the C sus chord in a droney way across the keyboard spattering Cs and Fs and Gs everywhere
+-   Drone around the Circle of fifths.
+    -   transition to the next sus chord going clockwise (start playing G with C and D around it, then start playing D with G and A around it)
+    -   do the same thing but going anti-clockwise
+    -   get used to the sus
+
 Rotate the fifth pairs, keep the drone the same
 
-- Drone on a C note
-  - add the F G around the C note
-  - keep the C note, but start moving the other notes around the circle of the fifths.
-  - F G -> C D -> G A -> D E -> etc.
-  
+-   Drone on a C note
+    -   add the F G around the C note
+    -   keep the C note, but start moving the other notes around the circle of the fifths.
+    -   F G -\> C D -\> G A -\> D E -\> etc.
+
 Keep the fifth pairs the same, rotate the drone
 
-- Drone on a C, add the F and G.
-  - keep playing F and G, but rotate C through the circle of fifths
-  - CFG -> FFG -> BbFG -> EbFG -> etc.
-  
+-   Drone on a C, add the F and G.
+    -   keep playing F and G, but rotate C through the circle of fifths
+    -   CFG -\> FFG -\> BbFG -\> EbFG -\> etc.
+
 Throughout these exercises, try to keep track of what the note relationships are in whichever scale is considered the center.
-  
 
+Practicing 5 note C chords that are constructed from rotations of neighboring 5ths.
 
-
+![](images/Untitled - January 28, 2024 20.25.39.jpg)
