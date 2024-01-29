@@ -633,3 +633,111 @@ Overall, it seems interesting to think about how chord progressions and note cho
 
 That's it for now. Maybe I'll add the 7th chords another day.
 
+---------------------
+
+## 12-bar blues analysis
+
+This probably deserves it's own post, but I want to quickly take a look at the 12 bar blues in terms of chord space analysis.
+
+The 12-bar blues starting with C7 is: C7 (4 bars), F7 (2 bars), C7 (2 bars), G7, F7, C7, G7. 
+
+I (4), IV(2), I(2), V, VI, I, V
+
+First, I'm curious what the performance vector for this series of chords looks like. I heart R indexing :)
+
+Here are the chord vectors for the 12-bar blues:
+
+```{r}
+blues_progression_matrix <-  chord_matrix[c(rep('C7',4),
+               rep('F7',2),
+               rep('C7',2),
+               'G7','F7','C7','G7'),]
+knitr::kable(blues_progression_matrix)
+```
+
+I'll take the column sum to compute the performance vector.
+
+```{r}
+blues_performance <- colSums(blues_progression_matrix)
+knitr::kable(t(blues_performance))
+```
+
+Next, I'd like to project this vector into the chord space and see where it is heading. 
+
+```{r,fig.height=10,fig.width=11.5}
+# row bind blues_performance
+
+chord_matrix <- rbind(chord_matrix,blues_performance)
+chord_properties <- rbind(chord_properties,tibble(type = "performance",
+                                                  key = NA,
+                                                  chord_names = "blues_performance",
+                                                  synonyms = NA,
+                                                  database_chord =NA,
+                                                  num_notes=NA,
+                                                  id = 757))
+
+first_order <- lsa::cosine(t(chord_matrix))
+
+mds_first_order <- cmdscale((first_order-1))
+mds_first_order <- as_tibble(mds_first_order) %>%
+  cbind(chord_properties)
+
+mds_first_order <- mds_first_order %>%
+  mutate(key = forcats::fct_relevel(key,"C","F","Bb","Eb","Ab","Db","Gb","B","E","A","D","G")) %>%
+  mutate(bold_me = case_when(key == "C" ~ 1,
+                             key != "C" ~ 0)) %>%
+  filter(type == "key" | chord_names %in% c("C7",
+                                             "F7",
+                                             "G7",
+                                            "blues_performance") == TRUE) %>%
+  mutate(V1 = V1*-1,
+         V2 = V2*-1) %>%
+  mutate(line_V1 = case_when(chord_names %in% c("C7",
+                                             "F7",
+                                             "G7",
+                                             "blues_performance",
+                                             "C note",
+                                             "D note",
+                                             "Eb note",
+                                             "E note",
+                                             "F note",
+                                             "G note",
+                                             "A note",
+                                             "Bb note",
+                                             "B note") ==TRUE ~ V1),
+         line_V2 = case_when(chord_names %in% c("C7",
+                                             "F7",
+                                             "G7",
+                                             "blues_performance",
+                                             "C note",
+                                             "D note",
+                                             "Eb note",
+                                             "E note",
+                                             "F note",
+                                             "G note",
+                                             "A note",
+                                             "Bb note",
+                                             "B note") ==TRUE ~ V2))
+
+p1 <- ggplot(mds_first_order, aes(V1, V2, 
+                                  label = chord_names))+ 
+  geom_point(color="black")+
+  geom_text_repel(size=8, max.overlaps = 500)+
+  geom_segment(arrow = arrow(length = unit(0.5, "cm")),
+               aes(x=0,
+                   y=0,
+                   xend = line_V1,
+                   yend = line_V2,
+                   color = type))+
+  theme_classic() +
+  coord_flip()
+p1
+```
+
+
+There three chords are centered around C7 (middle). I didn't draw the spin, but C7 (CEGBb) is loaded to spin anti-clockwise. And, that is what happens after four bars of C7, we take a spin anti-clockwise to F7. 
+
+In general, dominant 7th chords want to spin anti-clockwise. However, going to Bb7 from F7 would shift the center of the performance vector. The four bars of C7 at the beginning can be viewed as impressing C7 as the center into the performance vector. If F7 is a deviation for two bars, then it needs to be re-balanced. In 12 bar blues, we go back to C7 for 2 bars, which does some re-balancing. I haven't plotted this stuff, but the performance vector would still be tilted off C7. There would be six C7s and two F7s in the performance vector, which slightly tilts toward F7. As a result, the last four bars add in G7 twice, and C7 and F7 once each. The G7 counterbalances the F7s, and helps hold the center on C7. Nevertheless, there is one extra F7, as a result the performance vector is slightly off from C7 in the F direction.
+
+The very last G7 is a valiant attempt to rotate the performance vector back onto C7, but it doesn't quite get there by itself. It could use some extra notes to strengthen the force of the rotation. But, it seems palpable what the G7 is trying to do to the performance vector. It doesn't really matter that it doesn't get the performance vector to C7 because the 12-bar blues repeats, and the next chord is...C7, which resolves the question if there was any doubt.
+
