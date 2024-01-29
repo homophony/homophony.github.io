@@ -4174,11 +4174,14 @@ font-style: inherit;">coord_flip</span>()</span>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://homophony.quest/blog/29_1_29_24_cmajor/index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="960"></p>
+<p><img src="https://homophony.quest/blog/29_1_29_24_cmajor/index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="1104"></p>
 </figure>
 </div>
 </div>
 </div>
+<p>There are three chords are centered around C7 (middle). I didn’t draw the spin, but C7 (CEGBb) is loaded to spin anti-clockwise. And, that is what happens after four bars of C7, we take a spin anti-clockwise to F7.</p>
+<p>In general, dominant 7th chords want to spin anti-clockwise. However, going to Bb7 from F7 would shift the center of the performance vector. The four bars of C7 at the beginning can be viewed as impressing C7 as the center into the performance vector. If F7 is a deviation for two bars, then it needs to be re-balanced. In 12 bar blues, we go back to C7 for 2 bars, which does some re-balancing. I haven’t plotted this stuff, but the performance vector would still be tilted off C7. There would be six C7s and two F7s in the performance vector, which slightly tilts toward F7. As a result, the last four bars add in G7 twice, and C7 and F7 once each. The G7 counterbalances the F7s, and helps hold the center on C7. Nevertheless, there is one extra F7, as a result the performance vector is slightly off from C7 in the F direction.</p>
+<p>The very last G7 is a valiant attempt to rotate the performance vector back onto C7, but it doesn’t quite get there by itself. It could use some extra notes to strengthen the force of the rotation. But, it seems palpable what the G7 is trying to do to the performance vector. It doesn’t really matter that it doesn’t get the performance vector to C7 because the 12-bar blues repeats, and the next chord is…C7, which resolves the question if there was any doubt.</p>
 
 
 </section>
