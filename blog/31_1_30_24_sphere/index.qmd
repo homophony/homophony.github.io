@@ -1,0 +1,222 @@
+---
+title: "A sphere of fifths"
+author: "Matt Crump"
+date: 1/30/24
+description: "3d plot of chord space"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - chord similarity
+  - datavis
+  - circle of fifths
+  - music theory
+  - rstats
+execute: 
+  echo: true
+  message: false
+  warning: false
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "piano chord. 3d sphere. piano sphere. retro. 80s cartoon."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+piano chord. 3d sphere. piano sphere. retro. 80s cartoon. - Dreamshaper v7
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+My previous graphs of chord space have been 2-dimensional. I haven't looked at the eigendecomposition of the similarity matrix, so I'm not sure how many "meaningful" dimensions there are here. Nevertheless, there are more dimensions than implied by the 2d graph. I've been meaning to use MDS to create a 3d plot, and that's what I'm doing here, hopefully with plotly so it can be spun around interactively in the browser.
+
+
+## Chord sphere
+
+```{r}
+
+library(tidyverse)
+# pre-processing to get the chord vectors
+
+# load chord vectors
+c_chord_excel <- rio::import("chord_vectors.xlsx")
+
+# grab feature vectors
+c_chord_matrix <- as.matrix(c_chord_excel[,4:15])
+
+# assign row names to the third column containing chord names
+row.names(c_chord_matrix) <- c_chord_excel[,3]
+
+# define all keys
+keys <- c("C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B")
+
+
+# the excel sheet only has chords in C
+# loop through the keys, permute the matrix to get the chords in the next key
+# add the permuted matrix to new rows in the overall chord_matrix
+for (i in 1:length(keys)) {
+
+  if (i == 1) {
+    # initialize chord_matrix with C matrix
+    chord_matrix <- c_chord_matrix
+
+  } else {
+    #permute the matrix as a function of iterator
+    new_matrix <- cbind(c_chord_matrix[, (14-i):12],c_chord_matrix[, 1:(13-i)] )
+
+    # rename the rows with the new key
+    new_names <- gsub("C", keys[i], c_chord_excel[,3])
+    row.names(new_matrix) <- new_names
+
+    # append the new_matrix to chord_matrix
+    chord_matrix <- rbind(chord_matrix,new_matrix)
+
+  }
+}
+
+chord_properties <- tibble(
+  type = rep(c_chord_excel$type,length(keys)),
+  key = rep(keys, each = dim(c_chord_matrix)[1]),
+  chord_names  = row.names(chord_matrix),
+  synonyms = list(NA),
+  database_chord = FALSE
+)
+
+first_order <- lsa::cosine(t(chord_matrix))
+
+# find repeats and build synonym list
+repeat_indices <- c()
+
+first_occurrence <- c()
+
+for(i in 1:dim(chord_matrix)[1]){
+  # get the current row
+  evaluate_row <- first_order[i,]
+
+  # don't count the current item as a repeat
+  evaluate_row[i] <- 0
+
+  # repeats are the ids for any other 1s found
+  repeats <- which(evaluate_row == 1 )
+
+  if(length(repeats) == 0){
+  }
+
+  if(length(repeats) > 0){
+    #add to list of repeat items
+    repeat_indices <- c(repeat_indices,repeats)
+
+    # add synonyms
+    chord_properties$synonyms[i] <- list(synonyms = row.names(chord_matrix)[repeats])
+  }
+
+  if(i %in% first_occurrence == FALSE){
+    if(i %in% repeat_indices == FALSE){
+      first_occurrence <- c(first_occurrence,i)
+      chord_properties$database_chord[i] <- TRUE
+    }
+  }
+}
+
+chord_properties <- chord_properties %>%
+  mutate(num_notes = rowSums(chord_matrix),
+         id = 1:dim(chord_matrix)[1])
+
+# keep only unique chord, recompute similarities
+chord_matrix_no_repeats <- chord_matrix[first_occurrence,]
+first_order_no_repeats <- lsa::cosine(t(chord_matrix_no_repeats))
+second_order_no_repeats <- lsa::cosine(first_order_no_repeats)
+
+# remove scales and individual notes
+only_chords <- chord_properties %>%
+  filter(type!="scale",
+         type!="key",
+         database_chord == TRUE)
+
+first_order_chords <- first_order_no_repeats[only_chords$chord_names,
+                                               only_chords$chord_names]
+second_order_chords <- second_order_no_repeats[only_chords$chord_names,
+                                               only_chords$chord_names]
+```
+
+```{r, fig.height=10,fig.width=20}
+library(ggplot2)
+library(ggrepel)
+library(plotly)
+library(bslib)
+
+mds_first_order <- cmdscale((first_order-1),k=3)
+mds_first_order <- as_tibble(mds_first_order) %>%
+  cbind(chord_properties) %>%
+  mutate(bold_me = case_when(type == "key" ~ 8,
+                             type != "key" ~ 7)) %>%
+  filter(type %in% c("scale","other") == FALSE,
+         num_notes <= 4)
+
+fig <- plot_ly(mds_first_order, x = ~V1, y = ~V2, z = ~V3, color = ~type, mode='text', text = ~chord_names)
+
+fig |>
+  bslib::card(full_screen = TRUE)
+
+```
+
+I took out a bunch of chords so this was easier to look at. The plotly graph should go full screen and has some controls for spinning the sphere around and zooming in etc. If you click the names in the legend you can hide or show the corresponding chords, which can make it easier to see how things shake out.
+
+In terms of the circle of fifths, the new z dimension puts 6 of them up top, and 6 of them down below. Within the X-Y plane, there are two alternating circles of fifths (CDEGbAbBb, and FGABDbEb). 
+
+Neat to poke around here. 

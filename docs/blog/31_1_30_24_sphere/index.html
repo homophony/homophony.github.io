@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Matt Crump">
+<meta name="dcterms.date" content="2024-01-30">
+<meta name="description" content="3d plot of chord space">
+
+<title>Homophony - A sphere of fifths</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-C5FTH8QPGW"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
+</script>
+<script src="../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="../../site_libs/plotly-binding-4.10.4/plotly.js"></script>
+<script src="../../site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="../../site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="../../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="../../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="../../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="../../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+<link href="../../site_libs/htmltools-fill-0.5.7/fill.css" rel="stylesheet">
+<script src="../../site_libs/bslib-component-js-0.6.1/components.min.js"></script>
+<script src="../../site_libs/bslib-component-js-0.6.1/web-components.min.js" type="module"></script>
+<link href="../../site_libs/bslib-component-css-0.6.1/components.css" rel="stylesheet">
+<script src="../../site_libs/bslib-tag-require-0.6.1/tag-require.js"></script>
+
+
+<link rel="stylesheet" href="../../css/styles.css">
+<meta property="og:title" content="Homophony - A sphere of fifths">
+<meta property="og:description" content="3d plot of chord space">
+<meta property="og:image" content="https://homophony.quest/blog/31_1_30_24_sphere/cover.jpg">
+<meta property="og:site_name" content="Homophony">
+<meta name="twitter:title" content="Homophony - A sphere of fifths">
+<meta name="twitter:description" content="3d plot of chord space">
+<meta name="twitter:image" content="https://homophony.quest/blog/31_1_30_24_sphere/cover.jpg">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Homophony</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../notes.html"> 
+<span class="menu-text">Wall of Notes</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../notes.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://fosstodon.org/@MattCrumpLab"> <i class="bi bi-mastodon" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.youtube.com/channel/UCmzAb7gmWJBQ0zX3spqxrNQ"> <i class="bi bi-youtube" role="img" aria-label="Youtube">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://open.spotify.com/artist/21uZHA1jqXKOdkQmxR7ZcE?si=M2xiVdJpQG6OXuPW7URveg"> <i class="bi bi-spotify" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://music.apple.com/us/artist/homophony/1531902633"> <i class="bi bi-apple" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#chord-sphere" id="toc-chord-sphere" class="nav-link active" data-scroll-target="#chord-sphere">Chord sphere</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">A sphere of fifths</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">chord similarity</div>
+    <div class="quarto-category">datavis</div>
+    <div class="quarto-category">circle of fifths</div>
+    <div class="quarto-category">music theory</div>
+    <div class="quarto-category">rstats</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    3d plot of chord space
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Matt Crump </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 30, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> diffusers <span class="im">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> set_seed</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ssl</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>ssl._create_default_https_context <span class="op">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">#locate library</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>model_id <span class="op">=</span> <span class="st">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>pipeline <span class="op">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    pretrained_model_name_or_path <span class="op">=</span> <span class="st">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>pipeline <span class="op">=</span> pipeline.to(<span class="st">"mps"</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>pipeline.enable_attention_slicing(<span class="st">"max"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> <span class="st">"piano chord. 3d sphere. piano sphere. retro. 80s cartoon."</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> s <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">30</span>):</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> n <span class="kw">in</span> [<span class="dv">5</span>,<span class="dv">10</span>]:</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    seed <span class="op">=</span> s<span class="op">+</span><span class="dv">21</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    num_steps <span class="op">=</span> n<span class="op">+</span><span class="dv">1</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    set_seed(seed)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    image <span class="op">=</span> pipeline(prompt,height <span class="op">=</span> <span class="dv">1024</span>,width <span class="op">=</span> <span class="dv">1024</span>,num_images_per_prompt <span class="op">=</span> <span class="dv">1</span>,num_inference_steps<span class="op">=</span>num_steps)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    image_name <span class="op">=</span> <span class="st">"images/synth_</span><span class="sc">{}</span><span class="st">_</span><span class="sc">{}</span><span class="st">.jpeg"</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    image_save <span class="op">=</span> image.images[<span class="dv">0</span>].save(image_name.<span class="bu">format</span>(seed,num_steps))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>piano chord. 3d sphere. piano sphere. retro. 80s cartoon. - Dreamshaper v7</p>
+</div></div><p>My previous graphs of chord space have been 2-dimensional. I haven’t looked at the eigendecomposition of the similarity matrix, so I’m not sure how many “meaningful” dimensions there are here. Nevertheless, there are more dimensions than implied by the 2d graph. I’ve been meaning to use MDS to create a 3d plot, and that’s what I’m doing here, hopefully with plotly so it can be spun around interactively in the browser.</p>
+<section id="chord-sphere" class="level2">
+<h2 class="anchored" data-anchor-id="chord-sphere">Chord sphere</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># pre-processing to get the chord vectors</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># load chord vectors</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>c_chord_excel <span class="ot">&lt;-</span> rio<span class="sc">::</span><span class="fu">import</span>(<span class="st">"chord_vectors.xlsx"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># grab feature vectors</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>c_chord_matrix <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(c_chord_excel[,<span class="dv">4</span><span class="sc">:</span><span class="dv">15</span>])</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># assign row names to the third column containing chord names</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(c_chord_matrix) <span class="ot">&lt;-</span> c_chord_excel[,<span class="dv">3</span>]</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># define all keys</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>keys <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"C"</span>,<span class="st">"Db"</span>,<span class="st">"D"</span>,<span class="st">"Eb"</span>,<span class="st">"E"</span>,<span class="st">"F"</span>,<span class="st">"Gb"</span>,<span class="st">"G"</span>,<span class="st">"Ab"</span>,<span class="st">"A"</span>,<span class="st">"Bb"</span>,<span class="st">"B"</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># the excel sheet only has chords in C</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># loop through the keys, permute the matrix to get the chords in the next key</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># add the permuted matrix to new rows in the overall chord_matrix</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(keys)) {</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (i <span class="sc">==</span> <span class="dv">1</span>) {</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># initialize chord_matrix with C matrix</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    chord_matrix <span class="ot">&lt;-</span> c_chord_matrix</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    <span class="co">#permute the matrix as a function of iterator</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    new_matrix <span class="ot">&lt;-</span> <span class="fu">cbind</span>(c_chord_matrix[, (<span class="dv">14</span><span class="sc">-</span>i)<span class="sc">:</span><span class="dv">12</span>],c_chord_matrix[, <span class="dv">1</span><span class="sc">:</span>(<span class="dv">13</span><span class="sc">-</span>i)] )</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># rename the rows with the new key</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    new_names <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"C"</span>, keys[i], c_chord_excel[,<span class="dv">3</span>])</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">row.names</span>(new_matrix) <span class="ot">&lt;-</span> new_names</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># append the new_matrix to chord_matrix</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    chord_matrix <span class="ot">&lt;-</span> <span class="fu">rbind</span>(chord_matrix,new_matrix)</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>chord_properties <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">rep</span>(c_chord_excel<span class="sc">$</span>type,<span class="fu">length</span>(keys)),</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">key =</span> <span class="fu">rep</span>(keys, <span class="at">each =</span> <span class="fu">dim</span>(c_chord_matrix)[<span class="dv">1</span>]),</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">chord_names  =</span> <span class="fu">row.names</span>(chord_matrix),</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">synonyms =</span> <span class="fu">list</span>(<span class="cn">NA</span>),</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">database_chord =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>first_order <span class="ot">&lt;-</span> lsa<span class="sc">::</span><span class="fu">cosine</span>(<span class="fu">t</span>(chord_matrix))</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="co"># find repeats and build synonym list</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>repeat_indices <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>first_occurrence <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(chord_matrix)[<span class="dv">1</span>]){</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get the current row</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  evaluate_row <span class="ot">&lt;-</span> first_order[i,]</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  <span class="co"># don't count the current item as a repeat</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  evaluate_row[i] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>  <span class="co"># repeats are the ids for any other 1s found</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>  repeats <span class="ot">&lt;-</span> <span class="fu">which</span>(evaluate_row <span class="sc">==</span> <span class="dv">1</span> )</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(repeats) <span class="sc">==</span> <span class="dv">0</span>){</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(repeats) <span class="sc">&gt;</span> <span class="dv">0</span>){</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>    <span class="co">#add to list of repeat items</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>    repeat_indices <span class="ot">&lt;-</span> <span class="fu">c</span>(repeat_indices,repeats)</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add synonyms</span></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>    chord_properties<span class="sc">$</span>synonyms[i] <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">synonyms =</span> <span class="fu">row.names</span>(chord_matrix)[repeats])</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(i <span class="sc">%in%</span> first_occurrence <span class="sc">==</span> <span class="cn">FALSE</span>){</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(i <span class="sc">%in%</span> repeat_indices <span class="sc">==</span> <span class="cn">FALSE</span>){</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>      first_occurrence <span class="ot">&lt;-</span> <span class="fu">c</span>(first_occurrence,i)</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>      chord_properties<span class="sc">$</span>database_chord[i] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>chord_properties <span class="ot">&lt;-</span> chord_properties <span class="sc">%&gt;%</span></span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">num_notes =</span> <span class="fu">rowSums</span>(chord_matrix),</span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>         <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(chord_matrix)[<span class="dv">1</span>])</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a><span class="co"># keep only unique chord, recompute similarities</span></span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>chord_matrix_no_repeats <span class="ot">&lt;-</span> chord_matrix[first_occurrence,]</span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>first_order_no_repeats <span class="ot">&lt;-</span> lsa<span class="sc">::</span><span class="fu">cosine</span>(<span class="fu">t</span>(chord_matrix_no_repeats))</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>second_order_no_repeats <span class="ot">&lt;-</span> lsa<span class="sc">::</span><span class="fu">cosine</span>(first_order_no_repeats)</span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a><span class="co"># remove scales and individual notes</span></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>only_chords <span class="ot">&lt;-</span> chord_properties <span class="sc">%&gt;%</span></span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type<span class="sc">!=</span><span class="st">"scale"</span>,</span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>         type<span class="sc">!=</span><span class="st">"key"</span>,</span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>         database_chord <span class="sc">==</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>first_order_chords <span class="ot">&lt;-</span> first_order_no_repeats[only_chords<span class="sc">$</span>chord_names,</span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>                                               only_chords<span class="sc">$</span>chord_names]</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>second_order_chords <span class="ot">&lt;-</span> second_order_no_repeats[only_chords<span class="sc">$</span>chord_names,</span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>                                               only_chords<span class="sc">$</span>chord_names]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bslib)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>mds_first_order <span class="ot">&lt;-</span> <span class="fu">cmdscale</span>((first_order<span class="dv">-1</span>),<span class="at">k=</span><span class="dv">3</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>mds_first_order <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mds_first_order) <span class="sc">%&gt;%</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cbind</span>(chord_properties) <span class="sc">%&gt;%</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">bold_me =</span> <span class="fu">case_when</span>(type <span class="sc">==</span> <span class="st">"key"</span> <span class="sc">~</span> <span class="dv">8</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                             type <span class="sc">!=</span> <span class="st">"key"</span> <span class="sc">~</span> <span class="dv">7</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"scale"</span>,<span class="st">"other"</span>) <span class="sc">==</span> <span class="cn">FALSE</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>         num_notes <span class="sc">&lt;=</span> <span class="dv">4</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>fig <span class="ot">&lt;-</span> <span class="fu">plot_ly</span>(mds_first_order, <span class="at">x =</span> <span class="sc">~</span>V1, <span class="at">y =</span> <span class="sc">~</span>V2, <span class="at">z =</span> <span class="sc">~</span>V3, <span class="at">color =</span> <span class="sc">~</span>type, <span class="at">mode=</span><span class="st">'text'</span>, <span class="at">text =</span> <span class="sc">~</span>chord_names)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>fig <span class="sc">|&gt;</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  bslib<span class="sc">::</span><span class="fu">card</span>(<span class="at">full_screen =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="card bslib-card bslib-mb-spacing html-fill-item html-fill-container" data-bslib-card-init="" data-full-screen="false" data-require-bs-caller="card()" data-require-bs-version="5">
+<div class="card-body bslib-gap-spacing html-fill-item html-fill-container" style="margin-top:auto;margin-bottom:auto;flex:1 1 auto;">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-de33912c0fdf5ec41a96" style="width:100%;height:400px;"></div>
+<script type="application/json" data-for="htmlwidget-de33912c0fdf5ec41a96">{"x":{"visdat":{"54061a76edf":["function () ","plotlyVisDat"]},"cur_data":"54061a76edf","attrs":{"54061a76edf":{"x":{},"y":{},"z":{},"mode":"text","text":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20]}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"V1"},"yaxis":{"title":"V2"},"zaxis":{"title":"V3"}},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[3.6754507151208757e-17,0.14708745491499944,2.310398288195577e-16,-0.083329950699634697,-2.5015665961959773e-16,-0.0027557465110215188,-2.5927987832278584e-16,0.088103043669505512,1.4228623316157677e-16,-0.14984320142602062,1.0348382775257895e-16,0.17143299436914008,-4.6382732792241629e-17,-0.14708745491499894,3.2676534732010637e-16,0.083329950699635405,-2.9634973568447298e-16,0.0027557465110213258,-1.7391605169407509e-16,-0.088103043669504902,8.1947981723480366e-17,0.14984320142602078,4.1344338698695019e-17,-0.17143299436914014],"y":[2.5395671229765589e-16,-0.088103043669504694,-4.0743653974158643e-16,0.14984320142602048,1.9426178019816452e-16,-0.17143299436913959,3.5712314645985099e-17,0.14708745491499917,1.467384387851145e-16,-0.083329950699634753,-6.3248341696875314e-17,-0.0027557465110216515,2.5761640932521498e-16,0.088103043669505388,-3.628327072793328e-16,-0.14984320142602092,2.5653519637629417e-16,0.17143299436914058,-1.1749243843012779e-17,-0.14708745491499944,2.4998326408140813e-16,0.083329950699635544,-6.5631401592026472e-17,0.0027557465110214269],"z":[-0.46660535885451754,-0.46676964763402995,0.46660535885452337,0.46676964763403483,-0.46660535885451943,-0.46676964763403728,0.46660535885451138,0.46676964763403606,-0.46660535885450705,-0.46676964763403045,0.46660535885450966,0.46676964763402906,-0.46660535885451793,-0.46676964763403139,0.46660535885452314,0.46676964763403478,-0.46660535885451948,-0.46676964763403556,0.46660535885451127,0.4667696476340355,-0.46660535885450721,-0.46676964763403217,0.46660535885450993,0.46676964763402862],"mode":"text","text":["C7(b5)","C7(#5)","Db7(b5)","Db7(#5)","D7(b5)","D7(#5)","Eb7(b5)","Eb7(#5)","E7(b5)","E7(#5)","F7(b5)","F7(#5)","Gb7(b5)","Gb7(#5)","G7(b5)","G7(#5)","Ab7(b5)","Ab7(#5)","A7(b5)","A7(#5)","Bb7(b5)","Bb7(#5)","B7(b5)","B7(#5)"],"type":"scatter3d","name":"altered","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"line":{"color":"rgba(102,194,165,1)"},"frame":null},{"x":[-0.078756296866261968,0.22539282331616053,-0.31163552477872297,0.31437573904397703,-0.2328792279124608,0.088982915727817108,0.078756296866261899,-0.22539282331616003,0.31163552477872214,-0.31437573904397709,0.2328792279124608,-0.088982915727817372],"y":[-0.31437573904397714,0.23287922791246071,-0.088982915727816886,-0.07875629686626183,0.22539282331616048,-0.31163552477872275,0.31437573904397764,-0.23287922791246132,0.088982915727817413,0.078756296866261899,-0.22539282331616034,0.31163552477872303],"z":[-0.23533744406158788,0.23533744406160165,-0.23533744406160445,0.23533744406159637,-0.23533744406158597,0.23533744406158388,-0.23533744406159107,0.23533744406160073,-0.23533744406160312,0.23533744406159759,-0.23533744406158744,0.23533744406158286],"mode":"text","text":["C7","Db7","D7","Eb7","E7","F7","Gb7","G7","Ab7","A7","Bb7","B7"],"type":"scatter3d","name":"dominant 7th","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"line":{"color":"rgba(252,141,98,1)"},"frame":null},{"x":[0.30710991329191267,-0.22524002982548255,0.083017262264152514,0.081449913678699665,-0.22409265102776021,0.30668994350418277,-0.30710991329191273,0.22524002982548233,-0.083017262264152333,-0.0814499136787004,0.22409265102776021,-0.30668994350418216],"y":[-0.081449913678699748,0.2240926510277603,-0.30668994350418255,0.30710991329191295,-0.22524002982548266,0.083017262264152306,0.081449913678700331,-0.22409265102776058,0.30668994350418288,-0.30710991329191228,0.22524002982548288,-0.083017262264152625],"z":[-0.23126791479293088,0.23126791479293066,-0.23126791479292003,0.23126791479291117,-0.23126791479291284,0.23126791479292214,-0.23126791479292957,0.23126791479292957,-0.23126791479292078,0.231267914792912,-0.23126791479291223,0.23126791479292128],"mode":"text","text":["Cm7(b5)","Dbm7(b5)","Dm7(b5)","Ebm7(b5)","Em7(b5)","Fm7(b5)","Gbm7(b5)","Gm7(b5)","Abm7(b5)","Am7(b5)","Bbm7(b5)","Bm7(b5)"],"type":"scatter3d","name":"half-diminished 7th","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"line":{"color":"rgba(141,160,203,1)"},"frame":null},{"x":[0.0025821171599286416,0.20724033647752346,-0.36153290931667098,0.41895303106714138,-0.36411502647659971,0.211712694589617,-0.0025821171599297878,-0.20724033647752477,0.36153290931667176,-0.41895303106714143,0.36411502647660071,-0.21171269458961775],"y":[-0.41895303106714094,0.36411502647659982,-0.21171269458961658,0.0025821171599286351,0.20724033647752516,-0.36153290931667226,0.41895303106714205,-0.36411502647660055,0.21171269458961686,-0.0025821171599284803,-0.20724033647752474,0.36153290931667159],"z":[-0.28720274933164269,0.28720274933164047,-0.28720274933163148,0.28720274933162504,-0.28720274933162726,0.28720274933163892,-0.28720274933164402,0.28720274933164086,-0.28720274933162876,0.28720274933162465,-0.28720274933162937,0.28720274933163858],"mode":"text","text":["C note","Db note","D note","Eb note","E note","F note","Gb note","G note","Ab note","A note","Bb note","B note"],"type":"scatter3d","name":"key","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"line":{"color":"rgba(231,138,195,1)"},"frame":null},{"x":[-0.30612647646942281,-0.083452237587452294,-0.22476966460753986,0.31013171716858356,0.0019189792473506509,0.082787309036964032,-0.23103741470514574,0.080128468032368783,0.081377839133621122,0.090036823550089573,-0.14070555701207141,-0.22373786102656273,0.075089061764276696,0.16358070561981872,0.30614750374117033,-0.22009489361849363,-0.14262453625942229,-0.30652517006352648,0.30612647646942198,0.083452237587449796,0.22476966460754849,-0.31013171716858318,-0.0019189792473504751,-0.082787309036963824,0.23103741470514519,-0.080128468032368824,-0.081377839133620955,-0.090036823550089184,0.14070555701207177,0.22373786102656248,-0.075089061764276821,-0.16358070561981902,-0.3061475037411695,0.22009489361849369,0.1426245362594224,0.30652517006352692],"y":[-0.090036823550089726,0.14070555701207196,0.22373786102656271,-0.075089061764276765,-0.16358070561981922,-0.30614750374117011,0.22009489361849394,0.1426245362594224,0.3065251700635267,-0.30612647646942209,-0.083452237587450184,-0.22476966460754869,0.31013171716858362,0.0019189792473506039,0.082787309036964227,-0.23103741470514552,0.080128468032368727,0.081377839133620969,0.090036823550089462,-0.14070555701207163,-0.22373786102656215,0.075089061764276516,0.16358070561981891,0.30614750374116967,-0.22009489361849421,-0.1426245362594224,-0.30652517006352648,0.30612647646942209,0.083452237587450059,0.22476966460754896,-0.31013171716858368,-0.001918979247350188,-0.082787309036963699,0.23103741470514574,-0.080128468032368769,-0.081377839133621024],"z":[-0.0031765082125666646,-0.22858206717021129,-0.23366338815770893,0.0031765082125735063,0.22858206717021057,0.23366338815770929,-0.0031765082125747865,-0.22858206717021282,-0.23366338815770452,0.0031765082125716874,0.22858206717021498,0.23366338815770099,-0.0031765082125685684,-0.2285820671702169,-0.23366338815770377,0.0031765082125674651,0.22858206717021695,0.23366338815770837,-0.0031765082125688507,-0.2285820671702139,-0.23366338815770998,0.0031765082125716519,0.22858206717020974,0.23366338815770854,-0.0031765082125732075,-0.22858206717021004,-0.23366338815770363,0.0031765082125735935,0.22858206717021598,0.23366338815770238,-0.0031765082125709749,-0.22858206717021967,-0.23366338815770507,0.0031765082125657061,0.22858206717021598,0.23366338815770737],"mode":"text","text":["C∆7","C∆7(#5)","C∆7(b5)","Db∆7","Db∆7(#5)","Db∆7(b5)","D∆7","D∆7(#5)","D∆7(b5)","Eb∆7","Eb∆7(#5)","Eb∆7(b5)","E∆7","E∆7(#5)","E∆7(b5)","F∆7","F∆7(#5)","F∆7(b5)","Gb∆7","Gb∆7(#5)","Gb∆7(b5)","G∆7","G∆7(#5)","G∆7(b5)","Ab∆7","Ab∆7(#5)","Ab∆7(b5)","A∆7","A∆7(#5)","A∆7(b5)","Bb∆7","Bb∆7(#5)","Bb∆7(b5)","B∆7","B∆7(#5)","B∆7(b5)"],"type":"scatter3d","name":"major 7th","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"line":{"color":"rgba(166,216,84,1)"},"frame":null},{"x":[0.23063972089546339,-0.0043168916970113486,-0.22316264514546763,0.3908459314404259,-0.45380236604093199,0.39516282313743734,-0.23063972089546408,0.0043168916970110442,0.22316264514546821,-0.39084593144042545,0.45380236604093188,-0.39516282313743761],"y":[-0.39084593144042601,0.45380236604093194,-0.39516282313743756,0.23063972089546425,-0.0043168916970114822,-0.22316264514546777,0.3908459314404264,-0.4538023660409321,0.39516282313743795,-0.23063972089546386,0.0043168916970115767,0.22316264514546838],"z":[-0.0060266446147988102,0.0060266446148050917,-0.0060266446148009994,0.0060266446147916701,-0.0060266446147871173,0.0060266446147923649,-0.0060266446147985474,0.006026644614802578,-0.0060266446148004174,0.0060266446147934334,-0.0060266446147873619,0.0060266446147905313],"mode":"text","text":["Cm7","Dbm7","Dm7","Ebm7","Em7","Fm7","Gbm7","Gm7","Abm7","Am7","Bbm7","Bm7"],"type":"scatter3d","name":"minor 7th","marker":{"color":"rgba(255,217,47,1)","line":{"color":"rgba(255,217,47,1)"}},"textfont":{"color":"rgba(255,217,47,1)"},"error_y":{"color":"rgba(255,217,47,1)"},"error_x":{"color":"rgba(255,217,47,1)"},"line":{"color":"rgba(255,217,47,1)"},"frame":null},{"x":[-9.5643600089025745e-05,0.14388321796360926,0.28143481252864944,0.14432714586746706,-0.48736375071815358,-0.39386516751746647,0.56270396548252577,0.53786733560441236,-0.48726810711806434,-0.53774838548107629,0.28126915295387689,0.39354018973694532,9.5643600089042103e-05,-0.14388321796360948,-0.28143481252864938,-0.14432714586746689,0.48736375071815374,0.39386516751746653,-0.56270396548252544,-0.53786733560441213,0.48726810711806456,0.53774838548107617,-0.28126915295387672,-0.39354018973694549],"y":[-0.56270396548252677,-0.5378673356044128,0.48726810711806418,0.53774838548107595,-0.28126915295387639,-0.3935401897369451,-9.5643600089010322e-05,0.14388321796360945,0.28143481252864977,0.14432714586746709,-0.48736375071815402,-0.39386516751746631,0.56270396548252555,0.53786733560441224,-0.48726810711806556,-0.53774838548107595,0.28126915295387606,0.39354018973694538,9.5643600089340353e-05,-0.14388321796360934,-0.2814348125286496,-0.14432714586746698,0.48736375071815369,0.39386516751746675],"z":[0.14921488075522094,-0.0032884944208844791,-0.1492148807552198,0.0032884944208891793,0.14921488075521963,-0.0032884944208912358,-0.14921488075522038,0.0032884944208895106,0.14921488075522099,-0.0032884944208853256,-0.14921488075522008,0.0032884944208836763,0.14921488075522016,-0.0032884944208843069,-0.14921488075522046,0.0032884944208888354,0.14921488075522085,-0.003288494420891032,-0.14921488075522046,0.0032884944208897019,0.1492148807552198,-0.00328849442088547,-0.14921488075522019,0.0032884944208837891],"mode":"text","text":["Csus","C7sus","Dbsus","Db7sus","Dsus","D7sus","Ebsus","Eb7sus","Esus","E7sus","Fsus","F7sus","Gbsus","Gb7sus","Gsus","G7sus","Absus","Ab7sus","Asus","A7sus","Bbsus","Bb7sus","Bsus","B7sus"],"type":"scatter3d","name":"sus","marker":{"color":"rgba(229,196,148,1)","line":{"color":"rgba(229,196,148,1)"}},"textfont":{"color":"rgba(229,196,148,1)"},"error_y":{"color":"rgba(229,196,148,1)"},"error_x":{"color":"rgba(229,196,148,1)"},"line":{"color":"rgba(229,196,148,1)"},"frame":null},{"x":[-0.27748894596514906,0.10834808111969139,-0.39084593144042612,-0.0814499136787004,-0.37271792436994988,-0.057068476058306707,0.38250873715620487,0.095688501213411284,0.45380236604093144,0.22409265102776035,0.47839263083880434,0.24420999832557497,-0.38503562112840756,-0.27408542692143634,-0.39516282313743722,-0.30668994350418233,-0.45588241820939968,-0.36591564875789861,0.28439252136203697,0.3790413838287236,0.23063972089546395,0.30710991329191267,0.31121887977723922,0.3895744966076346,-0.10754667516325851,-0.38243350804112858,-0.0043168916970113295,-0.22524002982548236,-0.083164493839448766,-0.30884717269959255,-0.098116215794167655,0.28335288261531189,-0.22316264514546763,0.083017262264152514,-0.1671737510615649,0.14536449828205938,0.27748894596514889,-0.10834808111969232,0.39084593144042579,0.081449913678699581,0.37271792436995094,0.057068476058306616,-0.38250873715620459,-0.095688501213411353,-0.4538023660409321,-0.22409265102776035,-0.47839263083880429,-0.24420999832557455,0.38503562112840722,0.27408542692143667,0.39516282313743778,0.30668994350418277,0.45588241820939956,0.36591564875789923,-0.28439252136203691,-0.37904138382872271,-0.230639720895464,-0.30710991329191262,-0.311218879777239,-0.3895744966076341,0.10754667516325826,0.38243350804112802,0.0043168916970110381,0.22524002982548241,0.08316449383944903,0.30884717269959289,0.098116215794167683,-0.28335288261531233,0.22316264514546819,-0.0830172622641525,0.16717375106156507,-0.145364498282059],"y":[-0.28439252136203486,-0.3790413838287241,-0.23063972089546378,-0.30710991329191262,-0.31121887977723917,-0.38957449660763371,0.10754667516325812,0.38243350804112874,0.0043168916970113417,0.22524002982548297,0.083164493839448683,0.30884717269959244,0.098116215794168182,-0.28335288261531216,0.2231626451454681,-0.083017262264152569,0.16717375106156546,-0.14536449828205944,-0.27748894596514917,0.10834808111969238,-0.3908459314404259,-0.08144991367869979,-0.37271792436995127,-0.057068476058306367,0.3825087371562052,0.095688501213411062,0.45380236604093199,0.2240926510277601,0.47839263083880457,0.24420999832557422,-0.3850356211284075,-0.2740854269214365,-0.39516282313743711,-0.30668994350418272,-0.45588241820939984,-0.36591564875789917,0.28439252136203741,0.37904138382872321,0.2306397208954642,0.30710991329191284,0.3112188797772395,0.38957449660763399,-0.10754667516325857,-0.38243350804112858,-0.0043168916970116131,-0.22524002982548261,-0.083164493839448864,-0.30884717269959272,-0.098116215794167794,0.28335288261531211,-0.22316264514546791,0.083017262264152292,-0.16717375106156498,0.14536449828205955,0.27748894596514934,-0.10834808111969196,0.39084593144042645,0.081449913678700372,0.37271792436995099,0.057068476058306471,-0.38250873715620509,-0.095688501213411339,-0.45380236604093238,-0.22409265102776024,-0.47839263083880457,-0.24420999832557469,0.38503562112840761,0.27408542692143645,0.39516282313743795,0.30668994350418316,0.45588241820940023,0.36591564875789934],"z":[-0.14222073439920491,0.14013797480510698,0.0060266446147942453,0.23126791479291442,-0.23823988303501742,-0.0044122060977982124,0.14222073439921457,-0.14013797480510332,-0.0060266446147872951,-0.23126791479291187,0.23823988303502286,0.0044122060977991899,-0.14222073439921509,0.14013797480510984,0.0060266446147904332,0.23126791479292094,-0.2382398830350245,-0.0044122060977948427,0.14222073439920702,-0.14013797480511986,-0.0060266446147987304,-0.23126791479293077,0.2382398830350225,0.0044122060977915423,-0.14222073439919866,0.14013797480512094,0.0060266446148049138,0.23126791479293066,-0.23823988303501828,-0.0044122060977934054,0.14222073439919952,-0.14013797480511128,-0.0060266446148008945,-0.23126791479291997,0.23823988303501673,0.0044122060977991838,-0.14222073439920668,0.14013797480510509,0.0060266446147916085,0.23126791479291106,-0.23823988303501845,-0.0044122060978000147,0.14222073439921348,-0.14013797480510548,-0.00602664461478708,-0.23126791479291275,0.238239883035022,0.0044122060977971368,-0.14222073439921293,0.14013797480511131,0.0060266446147923215,0.23126791479292208,-0.23823988303502369,-0.0044122060977946648,0.14222073439920807,-0.14013797480511772,-0.0060266446147984815,-0.23126791479292955,0.23823988303502358,0.0044122060977935269,-0.14222073439920127,0.14013797480511947,0.0060266446148024211,0.2312679147929293,-0.23823988303501947,-0.0044122060977935338,0.1422207343991983,-0.14013797480511381,-0.0060266446148005423,-0.23126791479292069,0.23823988303501642,0.0044122060977980536],"mode":"text","text":["C major triad","C minor triad","C6","Cm6","C (add 9)","Cm (add 9)","Db major triad","Db minor triad","Db6","Dbm6","Db (add 9)","Dbm (add 9)","D major triad","D minor triad","D6","Dm6","D (add 9)","Dm (add 9)","Eb major triad","Eb minor triad","Eb6","Ebm6","Eb (add 9)","Ebm (add 9)","E major triad","E minor triad","E6","Em6","E (add 9)","Em (add 9)","F major triad","F minor triad","F6","Fm6","F (add 9)","Fm (add 9)","Gb major triad","Gb minor triad","Gb6","Gbm6","Gb (add 9)","Gbm (add 9)","G major triad","G minor triad","G6","Gm6","G (add 9)","Gm (add 9)","Ab major triad","Ab minor triad","Ab6","Abm6","Ab (add 9)","Abm (add 9)","A major triad","A minor triad","A6","Am6","A (add 9)","Am (add 9)","Bb major triad","Bb minor triad","Bb6","Bbm6","Bb (add 9)","Bbm (add 9)","B major triad","B minor triad","B6","Bm6","B (add 9)","Bm (add 9)"],"type":"scatter3d","name":"triads","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"line":{"color":"rgba(179,179,179,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
+<template>Expand</template>
+<span class="bslib-full-screen-enter badge rounded-pill"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;fill:currentColor;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg></span>
+</bslib-tooltip>
+<script data-bslib-card-init="">bslib.Card.initializeAllCards();</script>
+</div>
+</div>
+</div>
+<p>I took out a bunch of chords so this was easier to look at. The plotly graph should go full screen and has some controls for spinning the sphere around and zooming in etc. If you click the names in the legend you can hide or show the corresponding chords, which can make it easier to see how things shake out.</p>
+<p>In terms of the circle of fifths, the new z dimension puts 6 of them up top, and 6 of them down below. Within the X-Y plane, there are two alternating circles of fifths (CDEGbAbBb, and FGABDbEb).</p>
+<p>Neat to poke around here.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="CrumpLab/crumplab_comments" data-repo-id="R_kgDOJ0QrEQ" data-category="General" data-category-id="DIC_kwDOJ0QrEc4CXety" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark">
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+<p>Brought to you by Homophony, 2023</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://quarto.org">
+<p>Published with Quarto</p>
+</a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
