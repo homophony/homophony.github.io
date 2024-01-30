@@ -3630,15 +3630,8 @@ font-style: inherit;">library</span>(tidyr)</span>
 <span id="cb2-4"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(purrr)</span>
-<span id="cb2-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(ggplot2)</span>
-<span id="cb2-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(zeallot)</span>
-<span id="cb2-7"></span>
-<span id="cb2-8"></span>
-<span id="cb2-9">midifile <span class="ot" style="color: #003B4F;
+<span id="cb2-5"></span>
+<span id="cb2-6">midifile <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> MidiFramer<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -3647,8 +3640,8 @@ background-color: null;
 font-style: inherit;">new</span>(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Top Gun Theme.mid"</span>)</span>
-<span id="cb2-10"></span>
-<span id="cb2-11">knitr<span class="sc" style="color: #5E5E5E;
+<span id="cb2-7"></span>
+<span id="cb2-8">knitr<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
@@ -3832,8 +3825,8 @@ font-style: inherit;">10</span>,])</span></code></pre></div>
 <h2 class="anchored" data-anchor-id="writing-midi">Writing Midi</h2>
 <p>Haven’t tried this yet.</p>
 </section>
-<section id="synthesing-midi-to-wav-and-mp3" class="level2">
-<h2 class="anchored" data-anchor-id="synthesing-midi-to-wav-and-mp3">Synthesing midi to wav and mp3</h2>
+<section id="synthesizing-midi-to-wav-and-mp3" class="level2">
+<h2 class="anchored" data-anchor-id="synthesizing-midi-to-wav-and-mp3">Synthesizing midi to wav and mp3</h2>
 <p><a href="https://urswilke.github.io/raudiomate/">raudiomate</a></p>
 <p>also need <a href="https://www.fluidsynth.org">fluid synth</a></p>
 <p>And, apparently fluid synth needs sound fonts. Got this one <a href="https://member.keymusician.com/Member/FluidR3_GM/index.html" class="uri">https://member.keymusician.com/Member/FluidR3_GM/index.html</a></p>
@@ -3861,6 +3854,240 @@ font-style: inherit;">"out.mp3"</span>)</span></code></pre></div>
 </div>
 <p><audio controls=""> <source src="out.mp3" type="audio/wav"> </audio></p>
 <p>This all took way longer than I expected. Mostly fiddling with python packages and paths to things. But, I declare victory because it made the Top Gun theme song into an mp3.</p>
+<hr>
+</section>
+<section id="questions" class="level2">
+<h2 class="anchored" data-anchor-id="questions">Questions</h2>
+<p>I’ve only got 30 minutes right now, can I make this thing randomize notes?</p>
+<p>answer, close enough for now.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># trying stuff from the pyramidi docs</span></span>
+<span id="cb4-2"></span>
+<span id="cb4-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># load in a basic midi file</span></span>
+<span id="cb4-4">midi_file_string <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">system.file</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"extdata"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"test_midi_file.mid"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">package =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"pyramidi"</span>)</span>
+<span id="cb4-5"></span>
+<span id="cb4-6">mfr <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> MidiFramer<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">new</span>(midi_file_string)</span>
+<span id="cb4-7"></span>
+<span id="cb4-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># mfr has a bunch of midi dataframes in it</span></span>
+<span id="cb4-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#mfr$df_notes_wide[1:10]</span></span>
+<span id="cb4-10"></span>
+<span id="cb4-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># helper function</span></span>
+<span id="cb4-12">beats_to_ticks <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(notes_wide) {</span>
+<span id="cb4-13">  notes_wide <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-14">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb4-15">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ticks_note_on  =</span> b_note_on  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> ticks_per_beat,</span>
+<span id="cb4-16">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ticks_note_off =</span> b_note_off <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> ticks_per_beat</span>
+<span id="cb4-17">    )</span>
+<span id="cb4-18">}</span>
+<span id="cb4-19"></span>
+<span id="cb4-20">n_beats <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span></span>
+<span id="cb4-21">ticks_per_beat <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">960</span>L</span>
+<span id="cb4-22"></span>
+<span id="cb4-23"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#(b_note_on = (0:(n_beats-1) %/% 4) * 4)</span></span>
+<span id="cb4-24"></span>
+<span id="cb4-25">b_note_on <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>(n_beats<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">-1</span>)</span>
+<span id="cb4-26"></span>
+<span id="cb4-27"></span>
+<span id="cb4-28">notes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(</span>
+<span id="cb4-29">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">i_track =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb4-30">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">meta =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>,</span>
+<span id="cb4-31">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">note =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sample</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">60</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">64</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">67</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">72</span>), <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">16</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">replace=</span>T),</span>
+<span id="cb4-32">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">channel =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb4-33">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">i_note =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>n_beats,</span>
+<span id="cb4-34">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">velocity_note_on =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>,</span>
+<span id="cb4-35">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">velocity_note_off =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb4-36">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">b_note_on =</span> b_note_on,</span>
+<span id="cb4-37">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">b_note_off =</span> b_note_on <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb4-38">)</span>
+<span id="cb4-39"></span>
+<span id="cb4-40">mfr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">update_notes_wide</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">beats_to_ticks</span>(notes))</span>
+<span id="cb4-41"></span>
+<span id="cb4-42">df_notes_long <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pivot_long_notes</span>(mfr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>df_notes_wide)</span>
+<span id="cb4-43">df_midi_out <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">merge_midi_frames</span>(mfr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>df_meta, mfr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>df_notes_long, mfr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>df_not_notes)</span>
+<span id="cb4-44"></span>
+<span id="cb4-45">dfc2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> df_midi_out <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-46">        miditapyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nest_midi</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">repair_reticulate_conversion =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb4-47"></span>
+<span id="cb4-48">miditapyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write_midi</span>(dfc2, ticks_per_beat, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"test.mid"</span>)</span>
+<span id="cb4-49"></span>
+<span id="cb4-50"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">system</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fluidsynth -F test.wav ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 'test.mid'"</span>)</span>
+<span id="cb4-51"></span>
+<span id="cb4-52">av<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">av_audio_convert</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"test.wav"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"test.mp3"</span>)</span></code></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="test.mp3" type="audio/wav"> </audio></p>
 
 
 </section>

@@ -838,5 +838,12 @@
     "title": "Midi and synthesis in R",
     "section": "Synthesizing midi to wav and mp3",
     "text": "Synthesizing midi to wav and mp3\nraudiomate\nalso need fluid synth\nAnd, apparently fluid synth needs sound fonts. Got this one https://member.keymusician.com/Member/FluidR3_GM/index.html\nI could not get raudiomate to work. The processx:run command kept putting quotes where they didn’t belong.\nUsed the av package to turn the wav into an mp3\n\n\nShow the code\nsystem(\"fluidsynth -F out.wav ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 'Top Gun Theme.mid'\")\n\nav::av_audio_convert(\"out.wav\",\"out.mp3\")\n\n\n  \nThis all took way longer than I expected. Mostly fiddling with python packages and paths to things. But, I declare victory because it made the Top Gun theme song into an mp3."
+  },
+  {
+    "objectID": "blog/32_1_30_24_R_synth/index.html#questions",
+    "href": "blog/32_1_30_24_R_synth/index.html#questions",
+    "title": "Midi and synthesis in R",
+    "section": "Questions",
+    "text": "Questions\nI’ve only got 30 minutes right now, can I make this thing randomize notes?\nanswer, close enough for now.\n\n\nShow the code\n# trying stuff from the pyramidi docs\n\n# load in a basic midi file\nmidi_file_string &lt;- system.file(\"extdata\", \"test_midi_file.mid\", package = \"pyramidi\")\n\nmfr &lt;- MidiFramer$new(midi_file_string)\n\n# mfr has a bunch of midi dataframes in it\n#mfr$df_notes_wide[1:10]\n\n# helper function\nbeats_to_ticks &lt;- function(notes_wide) {\n  notes_wide %&gt;%\n    mutate(\n      ticks_note_on  = b_note_on  * ticks_per_beat,\n      ticks_note_off = b_note_off * ticks_per_beat\n    )\n}\n\nn_beats &lt;- 16\nticks_per_beat &lt;- 960L\n\n#(b_note_on = (0:(n_beats-1) %/% 4) * 4)\n\nb_note_on &lt;- 0:(n_beats-1)\n\n\nnotes &lt;- tibble(\n  i_track = 0,\n  meta = FALSE,\n  note = sample(c(60, 64, 67, 72), 16, replace=T),\n  channel = 1,\n  i_note = 1:n_beats,\n  velocity_note_on = 100,\n  velocity_note_off = 0,\n  b_note_on = b_note_on,\n  b_note_off = b_note_on + 1,\n)\n\nmfr$update_notes_wide(beats_to_ticks(notes))\n\ndf_notes_long &lt;- pivot_long_notes(mfr$df_notes_wide)\ndf_midi_out &lt;- merge_midi_frames(mfr$df_meta, mfr$df_notes_long, mfr$df_not_notes)\n\ndfc2 &lt;- df_midi_out %&gt;%\n        miditapyr$nest_midi(repair_reticulate_conversion = TRUE)\n\nmiditapyr$write_midi(dfc2, ticks_per_beat, \"test.mid\")\n\nsystem(\"fluidsynth -F test.wav ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 'test.mid'\")\n\nav::av_audio_convert(\"test.wav\",\"test.mp3\")"
   }
 ]

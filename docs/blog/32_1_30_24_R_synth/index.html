@@ -200,6 +200,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
   <li><a href="#reading-in-midi-with-pyramidi" id="toc-reading-in-midi-with-pyramidi" class="nav-link active" data-scroll-target="#reading-in-midi-with-pyramidi">Reading in MIDI with pyramidi</a></li>
   <li><a href="#writing-midi" id="toc-writing-midi" class="nav-link" data-scroll-target="#writing-midi">Writing Midi</a></li>
   <li><a href="#synthesizing-midi-to-wav-and-mp3" id="toc-synthesizing-midi-to-wav-and-mp3" class="nav-link" data-scroll-target="#synthesizing-midi-to-wav-and-mp3">Synthesizing midi to wav and mp3</a></li>
+  <li><a href="#questions" id="toc-questions" class="nav-link" data-scroll-target="#questions">Questions</a></li>
   </ul>
 </nav>
     </div>
@@ -500,6 +501,70 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </div>
 <p><audio controls=""> <source src="out.mp3" type="audio/wav"> </audio></p>
 <p>This all took way longer than I expected. Mostly fiddling with python packages and paths to things. But, I declare victory because it made the Top Gun theme song into an mp3.</p>
+<hr>
+</section>
+<section id="questions" class="level2">
+<h2 class="anchored" data-anchor-id="questions">Questions</h2>
+<p>I’ve only got 30 minutes right now, can I make this thing randomize notes?</p>
+<p>answer, close enough for now.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># trying stuff from the pyramidi docs</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># load in a basic midi file</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>midi_file_string <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"extdata"</span>, <span class="st">"test_midi_file.mid"</span>, <span class="at">package =</span> <span class="st">"pyramidi"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>mfr <span class="ot">&lt;-</span> MidiFramer<span class="sc">$</span><span class="fu">new</span>(midi_file_string)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># mfr has a bunch of midi dataframes in it</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#mfr$df_notes_wide[1:10]</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># helper function</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>beats_to_ticks <span class="ot">&lt;-</span> <span class="cf">function</span>(notes_wide) {</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  notes_wide <span class="sc">%&gt;%</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">ticks_note_on  =</span> b_note_on  <span class="sc">*</span> ticks_per_beat,</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">ticks_note_off =</span> b_note_off <span class="sc">*</span> ticks_per_beat</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>n_beats <span class="ot">&lt;-</span> <span class="dv">16</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>ticks_per_beat <span class="ot">&lt;-</span> <span class="dv">960</span>L</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#(b_note_on = (0:(n_beats-1) %/% 4) * 4)</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>b_note_on <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span>(n_beats<span class="dv">-1</span>)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>notes <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">i_track =</span> <span class="dv">0</span>,</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">meta =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">note =</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">60</span>, <span class="dv">64</span>, <span class="dv">67</span>, <span class="dv">72</span>), <span class="dv">16</span>, <span class="at">replace=</span>T),</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">channel =</span> <span class="dv">1</span>,</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">i_note =</span> <span class="dv">1</span><span class="sc">:</span>n_beats,</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">velocity_note_on =</span> <span class="dv">100</span>,</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">velocity_note_off =</span> <span class="dv">0</span>,</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_note_on =</span> b_note_on,</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">b_note_off =</span> b_note_on <span class="sc">+</span> <span class="dv">1</span>,</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>mfr<span class="sc">$</span><span class="fu">update_notes_wide</span>(<span class="fu">beats_to_ticks</span>(notes))</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>df_notes_long <span class="ot">&lt;-</span> <span class="fu">pivot_long_notes</span>(mfr<span class="sc">$</span>df_notes_wide)</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>df_midi_out <span class="ot">&lt;-</span> <span class="fu">merge_midi_frames</span>(mfr<span class="sc">$</span>df_meta, mfr<span class="sc">$</span>df_notes_long, mfr<span class="sc">$</span>df_not_notes)</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>dfc2 <span class="ot">&lt;-</span> df_midi_out <span class="sc">%&gt;%</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>        miditapyr<span class="sc">$</span><span class="fu">nest_midi</span>(<span class="at">repair_reticulate_conversion =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>miditapyr<span class="sc">$</span><span class="fu">write_midi</span>(dfc2, ticks_per_beat, <span class="st">"test.mid"</span>)</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(<span class="st">"fluidsynth -F test.wav ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 'test.mid'"</span>)</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>av<span class="sc">::</span><span class="fu">av_audio_convert</span>(<span class="st">"test.wav"</span>,<span class="st">"test.mp3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="test.mp3" type="audio/wav"> </audio></p>
 
 
 </section>

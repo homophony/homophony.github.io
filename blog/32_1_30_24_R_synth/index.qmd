@@ -135,3 +135,69 @@ av::av_audio_convert("out.wav","out.mp3")
 
 This all took way longer than I expected. Mostly fiddling with python packages and paths to things. But, I declare victory because it made the Top Gun theme song into an mp3.
 
+-----------------
+
+## Questions
+
+I've only got 30 minutes right now, can I make this thing randomize notes?
+
+answer, close enough for now.
+
+```{r, eval=FALSE}
+# trying stuff from the pyramidi docs
+
+# load in a basic midi file
+midi_file_string <- system.file("extdata", "test_midi_file.mid", package = "pyramidi")
+
+mfr <- MidiFramer$new(midi_file_string)
+
+# mfr has a bunch of midi dataframes in it
+#mfr$df_notes_wide[1:10]
+
+# helper function
+beats_to_ticks <- function(notes_wide) {
+  notes_wide %>%
+    mutate(
+      ticks_note_on  = b_note_on  * ticks_per_beat,
+      ticks_note_off = b_note_off * ticks_per_beat
+    )
+}
+
+n_beats <- 16
+ticks_per_beat <- 960L
+
+#(b_note_on = (0:(n_beats-1) %/% 4) * 4)
+
+b_note_on <- 0:(n_beats-1)
+
+
+notes <- tibble(
+  i_track = 0,
+  meta = FALSE,
+  note = sample(c(60, 64, 67, 72), 16, replace=T),
+  channel = 1,
+  i_note = 1:n_beats,
+  velocity_note_on = 100,
+  velocity_note_off = 0,
+  b_note_on = b_note_on,
+  b_note_off = b_note_on + 1,
+)
+
+mfr$update_notes_wide(beats_to_ticks(notes))
+
+df_notes_long <- pivot_long_notes(mfr$df_notes_wide)
+df_midi_out <- merge_midi_frames(mfr$df_meta, mfr$df_notes_long, mfr$df_not_notes)
+
+dfc2 <- df_midi_out %>%
+        miditapyr$nest_midi(repair_reticulate_conversion = TRUE)
+
+miditapyr$write_midi(dfc2, ticks_per_beat, "test.mid")
+
+system("fluidsynth -F test.wav ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 'test.mid'")
+
+av::av_audio_convert("test.wav","test.mp3")
+```
+
+`r html_tag_audio("test.mp3", type = "wav")`
+
+
