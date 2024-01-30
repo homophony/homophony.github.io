@@ -96,9 +96,6 @@ library(pyramidi)
 library(dplyr)
 library(tidyr)
 library(purrr)
-library(ggplot2)
-library(zeallot)
-
 
 midifile <- MidiFramer$new("Top Gun Theme.mid")
 
