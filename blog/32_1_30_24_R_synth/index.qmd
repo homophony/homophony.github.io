@@ -83,13 +83,13 @@ html_tag_audio <- function(file, type = c("wav")) {
 
 I'm going to be running a cognition experiment or two this semester that will involve creating musical stimuli. I would like programmatic control over that, so I'm delighted to learn that there are existing R packages that will help me with a few things. 
 
-I'm just testing a few things out here.
+I'm just testing a few things out here, which means this page will be a loose collection of notes and scraps of code.
 
 ## Reading in MIDI with pyramidi
 
 It looks like I can read in MIDI data to a dataframe with [pyramidi](https://urswilke.github.io/pyramidi/).
 
-Requires some python stuff, but it is working.
+Requires some python stuff, but it is working. Kudos to Urs Wilke for developing `pyramidi`! It uses [R6](https://adv-r.hadley.nz/r6.html), which I don't use very often. 
 
 ```{r}
 library(pyramidi)
@@ -102,17 +102,6 @@ midifile <- MidiFramer$new("Top Gun Theme.mid")
 knitr::kable(midifile$df_notes_wide[1:10,])
 ```
 
-
-
-## Writing Midi
-
-Haven't tried this yet.
-
-```{r}
-
-```
-
-
 ## Synthesizing midi to wav and mp3
 
 [raudiomate](https://urswilke.github.io/raudiomate/)
@@ -121,9 +110,12 @@ also need [fluid synth](https://www.fluidsynth.org)
 
 And, apparently fluid synth needs sound fonts. Got this one <https://member.keymusician.com/Member/FluidR3_GM/index.html>
 
-I could not get raudiomate to work. The `processx:run` command kept putting quotes where they didn't belong. 
+I could also try timidity, but I haven't gone there yet.
 
-Used the `av` package to turn the wav into an mp3
+I could not get `raudiomate` helper functions to work. The `processx::run` command kept putting quotes where they didn't belong 
+
+- used the system command to run fluidsynth
+- used the `av` package to turn the wav into an mp3
 
 ```{r, eval = F}
 
@@ -137,11 +129,19 @@ This all took way longer than I expected. Mostly fiddling with python packages a
 
 -----------------
 
-## Questions
+Very happy that it is possible to import, manipulate, and render midi files using R as a central command language. Although I have been messing with midi stuff for since the 80s, I have not tried to programmatically mess with it, or dug into midi file convention and structure. 
+
+I have some work ahead if I want to compose "computer music" with R. That would be fun though. I would probably glitch out until everything descends into modem sounds. Actually, I'm secretly extremely excited about some possibilities that I've wanted to explore.
+
+Anyway, below is scraps of code trying out various things and making notes to my future self.
+
+## Writing some random notes
 
 I've only got 30 minutes right now, can I make this thing randomize notes?
 
-answer, close enough for now.
+Strategy: Read the pyramidi docs, borrow some code from there, and try to play some random notes.
+
+Answer: yes, close enough for now.
 
 ```{r, eval=FALSE}
 # trying stuff from the pyramidi docs
@@ -199,5 +199,301 @@ av::av_audio_convert("test.wav","test.mp3")
 ```
 
 `r html_tag_audio("test.mp3", type = "wav")`
+
+## Midi specs
+
+Don't have time to read through this today, but here it is.
+
+- <https://www.midi.org/specifications>
+
+## Drums
+
+On BPM, tempo, and midi ticks
+
+- <https://majicdesigns.github.io/MD_MIDIFile/page_timing.html> 
+
+The next bit is straight from <https://urswilke.github.io/pyramidi/articles/compose.html>, with a few minor modifications to get things working on my machine.
+
+```{r}
+# load system midi file to start
+midi_file_string <- system.file("extdata", "test_midi_file.mid", package = "pyramidi")
+
+mfr <- MidiFramer$new(midi_file_string)
+
+# set some timing params
+n_beats <- 16
+ticks_per_beat <- 960L
+
+# construct a tibble
+drum <- tibble(
+  i_track = 0,
+  meta = FALSE,
+  # This is just a repetition of a classical rock beat:
+  note = rep(c(36, 38), n_beats / 2),
+  channel = 9,
+  i_note = 1:n_beats,
+  velocity_note_on = 100,
+  velocity_note_off = 0,
+  b_note_on = 0:(n_beats - 1),
+  b_note_off = b_note_on + 1 / 2,
+)
+
+# helper function
+beats_to_ticks <- function(notes_wide) {
+  notes_wide %>%
+    mutate(
+      ticks_note_on  = b_note_on  * ticks_per_beat,
+      ticks_note_off = b_note_off * ticks_per_beat
+    )
+}
+
+# pass the tibble back to the midi df
+mfr$update_notes_wide(beats_to_ticks(drum))
+
+mfr$mf$write_file("testagain.mid")
+
+# do pyramidi stuff to get the tibble back into the format it needs to be
+df_notes_long <- pivot_long_notes(mfr$df_notes_wide)
+df_midi_out <- merge_midi_frames(mfr$df_meta, mfr$df_notes_long, mfr$df_not_notes)
+
+dfc2 <- df_midi_out %>%
+        miditapyr$nest_midi(repair_reticulate_conversion = TRUE)
+
+# write the midi file to disk
+miditapyr$write_midi(dfc2, ticks_per_beat, "test_drums.mid")
+
+# synthesize midi file to wav with fluid synth
+system("fluidsynth -F test_drums.wav ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 'test_drums.mid'")
+
+# convert wav to mp3
+av::av_audio_convert("test_drums.wav","test_drums.mp3")
+
+# clean up and delete wav
+if(file.exists("test_drums.wav")){
+  file.remove("test_drums.wav")
+}
+
+```
+
+`r html_tag_audio("test_drums.mp3", type = "wav")`
+
+Cool, a basic rock beat.
+
+-----------------
+
+Attempting to add hi-hats, change tempo, and generally mess about.
+
+hopefully this percussion midi map helps <https://usermanuals.finalemusic.com/SongWriter2012Win/Content/PercussionMaps.htm>
+
+Got the hihats, changed the tempo. I'm missing something about timing, the resulting wav file is playing with silence at the end, and that seems wrong. Need to tinker some more.
+
+<https://mido.readthedocs.io/en/latest/files/midi.html?highlight=set_tempo#about-the-time-attribute>
+
+There seems to be some issues with `merge_midi_frames()`. The merged dataframe may contain some out of order rows.
+
+- arranging by ticks gets screwed up when there are  0 ticks in meta and note dfs
+
+```{r}
+# add additional sorting by i_note, seems to solve the curent problem
+merge_midi_frames_matt <-
+  function(df_meta, df_notes_long, df_not_notes) {
+    if (is.null(df_meta) &
+        is.null(df_notes_long) & is.null(df_not_notes)) {
+      return(NULL)
+    }
+    cols_to_remove <- c("i_note", "ticks", "t", "m", "b")
+    
+    res <- df_notes_long %>%
+      dplyr::bind_rows(df_meta) %>%
+      dplyr::bind_rows(df_not_notes)
+    
+    # if in tab_measures() there weren't all columns built, we have to remove them here:
+    cols_to_remove <- intersect(cols_to_remove, names(res))
+    res %>%
+      dplyr::arrange(.data$i_track, .data$ticks, .data$i_note) %>%
+      dplyr::group_by(.data$i_track) %>%
+      dplyr::mutate(time = .data$ticks - dplyr::lag(.data$ticks) %>% {
+        .[1] = 0
+        .
+      }) %>%
+      dplyr::ungroup() %>%
+      dplyr::select(-!!cols_to_remove)
+  }
+
+```
+
+
+```{r}
+# load system midi file to start
+midi_file_string <- system.file("extdata", "test_midi_file.mid", package = "pyramidi")
+
+mfr <- MidiFramer$new(midi_file_string)
+
+# set tempo
+BPM_to_microsecond_tempo <- function(BPM) {
+  return(60000000/BPM)
+}
+
+midi_tempo <- BPM_to_microsecond_tempo(120)
+
+mfr$df_meta <- mfr$df_meta %>%
+  mutate(tempo = case_when(type == "set_tempo" ~ midi_tempo),
+         clocks_per_click = case_when(type == "time_signature" ~ 24),
+         b = 0) %>%
+  #keep the first track
+  filter(i_track == 0)
+
+#View(mfr$df_meta)
+#mfr$ticks_per_beat
+#View(mfr$df_notes_wide)
+
+# set some timing params
+num_bars <- 1
+n_beats <- num_bars*4
+smallest_note_per_bar <- 16
+max_steps <- num_bars*smallest_note_per_bar
+
+ticks_per_beat <- 960L
+mfr$ticks_per_beat <- 960L
+
+
+# Construct a beat with hihats
+drum <- tibble(
+  i_track = 0,
+  i_note = 1:max_steps,
+  kick = rep(c(1,NA,NA,NA),4),
+  snare = rep(c(NA,NA,1,NA),4),
+  hihat_closed = rep(1,16),
+  meta = FALSE,
+  channel = 9,
+  velocity_note_on = 100,
+  velocity_note_off = 0,
+  b_note_on = 0:(max_steps - 1),
+  b_note_off = b_note_on + 1 / 2
+) %>%
+  mutate(kick = kick*36,
+         snare = snare*38,
+         hihat_closed = hihat_closed*42) %>%
+  pivot_longer(cols = c("kick","snare","hihat_closed"), 
+               values_to = "note",
+               values_drop_na = T) %>%
+  mutate(b_note_on = b_note_on/(2),
+         b_note_off = b_note_off/(2))
+
+drum$i_note <- 1:dim(drum)[1]
+
+# helper function
+beats_to_ticks <- function(notes_wide) {
+  notes_wide %>%
+    mutate(
+      ticks_note_on  = b_note_on  * ticks_per_beat,
+      ticks_note_off = b_note_off * ticks_per_beat
+    )
+}
+
+# pass the tibble back to the midi df
+mfr$update_notes_wide(beats_to_ticks(drum))
+
+df_notes_long <- pivot_long_notes(mfr$df_notes_wide)
+df_not_notes <- mfr$df_not_notes
+
+# do pyramidi stuff to get the tibble back into the format it needs to be
+#mfr$df_notes_long <- pivot_long_notes(mfr$df_notes_wide)
+
+df_meta <- mfr$df_meta %>%
+  mutate(ticks = case_when(type == "end_of_track" ~ (max(df_notes_long$ticks)+ticks_per_beat),
+                           type != "end_of_track" ~ 0))
+
+
+#mfr$df_meta <- mfr$df_meta %>%
+#  mutate(ticks = case_when(type == "end_of_track" ~ (max(mfr$df_notes_long$ticks)+ticks_per_beat)))
+
+df_midi_out <- merge_midi_frames_matt(df_meta, df_notes_long, df_not_notes)
+
+dfc2 <- df_midi_out %>%
+        miditapyr$nest_midi(repair_reticulate_conversion = TRUE)
+
+#########
+# bounce 
+
+track_name <- "try_Write"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# write the midi file to disk
+miditapyr$write_midi(dfc2, ticks_per_beat, midi_name)
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+```
+
+`r html_tag_audio("try_Write.mp3", type = "wav")`
+
+This works sort of. MIDI fried my brain here. For some reason the file has extra bars of silence, can't figure out why right now. I'm missing something here about how midi time works.
+
+## Piano keyboard plot with ggplot2
+
+Neat, this is from [pyramidi](https://urswilke.github.io/pyramidi/reference/piano_keys_coordinates.html).
+
+```{r}
+library(ggplot2)
+
+piano_keys_coordinates %>%
+  # plot white keys first that they don't cover half of the black keys:
+  dplyr::arrange(layer) %>%
+  ggplot(aes(
+    ymin = ymin,
+    ymax = ymax,
+    xmin = xmin,
+    xmax = xmax,
+    fill = factor(layer)
+  )) +
+  geom_rect(color = "black", show.legend = FALSE) +
+  scale_fill_manual(values = c("#ffffdd", "#113300")) +
+  coord_fixed(ratio = 10)
+```
+
+Let's try plotting a chord, C7. Cool!
+
+```{r}
+# get midi notes from table look up
+note_numbers <- midi_defs %>%
+  filter(note_name %in% c("C4","E4","G4","Bb4") == TRUE) %>%
+  pull(note)
+
+# plot
+piano_keys_coordinates %>%
+  # make black keys 3rd order for printing
+  mutate(layer = case_when(layer == 2 ~ 3,
+                           layer == 1 ~ 1)) %>%
+  # set played keys to layer 2
+  mutate(layer = case_when(midi %in% note_numbers == TRUE ~ 2,
+                           midi %in% note_numbers == FALSE ~ layer)) %>%
+  # plot white keys first that they don't cover half of the black keys:
+  dplyr::arrange(layer) %>%
+  ggplot(aes(
+    ymin = ymin,
+    ymax = ymax,
+    xmin = xmin,
+    xmax = xmax,
+    fill = factor(layer)
+  )) +
+  geom_rect(color = "black", show.legend = FALSE) +
+  scale_fill_manual(values = c("#ffffdd", "pink","#113300")) +
+  coord_fixed(ratio = 10)
+  
+```
 
 
