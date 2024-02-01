@@ -448,3 +448,108 @@ for(p in c(.1,.2,.3,.4,.5,.6,.7,.8,.9,1)){
 90% shuffled notes `r html_tag_audio("mario_9.mp3", type = "wav")`
 
 100% shuffled notes `r html_tag_audio("mario_10.mp3", type = "wav")`
+
+## Really Really Random
+
+Let's go a bit further into that green pipe of entropy. Now, instead of shuffling notes within each track by some proportion, let's just choose any random note (not necessarily from the song or the key). I used the note range 30 - 90 (midi notes), and sampled from this distribution uniformly. Mario get's even more weird now. Still even at 100% it's still recognizably Mario...as if Mario was trying to dial into the internet from a landline.
+
+```{r, eval = FALSE}
+
+for(p in c(.1,.5,1)){
+    #import midi using miditapyr
+  test_midi <- pyramidi::miditapyr$MidiFrames("overworld.mid")
+  
+  #import using mido
+  mido_import <- pyramidi::mido$MidiFile("overworld.mid")
+  
+  # to R dataframe
+  dfc <- pyramidi::miditapyr$frame_midi(mido_import)
+  ticks_per_beat <- mido_import$ticks_per_beat
+  
+  # unnest the dataframe
+  df <- pyramidi::miditapyr$unnest_midi(dfc)
+  
+  # do shuffling for all tracks
+  for(t in c(1,2,3)){
+      # isolate track 1 and add the unique note id vector
+    track <- df %>%
+      filter(i_track == t) %>%
+      mutate(row_id = 1:n()) %>%
+      mutate(note_id = get_unique_note_id(note))
+    
+    # get all unique notes
+    possible_notes <- unique(track$note_id[is.nan(track$note_id) == F])
+    
+    # randomly select some proportion to shuffle
+    rand_proportion <- p
+    shuffled_ids <- sample(possible_notes, round(length(possible_notes)*rand_proportion))
+    
+    # get the note names that will be shuffled
+    note_names <- track[track$note_id %in% shuffled_ids == T &
+              track$type == 'note_on',]$note
+    
+    # shuffle
+    note_names <- sample(30:90,length(note_names), replace = T)
+    
+    # assign shuffled notes back to df for note and note off messages
+    track[track$note_id %in% shuffled_ids == T &
+              track$type == 'note_on',]$note <- note_names
+    
+    track[track$note_id %in% shuffled_ids == T &
+              track$type == 'note_off',]$note <- note_names
+    
+    track <- track %>%
+      select(-row_id,-note_id)
+    
+    # put track 1 back into df
+    
+    df[df$i_track == t,] <- track
+  }
+  
+  
+  mod_df <- df
+  
+  # update df
+  test_midi$midi_frame_unnested$update_unnested_mf(mod_df)
+  
+  # write midi file
+  iter <- p*10
+ 
+  track_name <- paste0("mario_R",iter)
+  midi_name <- paste0(track_name,".mid")
+   
+  test_midi$write_file(midi_name)
+  
+  #########
+  # bounce 
+  
+ 
+  
+  wav_name <- paste0(track_name,".wav")
+  mp3_name <- paste0(track_name,".mp3")
+  
+  # write the midi file to disk
+  #miditapyr$write_midi(dfc, ticks_per_beat, midi_name)
+  
+  # synthesize midi file to wav with fluid synth
+  system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+  system(system_command)
+  
+  # convert wav to mp3
+  av::av_audio_convert(wav_name,mp3_name)
+  
+  # clean up and delete wav
+  if(file.exists(wav_name)){
+    file.remove(wav_name)
+  }
+}
+
+
+
+```
+
+10% random notes `r html_tag_audio("mario_R1.mp3", type = "wav")`
+
+50% random notes `r html_tag_audio("mario_R5.mp3", type = "wav")`
+
+100% random notes `r html_tag_audio("mario_R10.mp3", type = "wav")`

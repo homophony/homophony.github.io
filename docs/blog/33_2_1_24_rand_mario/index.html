@@ -199,6 +199,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
   <ul>
   <li><a href="#note-on-and-off" id="toc-note-on-and-off" class="nav-link active" data-scroll-target="#note-on-and-off">Note on and off</a></li>
   <li><a href="#randomizing-mario-even-more" id="toc-randomizing-mario-even-more" class="nav-link" data-scroll-target="#randomizing-mario-even-more">Randomizing Mario even more</a></li>
+  <li><a href="#really-really-random" id="toc-really-really-random" class="nav-link" data-scroll-target="#really-really-random">Really Really Random</a></li>
   </ul>
 </nav>
     </div>
@@ -637,6 +638,106 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <p>80% shuffled notes <audio controls=""> <source src="mario_8.mp3" type="audio/wav"> </audio></p>
 <p>90% shuffled notes <audio controls=""> <source src="mario_9.mp3" type="audio/wav"> </audio></p>
 <p>100% shuffled notes <audio controls=""> <source src="mario_10.mp3" type="audio/wav"> </audio></p>
+</section>
+<section id="really-really-random" class="level2">
+<h2 class="anchored" data-anchor-id="really-really-random">Really Really Random</h2>
+<p>Let’s go a bit further into that green pipe of entropy. Now, instead of shuffling notes within each track by some proportion, let’s just choose any random note (not necessarily from the song or the key). I used the note range 30 - 90 (midi notes), and sampled from this distribution uniformly. Mario get’s even more weird now. Still even at 100% it’s still recognizably Mario…as if Mario was trying to dial into the internet from a landline.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(p <span class="cf">in</span> <span class="fu">c</span>(.<span class="dv">1</span>,.<span class="dv">5</span>,<span class="dv">1</span>)){</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">#import midi using miditapyr</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  test_midi <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">MidiFrames</span>(<span class="st">"overworld.mid"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#import using mido</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  mido_import <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>mido<span class="sc">$</span><span class="fu">MidiFile</span>(<span class="st">"overworld.mid"</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># to R dataframe</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  dfc <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">frame_midi</span>(mido_import)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  ticks_per_beat <span class="ot">&lt;-</span> mido_import<span class="sc">$</span>ticks_per_beat</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># unnest the dataframe</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">unnest_midi</span>(dfc)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># do shuffling for all tracks</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(t <span class="cf">in</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>)){</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>      <span class="co"># isolate track 1 and add the unique note id vector</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    track <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(i_track <span class="sc">==</span> t) <span class="sc">%&gt;%</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">row_id =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">note_id =</span> <span class="fu">get_unique_note_id</span>(note))</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># get all unique notes</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    possible_notes <span class="ot">&lt;-</span> <span class="fu">unique</span>(track<span class="sc">$</span>note_id[<span class="fu">is.nan</span>(track<span class="sc">$</span>note_id) <span class="sc">==</span> F])</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># randomly select some proportion to shuffle</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    rand_proportion <span class="ot">&lt;-</span> p</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    shuffled_ids <span class="ot">&lt;-</span> <span class="fu">sample</span>(possible_notes, <span class="fu">round</span>(<span class="fu">length</span>(possible_notes)<span class="sc">*</span>rand_proportion))</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># get the note names that will be shuffled</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    note_names <span class="ot">&lt;-</span> track[track<span class="sc">$</span>note_id <span class="sc">%in%</span> shuffled_ids <span class="sc">==</span> T <span class="sc">&amp;</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>              track<span class="sc">$</span>type <span class="sc">==</span> <span class="st">'note_on'</span>,]<span class="sc">$</span>note</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># shuffle</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>    note_names <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">30</span><span class="sc">:</span><span class="dv">90</span>,<span class="fu">length</span>(note_names), <span class="at">replace =</span> T)</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># assign shuffled notes back to df for note and note off messages</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>    track[track<span class="sc">$</span>note_id <span class="sc">%in%</span> shuffled_ids <span class="sc">==</span> T <span class="sc">&amp;</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>              track<span class="sc">$</span>type <span class="sc">==</span> <span class="st">'note_on'</span>,]<span class="sc">$</span>note <span class="ot">&lt;-</span> note_names</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>    track[track<span class="sc">$</span>note_id <span class="sc">%in%</span> shuffled_ids <span class="sc">==</span> T <span class="sc">&amp;</span></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a>              track<span class="sc">$</span>type <span class="sc">==</span> <span class="st">'note_off'</span>,]<span class="sc">$</span>note <span class="ot">&lt;-</span> note_names</span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>    track <span class="ot">&lt;-</span> track <span class="sc">%&gt;%</span></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(<span class="sc">-</span>row_id,<span class="sc">-</span>note_id)</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>    <span class="co"># put track 1 back into df</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>    df[df<span class="sc">$</span>i_track <span class="sc">==</span> t,] <span class="ot">&lt;-</span> track</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>  mod_df <span class="ot">&lt;-</span> df</span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>  <span class="co"># update df</span></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>  test_midi<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span><span class="fu">update_unnested_mf</span>(mod_df)</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>  <span class="co"># write midi file</span></span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>  iter <span class="ot">&lt;-</span> p<span class="sc">*</span><span class="dv">10</span></span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>  track_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"mario_R"</span>,iter)</span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>  midi_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mid"</span>)</span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>  test_midi<span class="sc">$</span><span class="fu">write_file</span>(midi_name)</span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>  <span class="do">#########</span></span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>  <span class="co"># bounce </span></span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>  wav_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".wav"</span>)</span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>  mp3_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mp3"</span>)</span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>  <span class="co"># write the midi file to disk</span></span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>  <span class="co">#miditapyr$write_midi(dfc, ticks_per_beat, midi_name)</span></span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>  <span class="co"># synthesize midi file to wav with fluid synth</span></span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>  system_command <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}'</span>)</span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">system</span>(system_command)</span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>  <span class="co"># convert wav to mp3</span></span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>  av<span class="sc">::</span><span class="fu">av_audio_convert</span>(wav_name,mp3_name)</span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>  <span class="co"># clean up and delete wav</span></span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">file.exists</span>(wav_name)){</span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a>    <span class="fu">file.remove</span>(wav_name)</span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>10% random notes <audio controls=""> <source src="mario_R1.mp3" type="audio/wav"> </audio></p>
+<p>50% random notes <audio controls=""> <source src="mario_R5.mp3" type="audio/wav"> </audio></p>
+<p>100% random notes <audio controls=""> <source src="mario_R10.mp3" type="audio/wav"> </audio></p>
 
 
 </section>
