@@ -81,6 +81,8 @@ html_tag_audio <- function(file, type = c("wav")) {
 
 ```
 
+NOTE: I took some of the mp3s off because the page was loading really slowly with too many. 
+
 In the pursuit of MIDI knowledge I have achieved my goal of randomizing the overworld music from Super Mario Brothers.
 
 This one randomly shuffles 50% of the note ON messages.
@@ -431,21 +433,7 @@ for(p in c(.1,.2,.3,.4,.5,.6,.7,.8,.9,1)){
 
 10% shuffled notes `r html_tag_audio("mario_1.mp3", type = "wav")`
 
-20% shuffled notes `r html_tag_audio("mario_2.mp3", type = "wav")`
-
-30% shuffled notes `r html_tag_audio("mario_3.mp3", type = "wav")`
-
-40% shuffled notes `r html_tag_audio("mario_4.mp3", type = "wav")`
-
 50% shuffled notes `r html_tag_audio("mario_5.mp3", type = "wav")`
-
-60% shuffled notes `r html_tag_audio("mario_6.mp3", type = "wav")`
-
-70% shuffled notes `r html_tag_audio("mario_7.mp3", type = "wav")`
-
-80% shuffled notes `r html_tag_audio("mario_8.mp3", type = "wav")`
-
-90% shuffled notes `r html_tag_audio("mario_9.mp3", type = "wav")`
 
 100% shuffled notes `r html_tag_audio("mario_10.mp3", type = "wav")`
 
