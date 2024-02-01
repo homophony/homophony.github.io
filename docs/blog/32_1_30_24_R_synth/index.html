@@ -203,6 +203,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
   <li><a href="#midi-specs" id="toc-midi-specs" class="nav-link" data-scroll-target="#midi-specs">Midi specs</a></li>
   <li><a href="#drums" id="toc-drums" class="nav-link" data-scroll-target="#drums">Drums</a></li>
   <li><a href="#piano-keyboard-plot-with-ggplot2" id="toc-piano-keyboard-plot-with-ggplot2" class="nav-link" data-scroll-target="#piano-keyboard-plot-with-ggplot2">Piano keyboard plot with ggplot2</a></li>
+  <li><a href="#miditapyr" id="toc-miditapyr" class="nav-link" data-scroll-target="#miditapyr">miditapyr</a></li>
   </ul>
 </nav>
     </div>
@@ -824,6 +825,10 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </div>
 <p><audio controls=""> <source src="try_Write.mp3" type="audio/wav"> </audio></p>
 <p>This works sort of. MIDI fried my brain here. For some reason the file has extra bars of silence, can’t figure out why right now. I’m missing something here about how midi time works.</p>
+<ul>
+<li>loaded better in musescore.</li>
+<li>musescore shows two bars, but it plays through 4 bars…not sure what is going on.</li>
+</ul>
 </section>
 <section id="piano-keyboard-plot-with-ggplot2" class="level2">
 <h2 class="anchored" data-anchor-id="piano-keyboard-plot-with-ggplot2">Piano keyboard plot with ggplot2</h2>
@@ -892,6 +897,108 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </figure>
 </div>
 </div>
+</div>
+</section>
+<section id="miditapyr" class="level2">
+<h2 class="anchored" data-anchor-id="miditapyr">miditapyr</h2>
+<p><a href="https://miditapyr.readthedocs.io/en/latest/notebooks/midi_frame_usage.html" class="uri">https://miditapyr.readthedocs.io/en/latest/notebooks/midi_frame_usage.html</a></p>
+<p>Learning more about the miditapyr workflow.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#import midi using miditapyr</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>test_midi <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">MidiFrames</span>(<span class="st">"ableton.mid"</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#View(test_midi$midi_frame_unnested$df)</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co"># modify something</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>mod_df <span class="ot">&lt;-</span> test_midi<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span>df <span class="sc">%&gt;%</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">note =</span> <span class="fu">case_when</span>(note <span class="sc">==</span> <span class="dv">72</span> <span class="sc">~</span> <span class="dv">63</span>,</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>                          <span class="cn">TRUE</span> <span class="sc">~</span> note))</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co"># update df</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>test_midi<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span><span class="fu">update_unnested_mf</span>(mod_df)</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="co"># write midi file</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>test_midi<span class="sc">$</span><span class="fu">write_file</span>(<span class="st">"ableton2.mid"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>I made a 1 bar drum loop in ableton, using the clip view. Apparently this kind of midi file does not contain the meta set_tempo message…</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#import midi using miditapyr</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>test_midi <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">MidiFrames</span>(<span class="st">"ableton.mid"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">#import using mido</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>mido_import <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>mido<span class="sc">$</span><span class="fu">MidiFile</span>(<span class="st">"ableton.mid"</span>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># to R dataframe</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>dfc <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">frame_midi</span>(mido_import)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>ticks_per_beat <span class="ot">&lt;-</span> mido_import<span class="sc">$</span>ticks_per_beat</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co"># unnest the dataframe</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">unnest_midi</span>(dfc)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co"># add set_tempo message</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="co"># missing from ableton midi clip</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tempo =</span> <span class="cn">NaN</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">i_track =</span> <span class="dv">0</span>,</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">time =</span> <span class="dv">0</span>,</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">meta =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">"set_tempo"</span>,</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">tempo =</span> <span class="dv">500000</span>,</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">.before =</span> <span class="dv">2</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Before I go on, I need to do some timing tests to make sure I understand a few things.</p>
+<p>The beat is 1 bar. There are 4 beats per bar. The hi hats are in 16th notes, and there are 16 hi hats. The tempo is set to 120. What happens if I play with the time column.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># reload df</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">unnest_midi</span>(dfc)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># add set_tempo message</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># missing from ableton midi clip</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tempo =</span> <span class="cn">NaN</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">i_track =</span> <span class="dv">0</span>,</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">time =</span> <span class="dv">0</span>,</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">meta =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">"set_tempo"</span>,</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">tempo =</span> <span class="dv">500000</span>,</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">.before =</span> <span class="dv">2</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="co"># futz with the time column</span></span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a><span class="co"># behaves as expected, yah!</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time =</span> time<span class="sc">/</span><span class="dv">2</span>)</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a><span class="co"># update df</span></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>test_midi<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span><span class="fu">update_unnested_mf</span>(df)</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="co"># write midi file</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>test_midi<span class="sc">$</span><span class="fu">write_file</span>(<span class="st">"ableton2.mid"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>The pyramidi package has a <code>tab_measures()</code> function that adds additional timing information, for later use in composition and modification.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add more time info</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>dfm <span class="ot">&lt;-</span> <span class="fu">tab_measures</span>(<span class="at">df =</span> df, <span class="at">ticks_per_beat =</span> ticks_per_beat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 
 

@@ -1,0 +1,166 @@
+---
+title: "Systematically randomizing Super Mario brothers with R"
+author: "Matt Crump"
+date: 2/1/24
+description: "Achieving my glorious mission."
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - midi
+  - fluidsynth
+  - rstats
+execute: 
+  echo: true
+  message: false
+  warning: false
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "Super mario brothers. Random, random pixels. pixel art. chaos."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+Super mario brothers. Random, random pixels. pixel art. chaos. - Dreamshaper v7
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+In the pursuit of MIDI knowledge I have achieved my goal of randomizing the overworld music from Super Mario Brothers.
+
+This one randomly shuffles 50% of the note ON messages.
+
+```{r, eval=FALSE}
+library(pyramidi)
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+#import midi using miditapyr
+test_midi <- pyramidi::miditapyr$MidiFrames("overworld.mid")
+
+#import using mido
+mido_import <- pyramidi::mido$MidiFile("overworld.mid")
+
+# to R dataframe
+dfc <- pyramidi::miditapyr$frame_midi(mido_import)
+ticks_per_beat <- mido_import$ticks_per_beat
+
+# unnest the dataframe
+df <- pyramidi::miditapyr$unnest_midi(dfc)
+
+# achieve master plan to systematically randomize mario brothers
+# modify midi file
+# get ids for note on messages
+ids <- df %>%
+  mutate(add_row_id = 1:dim(df)[1]) %>%
+  filter(i_track < 4,
+         type == "note_on") %>%
+  pull(add_row_id)
+
+all_notes <- 1:length(ids)
+rand_proportion <- .5
+ids_to_swap <- sample(all_notes,round(length(all_notes)*rand_proportion))
+
+from_id <- ids[ids_to_swap]
+to_id <- sample(from_id)
+
+# swap the notes
+df[from_id,]$note <- df[to_id,]$note
+
+mod_df <- df
+
+# update df
+test_midi$midi_frame_unnested$update_unnested_mf(mod_df)
+
+# write midi file
+
+test_midi$write_file("mario.mid")
+
+#########
+# bounce 
+
+track_name <- "mario"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# write the midi file to disk
+#miditapyr$write_midi(dfc, ticks_per_beat, midi_name)
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+```
+
+`r html_tag_audio("mario.mp3", type = "wav")`
+
+Now I just need to get a nintendo soundfont and do even more weird stuff.
+
+
+

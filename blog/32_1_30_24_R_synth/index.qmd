@@ -443,6 +443,9 @@ if(file.exists(wav_name)){
 
 This works sort of. MIDI fried my brain here. For some reason the file has extra bars of silence, can't figure out why right now. I'm missing something here about how midi time works.
 
+- loaded better in musescore. 
+- musescore shows two bars, but it plays through 4 bars...not sure what is going on.
+
 ## Piano keyboard plot with ggplot2
 
 Neat, this is from [pyramidi](https://urswilke.github.io/pyramidi/reference/piano_keys_coordinates.html).
@@ -494,6 +497,108 @@ piano_keys_coordinates %>%
   scale_fill_manual(values = c("#ffffdd", "pink","#113300")) +
   coord_fixed(ratio = 10)
   
+```
+
+## miditapyr
+
+<https://miditapyr.readthedocs.io/en/latest/notebooks/midi_frame_usage.html>
+
+Learning more about the miditapyr workflow.
+
+```{r}
+#import midi using miditapyr
+test_midi <- pyramidi::miditapyr$MidiFrames("ableton.mid")
+
+#View(test_midi$midi_frame_unnested$df)
+
+# modify something
+mod_df <- test_midi$midi_frame_unnested$df %>%
+  mutate(note = case_when(note == 72 ~ 63,
+                          TRUE ~ note))
+
+# update df
+test_midi$midi_frame_unnested$update_unnested_mf(mod_df)
+
+# write midi file
+
+test_midi$write_file("ableton2.mid")
+```
+
+I made a 1 bar drum loop in ableton, using the clip view. Apparently this kind of midi file does not contain the meta set_tempo message...
+
+```{r}
+#import midi using miditapyr
+test_midi <- pyramidi::miditapyr$MidiFrames("ableton.mid")
+
+#import using mido
+mido_import <- pyramidi::mido$MidiFile("ableton.mid")
+
+# to R dataframe
+dfc <- pyramidi::miditapyr$frame_midi(mido_import)
+ticks_per_beat <- mido_import$ticks_per_beat
+
+# unnest the dataframe
+df <- pyramidi::miditapyr$unnest_midi(dfc)
+
+# add set_tempo message
+# missing from ableton midi clip
+
+df <- df %>%
+  mutate(tempo = NaN) %>%
+  add_row(
+    i_track = 0,
+    time = 0,
+    meta = TRUE,
+    type = "set_tempo",
+    tempo = 500000,
+    .before = 2
+  )
+```
+
+Before I go on, I need to do some timing tests to make sure I understand a few things.
+
+The beat is 1 bar. There are 4 beats per bar. The hi hats are in 16th notes, and there are 16 hi hats. The tempo is set to 120. What happens if I play with the time column. 
+
+```{r}
+# reload df
+df <- pyramidi::miditapyr$unnest_midi(dfc)
+
+# add set_tempo message
+# missing from ableton midi clip
+
+df <- df %>%
+  mutate(tempo = NaN) %>%
+  add_row(
+    i_track = 0,
+    time = 0,
+    meta = TRUE,
+    type = "set_tempo",
+    tempo = 500000,
+    .before = 2
+  )
+
+# futz with the time column
+# behaves as expected, yah!
+df <- df %>%
+  mutate(time = time/2)
+
+# update df
+test_midi$midi_frame_unnested$update_unnested_mf(df)
+
+# write midi file
+
+test_midi$write_file("ableton2.mid")
+
+```
+
+The pyramidi package has a `tab_measures()` function that adds additional timing information, for later use in composition and modification.
+
+
+```{r}
+# add more time info
+
+dfm <- tab_measures(df = df, ticks_per_beat = ticks_per_beat)
+
 ```
 
 
