@@ -200,6 +200,8 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
   <li><a href="#note-on-and-off" id="toc-note-on-and-off" class="nav-link active" data-scroll-target="#note-on-and-off">Note on and off</a></li>
   <li><a href="#randomizing-mario-even-more" id="toc-randomizing-mario-even-more" class="nav-link" data-scroll-target="#randomizing-mario-even-more">Randomizing Mario even more</a></li>
   <li><a href="#really-really-random" id="toc-really-really-random" class="nav-link" data-scroll-target="#really-really-random">Really Really Random</a></li>
+  <li><a href="#trying-another-soundfont" id="toc-trying-another-soundfont" class="nav-link" data-scroll-target="#trying-another-soundfont">Trying another soundfont</a></li>
+  <li><a href="#more-random-notes-with-the-mario-sound" id="toc-more-random-notes-with-the-mario-sound" class="nav-link" data-scroll-target="#more-random-notes-with-the-mario-sound">More random notes with the mario sound</a></li>
   </ul>
 </nav>
     </div>
@@ -738,6 +740,141 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <p>10% random notes <audio controls=""> <source src="mario_R1.mp3" type="audio/wav"> </audio></p>
 <p>50% random notes <audio controls=""> <source src="mario_R5.mp3" type="audio/wav"> </audio></p>
 <p>100% random notes <audio controls=""> <source src="mario_R10.mp3" type="audio/wav"> </audio></p>
+</section>
+<section id="trying-another-soundfont" class="level2">
+<h2 class="anchored" data-anchor-id="trying-another-soundfont">Trying another soundfont</h2>
+<p>So far I have only used a general style soundfont. Let’s see how easy it is to get a nintendo sound.</p>
+<p><a href="https://musical-artifacts.com/artifacts/610" class="uri">https://musical-artifacts.com/artifacts/610</a></p>
+<p>Pretty easy, nice.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>  track_name <span class="ot">&lt;-</span> <span class="st">"overworld"</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  midi_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mid"</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="do">#########</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># bounce </span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  wav_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".wav"</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  mp3_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mp3"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># write the midi file to disk</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="co">#miditapyr$write_midi(dfc, ticks_per_beat, midi_name)</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># synthesize midi file to wav with fluid synth</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  system_command <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}'</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">system</span>(system_command)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># convert wav to mp3</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  av<span class="sc">::</span><span class="fu">av_audio_convert</span>(wav_name,mp3_name)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># clean up and delete wav</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">file.exists</span>(wav_name)){</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">file.remove</span>(wav_name)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="overworld.mp3" type="audio/wav"> </audio></p>
+</section>
+<section id="more-random-notes-with-the-mario-sound" class="level2">
+<h2 class="anchored" data-anchor-id="more-random-notes-with-the-mario-sound">More random notes with the mario sound</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(p <span class="cf">in</span> <span class="fu">c</span>(.<span class="dv">1</span>,.<span class="dv">5</span>,<span class="dv">1</span>)){</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">#import midi using miditapyr</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  test_midi <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">MidiFrames</span>(<span class="st">"overworld.mid"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#import using mido</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  mido_import <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>mido<span class="sc">$</span><span class="fu">MidiFile</span>(<span class="st">"overworld.mid"</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># to R dataframe</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  dfc <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">frame_midi</span>(mido_import)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  ticks_per_beat <span class="ot">&lt;-</span> mido_import<span class="sc">$</span>ticks_per_beat</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># unnest the dataframe</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">unnest_midi</span>(dfc)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># do shuffling for all tracks</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(t <span class="cf">in</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>)){</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>      <span class="co"># isolate track 1 and add the unique note id vector</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    track <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(i_track <span class="sc">==</span> t) <span class="sc">%&gt;%</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">row_id =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">note_id =</span> <span class="fu">get_unique_note_id</span>(note))</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># get all unique notes</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    possible_notes <span class="ot">&lt;-</span> <span class="fu">unique</span>(track<span class="sc">$</span>note_id[<span class="fu">is.nan</span>(track<span class="sc">$</span>note_id) <span class="sc">==</span> F])</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># randomly select some proportion to shuffle</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    rand_proportion <span class="ot">&lt;-</span> p</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    shuffled_ids <span class="ot">&lt;-</span> <span class="fu">sample</span>(possible_notes, <span class="fu">round</span>(<span class="fu">length</span>(possible_notes)<span class="sc">*</span>rand_proportion))</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># get the note names that will be shuffled</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    note_names <span class="ot">&lt;-</span> track[track<span class="sc">$</span>note_id <span class="sc">%in%</span> shuffled_ids <span class="sc">==</span> T <span class="sc">&amp;</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>              track<span class="sc">$</span>type <span class="sc">==</span> <span class="st">'note_on'</span>,]<span class="sc">$</span>note</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># shuffle</span></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>    note_names <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">30</span><span class="sc">:</span><span class="dv">90</span>,<span class="fu">length</span>(note_names), <span class="at">replace =</span> T)</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># assign shuffled notes back to df for note and note off messages</span></span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>    track[track<span class="sc">$</span>note_id <span class="sc">%in%</span> shuffled_ids <span class="sc">==</span> T <span class="sc">&amp;</span></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>              track<span class="sc">$</span>type <span class="sc">==</span> <span class="st">'note_on'</span>,]<span class="sc">$</span>note <span class="ot">&lt;-</span> note_names</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>    track[track<span class="sc">$</span>note_id <span class="sc">%in%</span> shuffled_ids <span class="sc">==</span> T <span class="sc">&amp;</span></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>              track<span class="sc">$</span>type <span class="sc">==</span> <span class="st">'note_off'</span>,]<span class="sc">$</span>note <span class="ot">&lt;-</span> note_names</span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>    track <span class="ot">&lt;-</span> track <span class="sc">%&gt;%</span></span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>      <span class="fu">select</span>(<span class="sc">-</span>row_id,<span class="sc">-</span>note_id)</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>    <span class="co"># put track 1 back into df</span></span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>    df[df<span class="sc">$</span>i_track <span class="sc">==</span> t,] <span class="ot">&lt;-</span> track</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a>  mod_df <span class="ot">&lt;-</span> df</span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a>  <span class="co"># update df</span></span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>  test_midi<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span><span class="fu">update_unnested_mf</span>(mod_df)</span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a>  <span class="co"># write midi file</span></span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>  iter <span class="ot">&lt;-</span> p<span class="sc">*</span><span class="dv">10</span></span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>  track_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"mario_NES"</span>,iter)</span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>  midi_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mid"</span>)</span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a>  test_midi<span class="sc">$</span><span class="fu">write_file</span>(midi_name)</span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>  <span class="do">#########</span></span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a>  <span class="co"># bounce </span></span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a>  wav_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".wav"</span>)</span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a>  mp3_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mp3"</span>)</span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a>  <span class="co"># write the midi file to disk</span></span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a>  <span class="co">#miditapyr$write_midi(dfc, ticks_per_beat, midi_name)</span></span>
+<span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a>  <span class="co"># synthesize midi file to wav with fluid synth</span></span>
+<span id="cb8-78"><a href="#cb8-78" aria-hidden="true" tabindex="-1"></a>  system_command <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}'</span>)</span>
+<span id="cb8-79"><a href="#cb8-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">system</span>(system_command)</span>
+<span id="cb8-80"><a href="#cb8-80" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-81"><a href="#cb8-81" aria-hidden="true" tabindex="-1"></a>  <span class="co"># convert wav to mp3</span></span>
+<span id="cb8-82"><a href="#cb8-82" aria-hidden="true" tabindex="-1"></a>  av<span class="sc">::</span><span class="fu">av_audio_convert</span>(wav_name,mp3_name)</span>
+<span id="cb8-83"><a href="#cb8-83" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-84"><a href="#cb8-84" aria-hidden="true" tabindex="-1"></a>  <span class="co"># clean up and delete wav</span></span>
+<span id="cb8-85"><a href="#cb8-85" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">file.exists</span>(wav_name)){</span>
+<span id="cb8-86"><a href="#cb8-86" aria-hidden="true" tabindex="-1"></a>    <span class="fu">file.remove</span>(wav_name)</span>
+<span id="cb8-87"><a href="#cb8-87" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb8-88"><a href="#cb8-88" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="mario_NES1.mp3" type="audio/wav"> </audio></p>
+<p><audio controls=""> <source src="mario_NES5.mp3" type="audio/wav"> </audio></p>
+<p><audio controls=""> <source src="mario_NES10.mp3" type="audio/wav"> </audio></p>
+<p>Now my princess really is in another castle.</p>
 
 
 </section>
