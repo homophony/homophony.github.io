@@ -162,5 +162,289 @@ if(file.exists(wav_name)){
 
 Now I just need to get a nintendo soundfont and do even more weird stuff.
 
+## Note on and off
+
+Rows in the midi file either contain note on or note off messages. There is no grouping variable for a particular note's ON and OFF message. In the above, I only shuffled the note numbers for Note ON messages. This results in some notes having a long sustain because they are not turned OFF. Some of the notes may never be turned off, OMG that poor midi file.
+
+Next goal is, can I pair up the on and off messages, and re-randomize to make everything sound tighter.
 
 
+
+New Function to assign a unique id to each note
+
+```{r}
+
+# A function to create unique ids for each note
+# this helps group note on and off messages
+
+get_unique_note_id <- function(note_column){
+  
+  unique_note_id <- rep(NaN,length(note_column))
+  unique_counter <- 0
+  
+  notes_that_are_on <- tibble(note_number = NA,
+                              note_id = NA)
+  
+  for (i in 1:length(note_column)){
+    
+    if(is.nan(note_column[i]) == T) {
+    # catch NaNs don't modify  
+    }
+    
+    if(is.nan(note_column[i]) == F) {
+      # get current note
+      current_note <- note_column[i]
+      
+      do_once_toggle <- 0
+      # if current note is in the note_on buffer, remove it
+      if(current_note %in% notes_that_are_on$note_number == TRUE){
+        
+        # assign id to column vector
+        unique_note_id[i]<- notes_that_are_on %>%
+          filter(note_number == current_note) %>%
+          pull(note_id)
+        
+        # remove note from buffer
+        notes_that_are_on <- notes_that_are_on %>%
+          filter(note_number != current_note)
+        
+        do_once_toggle <- 1
+      }
+      
+      # if it isn't in the note_on buffer, put it in there
+      if(do_once_toggle == 0){
+        if(current_note %in% notes_that_are_on$note_number == FALSE){
+          # increment unique note counter
+          unique_counter <- unique_counter+1
+          
+          # add note on info to a new row in the buffer
+          notes_that_are_on <- notes_that_are_on %>%
+            add_row(note_number = current_note,
+                                 note_id = unique_counter)
+          # assign id to column vector
+          unique_note_id[i] <- unique_counter
+        }
+      }
+      
+    }
+  
+  }
+  
+  return(unique_note_id)
+  
+}
+
+```
+
+That works and assigns a new column (to be removed later)
+
+
+Now, I should be able to shuffle note objects, including their on and off messages. This should get rid of those sustained notes from the first randomization. 
+
+The midi file has four tracks. The fourth track is the drum track. The first three parts are essentially mono-voice harmony. The code below takes 50% of the notes in the first track and randomly shuffles them around so they appear in different random spots in the song. It still sounds very recognizable.
+
+```{r, eval = FALSE}
+#import midi using miditapyr
+test_midi <- pyramidi::miditapyr$MidiFrames("overworld.mid")
+
+#import using mido
+mido_import <- pyramidi::mido$MidiFile("overworld.mid")
+
+# to R dataframe
+dfc <- pyramidi::miditapyr$frame_midi(mido_import)
+ticks_per_beat <- mido_import$ticks_per_beat
+
+# unnest the dataframe
+df <- pyramidi::miditapyr$unnest_midi(dfc)
+
+# isolate track 1 and add the unique note id vector
+track_1 <- df %>%
+  filter(i_track == 1) %>%
+  mutate(row_id = 1:n()) %>%
+  mutate(note_id = get_unique_note_id(note))
+
+# get all unique notes
+possible_notes <- unique(track_1$note_id[is.nan(track_1$note_id) == F])
+
+# randomly select some proportion to shuffle
+rand_proportion <- .5
+shuffled_ids <- sample(possible_notes, round(length(possible_notes)*rand_proportion))
+
+# get the note names that will be shuffled
+note_names <- track_1[track_1$note_id %in% shuffled_ids == T &
+          track_1$type == 'note_on',]$note
+
+# shuffle
+note_names <- sample(note_names)
+
+# assign shuffled notes back to df for note and note off messages
+track_1[track_1$note_id %in% shuffled_ids == T &
+          track_1$type == 'note_on',]$note <- note_names
+
+track_1[track_1$note_id %in% shuffled_ids == T &
+          track_1$type == 'note_off',]$note <- note_names
+
+track_1 <- track_1 %>%
+  select(-row_id,-note_id)
+
+# put track 1 back into df
+
+df[df$i_track == 1,] <- track_1
+
+mod_df <- df
+
+# update df
+test_midi$midi_frame_unnested$update_unnested_mf(mod_df)
+
+# write midi file
+
+test_midi$write_file("mario_B.mid")
+
+#########
+# bounce 
+
+track_name <- "mario_B"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# write the midi file to disk
+#miditapyr$write_midi(dfc, ticks_per_beat, midi_name)
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+```
+
+`r html_tag_audio("mario_B.mp3", type = "wav")`
+
+## Randomizing Mario even more
+
+It would only be fair to randomize the song in steps of equal proportion from .1 to 1.
+
+I'm only randomizing the note numbers within voices, which preserves the timing of all of the notes. As the shuffling proportion increases the song becomes stranger. Still sounds like mario, even with full entropy.
+
+```{r, eval=FALSE}
+
+for(p in c(.1,.2,.3,.4,.5,.6,.7,.8,.9,1)){
+    #import midi using miditapyr
+  test_midi <- pyramidi::miditapyr$MidiFrames("overworld.mid")
+  
+  #import using mido
+  mido_import <- pyramidi::mido$MidiFile("overworld.mid")
+  
+  # to R dataframe
+  dfc <- pyramidi::miditapyr$frame_midi(mido_import)
+  ticks_per_beat <- mido_import$ticks_per_beat
+  
+  # unnest the dataframe
+  df <- pyramidi::miditapyr$unnest_midi(dfc)
+  
+  # do shuffling for all tracks
+  for(t in c(1,2,3)){
+      # isolate track 1 and add the unique note id vector
+    track <- df %>%
+      filter(i_track == t) %>%
+      mutate(row_id = 1:n()) %>%
+      mutate(note_id = get_unique_note_id(note))
+    
+    # get all unique notes
+    possible_notes <- unique(track$note_id[is.nan(track$note_id) == F])
+    
+    # randomly select some proportion to shuffle
+    rand_proportion <- p
+    shuffled_ids <- sample(possible_notes, round(length(possible_notes)*rand_proportion))
+    
+    # get the note names that will be shuffled
+    note_names <- track[track$note_id %in% shuffled_ids == T &
+              track$type == 'note_on',]$note
+    
+    # shuffle
+    note_names <- sample(note_names)
+    
+    # assign shuffled notes back to df for note and note off messages
+    track[track$note_id %in% shuffled_ids == T &
+              track$type == 'note_on',]$note <- note_names
+    
+    track[track$note_id %in% shuffled_ids == T &
+              track$type == 'note_off',]$note <- note_names
+    
+    track <- track %>%
+      select(-row_id,-note_id)
+    
+    # put track 1 back into df
+    
+    df[df$i_track == t,] <- track
+  }
+  
+  
+  mod_df <- df
+  
+  # update df
+  test_midi$midi_frame_unnested$update_unnested_mf(mod_df)
+  
+  # write midi file
+  iter <- p*10
+ 
+  track_name <- paste0("mario_",iter)
+  midi_name <- paste0(track_name,".mid")
+   
+  test_midi$write_file(midi_name)
+  
+  #########
+  # bounce 
+  
+ 
+  
+  wav_name <- paste0(track_name,".wav")
+  mp3_name <- paste0(track_name,".mp3")
+  
+  # write the midi file to disk
+  #miditapyr$write_midi(dfc, ticks_per_beat, midi_name)
+  
+  # synthesize midi file to wav with fluid synth
+  system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+  system(system_command)
+  
+  # convert wav to mp3
+  av::av_audio_convert(wav_name,mp3_name)
+  
+  # clean up and delete wav
+  if(file.exists(wav_name)){
+    file.remove(wav_name)
+  }
+}
+
+
+
+```
+
+10% shuffled notes `r html_tag_audio("mario_1.mp3", type = "wav")`
+
+20% shuffled notes `r html_tag_audio("mario_2.mp3", type = "wav")`
+
+30% shuffled notes `r html_tag_audio("mario_3.mp3", type = "wav")`
+
+40% shuffled notes `r html_tag_audio("mario_4.mp3", type = "wav")`
+
+50% shuffled notes `r html_tag_audio("mario_5.mp3", type = "wav")`
+
+60% shuffled notes `r html_tag_audio("mario_6.mp3", type = "wav")`
+
+70% shuffled notes `r html_tag_audio("mario_7.mp3", type = "wav")`
+
+80% shuffled notes `r html_tag_audio("mario_8.mp3", type = "wav")`
+
+90% shuffled notes `r html_tag_audio("mario_9.mp3", type = "wav")`
+
+100% shuffled notes `r html_tag_audio("mario_10.mp3", type = "wav")`
