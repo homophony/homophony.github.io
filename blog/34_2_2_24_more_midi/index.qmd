@@ -1,0 +1,777 @@
+---
+title: "Notes to self on writing midi files in R"
+author: "Matt Crump"
+date: 2/2/24
+description: "Mostly a scratchpad of bits of code."
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - midi
+  - fluidsynth
+  - rstats
+execute: 
+  echo: true
+  message: false
+  warning: false
+  eval: false
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+draft: true
+---
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "MIDI. Midi music technology. synthwave. 80s. rad cartoon."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+MIDI. Midi music technology. synthwave. 80s. rad cartoon. - Dreamshaper v7
+:::
+
+```{r}
+#| echo: false
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+I'm working on some goals with respect to programming midi files in R. This post is mostly a scratch pad to try out some code. 
+
+Some goals.
+
+- Code some bars of music in a tibble.
+- try to coerce the tibble into a midi format
+
+Each bar has 1 arpeggiated triad, followed by a chord. Each note will be quarter notes.
+
+```{r, eval=FALSE}
+library(pyramidi)
+library(tidyverse)
+
+# set tempo
+BPM_to_microsecond_tempo <- function(BPM) {
+  return(60000000/BPM)
+}
+
+# song timing and length parameters
+BPM <- 120
+midi_tempo <- BPM_to_microsecond_tempo(BPM)
+time_signature <- c(4,4)
+ticks_per_beat <- 480 #PPQN
+bars <- 4
+smallest_note_unit <- 32
+
+# function to generate a table of timing intervals
+make_timing_tibble <- function(bars, smallest_note_unit, BPM, ticks) {
+  tibble(
+    intervals = 1:(smallest_note_unit * bars),
+    bar = rep(1:bars, each = smallest_note_unit),
+    quarter = rep(rep(1:4, each = smallest_note_unit/4),bars),
+    eighth = rep(rep(1:8, each = smallest_note_unit/8),bars),
+    sixteenth = rep(rep(1:16, each = smallest_note_unit/16),bars),
+    thirty_two = rep(rep(1:32, each = smallest_note_unit/32),bars),
+    interval_ticks = ticks_per_beat/smallest_note_unit,
+    elapsed_time = cumsum(interval_ticks)
+  )
+}
+
+time_tibble <- make_timing_tibble(4,32,120,ticks_per_beat)
+
+# grab midi_defs from pyramidi, put into a names character vector
+midi_notes <- 1:dim(midi_defs)[1]
+names(midi_notes) <- midi_defs$note_name
+
+time_tibble <- make_timing_tibble(bars = 4,
+                                  smallest_note_unit = 4,
+                                  BPM = 120,
+                                  ticks_per_beat)
+
+
+
+
+
+```
+
+
+```{r, eval=FALSE}
+BPM <- 120
+midi_tempo <- BPM_to_microsecond_tempo(BPM)
+time_signature <- c(4, 4)
+ticks_per_beat <- 480 #PPQN
+bars <- 4
+smallest_note_unit <- 4
+
+time_tibble <- tibble(
+  intervals = 1:(smallest_note_unit * bars),
+  bar = rep(1:bars, each = smallest_note_unit),
+  quarter = rep(rep(1:4, each = smallest_note_unit / 4), bars),
+  interval_ticks = ticks_per_beat,
+  elapsed_time = cumsum(interval_ticks),
+  interval_on = elapsed_time - interval_ticks
+)
+
+notes_to_play <- list(
+  list(note = "C4", note_length = 1),
+  list(note = "E4", note_length = 1),
+  list(note = "G4", note_length = 1),
+  list(note = c("C4", "E4", "G4"), note_length = c(1,1,1)),
+  list(note = "D4", note_length = 1),
+  list(note = "F4", note_length = 1),
+  list(note = "A4", note_length = 1),
+  list(note = c("D4", "F4", "A4"), note_length = c(1,1,1)),
+  list(note = "E4", note_length = 1),
+  list(note = "G4", note_length = 1),
+  list(note = "B4", note_length = 1),
+  list(note = c("E4", "G4", "B4"), note_length = c(1,1,1)),
+  list(note = "F4", note_length = 1),
+  list(note = "A4", note_length = 1),
+  list(note = "C5", note_length = 1),
+  list(note = c("F4", "A4", "C5"), note_length = c(1,1,1))
+  )
+
+for(i in 1:length(notes_to_play)){
+  if(length(notes_to_play[[i]]$note) == 1){
+    notes_to_play[[i]]$start_time <- time_tibble$interval_on[i]
+    notes_to_play[[i]]$off_time <- time_tibble$elapsed_time[i]
+  }
+  if(length(notes_to_play[[i]]$note) > 1){
+    notes_to_play[[i]]$start_time <- rep(time_tibble$interval_on[i],length(notes_to_play[[i]]$note))
+    notes_to_play[[i]]$off_time <- rep(time_tibble$elapsed_time[i],length(notes_to_play[[i]]$note))
+  }
+}
+
+
+```
+
+
+
+
+
+--------------------
+
+# matrix coding
+
+Example of coding C major scale in a note by time matrix, and then concatenating down to note, time, and note x time vectors.
+
+This strategy ignores note length
+
+```{r}
+#empty matrix containing rows for every possible note
+#columns for every possible 64th note over 1 bar
+one_bar <- matrix(0,
+                  nrow=dim(pyramidi::midi_defs)[1],
+                  ncol=64)
+
+# assign rows note names
+row.names(one_bar) <- pyramidi::midi_defs$note_name
+
+# define notes to add to play C major scale up and down
+notes_to_play <- c("C4","D4","E4","F4","G4","A4","B4","C5",
+                   "C5","B4","A4","G4","F4","E4","D4","C4")
+times_to_play <- seq(1,64,4)
+
+# assign notes to the one_bar matrix
+for(i in 1:length(notes_to_play)){
+  one_bar[notes_to_play[i],times_to_play[i]] <- 1
+}
+
+#create pitch, time, and pitch x time vectors
+pitch_vector <- rowSums(one_bar)
+time_vector <- colSums(one_bar)
+pitch_by_time <- c(one_bar)
+
+#concatenate_vector
+music_vector <- c(pitch_vector,time_vector,pitch_by_time)
+```
+
+## midi to matrix
+
+It should be fairly straightforward to get a midi file into the matrix format above.
+
+This worked I think. I'm experimenting the mario file, but the principles here should be useful for a few different endeavors.
+
+Again ignoring note length.
+
+```{r}
+library(pyramidi)
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+#import midi using miditapyr
+test_midi <- pyramidi::miditapyr$MidiFrames("overworld.mid")
+
+#import using mido
+mido_import <- pyramidi::mido$MidiFile("overworld.mid")
+
+# to R dataframe
+dfc <- pyramidi::miditapyr$frame_midi(mido_import)
+ticks_per_beat <- mido_import$ticks_per_beat
+
+# unnest the dataframe
+df <- pyramidi::miditapyr$unnest_midi(dfc)
+
+# grab track 1
+track_1 <- df %>%
+  filter(i_track == 1,
+         type %in% c("note_on","note_off") ==TRUE) %>%
+  mutate(total_time = cumsum(time)) %>%
+  filter(type == "note_on")
+
+time_steps <- seq(0,max(track_1$total_time),8)
+total_bars <- round(length(time_steps)/48)+1
+bars <- rep(1:total_bars,each=48)
+bar_steps <- rep(1:48,total_bars)
+
+metric_tibble <- tibble(time_steps = time_steps,
+                        bars = bars[1:length(time_steps)],
+                        bar_steps =bar_steps[1:length(time_steps)])
+
+track_1 <- track_1 %>%
+  mutate(time_markers = which(time_steps %in% total_time),
+         bars = 0,
+         bar_steps = 0) 
+
+# get bar divisions, add them to track_1
+
+for(i in 1:dim(track_1)[1]){
+  get_timestep <- time_steps[track_1$time_markers[i]]
+  track_1$bars[i] <- metric_tibble %>%
+    filter(time_steps == get_timestep) %>%
+    pull(bars)
+  track_1$bar_steps[i] <- metric_tibble %>%
+    filter(time_steps == get_timestep) %>%
+    pull(bar_steps)
+}
+
+# assign intervals to the bars
+
+music_matrix <- matrix(0,
+                       ncol = (48+128+(48*128)),
+                       nrow = max(track_1$bars)
+)
+
+for(i in 1:max(track_1$bars)){
+  
+  bar_midi <- track_1%>%
+    filter(bars == i)
+  
+  one_bar <- matrix(0,
+                  nrow=dim(pyramidi::midi_defs)[1],
+                  ncol=48)
+  
+  for(j in 1:dim(one_bar)[1]){
+    one_bar[bar_midi$note[j],bar_midi$bar_steps[j]] <- 1
+  }
+  
+  
+  pitch_vector <- rowSums(one_bar)
+  time_vector <- colSums(one_bar)
+  pitch_by_time <- c(one_bar)
+
+  #concatenate_vector
+  music_vector <- c(pitch_vector,time_vector,pitch_by_time)
+  
+  music_matrix[i,] <- music_vector
+  
+}
+
+```
+
+
+I would like to be able to convert back to midi. 
+
+```{r}
+
+# select out one concatenated bar vector
+one_bar_vector <- music_matrix[1,(128+48+1):dim(music_matrix)[2]]
+
+#reconstitute matrix
+one_bar_matrix <- matrix(one_bar_vector,
+                         nrow=128,
+                         ncol=48,
+                         byrow=F)
+
+#filter for notes and times
+note_times <- which(one_bar_matrix == 1, arr.ind=T)
+colnames(note_times) <- c("note_num","bar_step")
+
+# convert back to midi time in ticks
+note_times <- as_tibble(note_times)
+note_times <- note_times %>%
+  mutate(ticks = (bar_step *8) -8,
+         note_id = 1:n(),
+         note_on = ticks,
+         note_off = ticks+8) %>%
+  pivot_longer(cols = c("note_on","note_off"), 
+               names_to = "type",
+               values_to = "cumulative_ticks") %>%
+  arrange(cumulative_ticks) %>%
+  mutate(time = cumulative_ticks - lag(cumulative_ticks, default = 0))
+
+
+# compose midi tibble
+midi_bar <- df[1,]
+midi_bar <- midi_bar[-1,]
+
+midi_bar <- midi_bar %>%
+  add_row(type = note_times$type,
+          time = note_times$time,
+          note = note_times$note_num) %>%
+  mutate(
+    i_track = 1,
+    meta = FALSE,
+    numerator = NaN,
+    denominator = NaN,
+    clocks_per_click = NaN,
+    notated_32nd_notes_per_beat = NaN,
+    tempo = NaN,
+    name = NA,
+    control = NaN,
+    value = NaN,
+    channel = 0,
+    program = NaN,
+    velocity = 64
+         )
+
+# get meta messages
+meta_midi  <- df %>% 
+  filter(meta ==TRUE,
+         i_track == 1)
+
+# merge bar midi into full midi file
+midi_track <- meta_midi %>%
+  add_row(midi_bar,.after = 3)
+
+```
+
+Test to see if the bar of midi reconstructed from the matrix can be played back. Seems to work.
+
+```{r}
+mod_df <- midi_track
+
+# update df
+test_midi$midi_frame_unnested$update_unnested_mf(mod_df)
+
+# write midi file
+
+test_midi$write_file("mario_bar.mid")
+
+#########
+# bounce 
+
+track_name <- "mario_bar"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# write the midi file to disk
+#miditapyr$write_midi(dfc, ticks_per_beat, midi_name)
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+```
+## try stuff
+
+```{r}
+#import midi using miditapyr
+test_midi <- pyramidi::miditapyr$MidiFrames("overworld.mid")
+
+#import using mido
+mido_import <- pyramidi::mido$MidiFile("overworld.mid")
+
+# to R dataframe
+dfc <- pyramidi::miditapyr$frame_midi(mido_import)
+ticks_per_beat <- mido_import$ticks_per_beat
+
+# unnest the dataframe
+df <- pyramidi::miditapyr$unnest_midi(dfc)
+
+# compose midi tibble
+all_midi_bars <- df[1,]
+all_midi_bars <- all_midi_bars[-1,]
+
+for(i in 1:32){
+
+sum_music <- colSums(music_matrix)
+sum_music <- sum_music[(48+128+1):length(sum_music)]
+prob_music <- sum_music/sum(sum_music)
+
+prob_bar <- rbinom(6144,8,prob_music)
+prob_bar[prob_bar > 1] <- 1
+#sum(prob_bar)
+#plot(prob_bar)
+
+#reconstitute matrix
+one_bar_matrix <- matrix(prob_bar,
+                         nrow=128,
+                         ncol=48,
+                         byrow=F)
+
+#filter for notes and times
+note_times <- which(one_bar_matrix == 1, arr.ind=T)
+colnames(note_times) <- c("note_num","bar_step")
+
+# convert back to midi time in ticks
+note_times <- as_tibble(note_times)
+note_times <- note_times %>%
+  mutate(ticks = (bar_step *8) -8,
+         note_id = 1:n(),
+         note_on = ticks,
+         note_off = ticks+8) %>%
+  pivot_longer(cols = c("note_on","note_off"), 
+               names_to = "type",
+               values_to = "cumulative_ticks") %>%
+  arrange(cumulative_ticks) %>%
+  mutate(time = cumulative_ticks - lag(cumulative_ticks, default = 0))
+
+midi_bar <- df[1,]
+midi_bar <- midi_bar[-1,]
+
+midi_bar <- midi_bar %>%
+  add_row(type = note_times$type,
+          time = note_times$time,
+          note = note_times$note_num) %>%
+  mutate(
+    i_track = 1,
+    meta = FALSE,
+    numerator = NaN,
+    denominator = NaN,
+    clocks_per_click = NaN,
+    notated_32nd_notes_per_beat = NaN,
+    tempo = NaN,
+    name = NA,
+    control = NaN,
+    value = NaN,
+    channel = 0,
+    program = NaN,
+    velocity = 64
+         )
+
+all_midi_bars <- rbind(all_midi_bars,midi_bar)
+
+}
+
+# get meta messages
+meta_midi  <- df %>% 
+  filter(meta ==TRUE,
+         i_track == 1)
+
+# merge bar midi into full midi file
+midi_track <- meta_midi %>%
+  add_row(all_midi_bars,.after = 3)
+
+##########################
+# bounce
+
+mod_df <- midi_track
+
+# update df
+test_midi$midi_frame_unnested$update_unnested_mf(mod_df)
+
+# write midi file
+
+test_midi$write_file("mario_Pbar.mid")
+
+#########
+# bounce 
+
+track_name <- "mario_Pbar"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# write the midi file to disk
+#miditapyr$write_midi(dfc, ticks_per_beat, midi_name)
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+```
+
+## all voices
+
+```{r}
+library(pyramidi)
+library(dplyr)
+library(tidyr)
+library(purrr)
+#import midi using miditapyr
+test_midi <- pyramidi::miditapyr$MidiFrames("all_overworld.mid")
+
+#import using mido
+mido_import <- pyramidi::mido$MidiFile("all_overworld.mid")
+
+# to R dataframe
+dfc <- pyramidi::miditapyr$frame_midi(mido_import)
+ticks_per_beat <- mido_import$ticks_per_beat
+
+# unnest the dataframe
+df <- pyramidi::miditapyr$unnest_midi(dfc)
+
+##############################################
+# convert to matrix
+
+# grab track 1
+track_1 <- df %>%
+  filter(i_track == 0,
+         type %in% c("note_on","note_off") ==TRUE) %>%
+  mutate(total_time = cumsum(time)) %>%
+  filter(type == "note_on")
+
+time_steps <- seq(0,max(track_1$total_time),8)
+total_bars <- round(length(time_steps)/48)+1
+bars <- rep(1:total_bars,each=48)
+bar_steps <- rep(1:48,total_bars)
+
+metric_tibble <- tibble(time_steps = time_steps,
+                        bars = bars[1:length(time_steps)],
+                        bar_steps =bar_steps[1:length(time_steps)])
+
+track_1 <- track_1 %>%
+  mutate(time_markers = 0,
+         bars = 0,
+         bar_steps = 0) 
+
+for(i in 1:dim(track_1)[1]){
+  track_1$time_markers[i] <- which(time_steps %in% track_1$total_time[i])
+}
+
+# get bar divisions, add them to track_1
+
+for(i in 1:dim(track_1)[1]){
+  get_timestep <- time_steps[track_1$time_markers[i]]
+  track_1$bars[i] <- metric_tibble %>%
+    filter(time_steps == get_timestep) %>%
+    pull(bars)
+  track_1$bar_steps[i] <- metric_tibble %>%
+    filter(time_steps == get_timestep) %>%
+    pull(bar_steps)
+}
+
+# assign intervals to the bars
+
+music_matrix <- matrix(0,
+                       ncol = (48+128+(48*128)),
+                       nrow = max(track_1$bars)
+)
+
+for(i in 1:max(track_1$bars)){
+  
+  bar_midi <- track_1%>%
+    filter(bars == i)
+  
+  one_bar <- matrix(0,
+                  nrow=dim(pyramidi::midi_defs)[1],
+                  ncol=48)
+  
+  for(j in 1:dim(one_bar)[1]){
+    one_bar[bar_midi$note[j],bar_midi$bar_steps[j]] <- 1
+  }
+  
+  
+  pitch_vector <- rowSums(one_bar)
+  time_vector <- colSums(one_bar)
+  pitch_by_time <- c(one_bar)
+
+  #concatenate_vector
+  music_vector <- c(pitch_vector,time_vector,pitch_by_time)
+  
+  music_matrix[i,] <- music_vector
+  
+}
+
+#########################################
+
+# compose midi tibble
+all_midi_bars <- df[1,]
+all_midi_bars <- all_midi_bars[-1,]
+
+for(i in 1:32){
+
+sum_music <- colSums(music_matrix)
+sum_music <- sum_music[(48+128+1):length(sum_music)]
+prob_music <- sum_music/sum(sum_music)
+
+#mean(rowSums(music_matrix[,(48+128+1):dim(music_matrix)[2]]))
+
+prob_bar <- rbinom(length(sum_music),48,prob_music)
+prob_bar[prob_bar > 1] <- 1
+#sum(prob_bar)
+#plot(prob_bar)
+
+#reconstitute matrix
+one_bar_matrix <- matrix(prob_bar,
+                         nrow=128,
+                         ncol=48,
+                         byrow=F)
+
+#filter for notes and times
+note_times <- which(one_bar_matrix == 1, arr.ind=T)
+colnames(note_times) <- c("note_num","bar_step")
+
+# convert back to midi time in ticks
+note_times <- as_tibble(note_times)
+note_times <- note_times %>%
+  mutate(ticks = (bar_step *8) -8,
+         note_id = 1:n(),
+         note_on = ticks,
+         note_off = ticks+8) %>%
+  pivot_longer(cols = c("note_on","note_off"), 
+               names_to = "type",
+               values_to = "cumulative_ticks") %>%
+  arrange(cumulative_ticks) %>%
+  mutate(time = cumulative_ticks - lag(cumulative_ticks, default = 0))
+
+midi_bar <- df[1,]
+midi_bar <- midi_bar[-1,]
+
+midi_bar <- midi_bar %>%
+  add_row(type = note_times$type,
+          time = note_times$time,
+          note = note_times$note_num) %>%
+  mutate(
+    i_track = 0,
+    meta = FALSE,
+    numerator = NaN,
+    denominator = NaN,
+    clocks_per_click = NaN,
+    notated_32nd_notes_per_beat = NaN,
+    tempo = NaN,
+    name = NA,
+    control = NaN,
+    value = NaN,
+    channel = 0,
+    program = NaN,
+    velocity = 64
+         )
+
+all_midi_bars <- rbind(all_midi_bars,midi_bar)
+
+}
+
+# get meta messages
+meta_midi  <- df %>% 
+  filter(meta ==TRUE,
+         i_track == 0) %>%
+  mutate(tempo = NaN) %>%
+  add_row(
+    i_track = 0,
+    time = 0,
+    meta = TRUE,
+    type = "set_tempo",
+    tempo = 500000,
+    .before = 2
+  )
+
+# merge bar midi into full midi file
+midi_track <- meta_midi %>%
+  add_row(all_midi_bars,.after = 3)
+
+##########################
+# bounce
+
+mod_df <- midi_track
+
+# update df
+test_midi$midi_frame_unnested$update_unnested_mf(mod_df)
+
+# write midi file
+
+test_midi$write_file("mario_P_allbar.mid")
+
+#########
+# bounce 
+
+track_name <- "mario_P_allbar"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# write the midi file to disk
+#miditapyr$write_midi(dfc, ticks_per_beat, midi_name)
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+```
+
+
