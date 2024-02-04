@@ -1,8 +1,8 @@
 ---
-title: "Midi to matrix representation and probabilistic super mario music with R"
+title: "Messing around with heart and soul"
 author: "Matt Crump"
-date: 2/3/24
-description: "Converting midi to feature vectors and back, with some probabilistic versions of the super mario overworld music."
+date: 2/4/24
+description: "A sunday synthesizer exploration."
 image: "cover.jpg"
 comments:
   giscus: 
@@ -10,7 +10,6 @@ comments:
 categories: 
   - midi
   - generative
-  - mario
   - matrix
   - rstats
 execute: 
@@ -46,7 +45,7 @@ pipeline = pipeline.to("mps")
 # Recommended if your computer has < 64 GB of RAM
 pipeline.enable_attention_slicing("max")
 
-prompt = "super mario enters the matrix. mario matrix. feature vector encoding. binary representation. pixel art."
+prompt = "heart and soul piano duet. probabilities. linear algebra. markov chain. thundercats cartoon."
 
 for s in range(30):
   for n in [5,10]:
@@ -65,7 +64,7 @@ for s in range(30):
 ![](cover.jpg){width="50%" fig-align="left"}
 
 ::: column-margin
-super mario enters the matrix. mario matrix. feature vector encoding. binary representation. pixel art. - Dreamshaper v7
+heart and soul piano duet. probabilities. linear algebra. markov chain. thundercats cartoon. - Dreamshaper v7
 :::
 
 ```{r}
@@ -83,15 +82,23 @@ html_tag_audio <- function(file, type = c("wav")) {
 
 ```
 
-For various reasons I'd like to convert midi into a matrix format and back again. In this example, I represent each bar in the midi file in a note x time step matrix. The matrix for each bar is concatenated into a long vector, and the whole song is represented as a bar x feature vector matrix. I then calculate the column sums, and divide by the total to get probabilities for each note x time cell. These probabilities can be used to generate new bars, by randomly creating notes in time as a function of those probabilities. After making new bars, I work backwards to generate midi files from the matrix representations to listen to everything.
+I'm following similar steps [from this post](https://homophony.quest/blog/35_2_3_24_matrix_midi/), but with my own noodling around playing heart and soul on piano.
 
-I used the mario overworld midi file, and this yields some probabilistic version of the overworld theme.
+Notes:
 
-Here's a picture of roughly what's happening:
+1. Riff on Heart and Soul on midi piano, BPM 103
+2. Load in midi
+  - check if i need to quantize it.
+3. Turn it into a matrix
+4. Generate notes probabilistically
+5. listen to it
 
-![](images/figure.png)
+## Try stuff
 
-## all voices
+- ticks per beat is 96
+- going with temporal units down to smallest tick (1).
+- got it working, ya
+- generate 1 minute of heart and soul nonsense with nintendo synth sound for fun
 
 ```{r,eval = FALSE}
 library(pyramidi)
@@ -104,10 +111,10 @@ library(purrr)
 ```{r, eval = FALSE}
 
 #import midi using miditapyr
-test_midi <- pyramidi::miditapyr$MidiFrames("all_overworld.mid")
+test_midi <- pyramidi::miditapyr$MidiFrames("heart_soul_103_185b.mid")
 
 #import using mido
-mido_import <- pyramidi::mido$MidiFile("all_overworld.mid")
+mido_import <- pyramidi::mido$MidiFile("heart_soul_103_185b.mid")
 
 # to R dataframe
 dfc <- pyramidi::miditapyr$frame_midi(mido_import)
@@ -126,10 +133,10 @@ track_1 <- df %>%
   mutate(total_time = cumsum(time)) %>%
   filter(type == "note_on")
 
-time_steps <- seq(0,max(track_1$total_time),8)
-total_bars <- round(length(time_steps)/48)+1
-bars <- rep(1:total_bars,each=48)
-bar_steps <- rep(1:48,total_bars)
+time_steps <- seq(0,max(track_1$total_time),1)
+total_bars <- round(length(time_steps)/(96*4))+1
+bars <- rep(1:total_bars,each=(96*4))
+bar_steps <- rep(1:(96*4),total_bars)
 
 metric_tibble <- tibble(time_steps = time_steps,
                         bars = bars[1:length(time_steps)],
@@ -159,7 +166,7 @@ for(i in 1:dim(track_1)[1]){
 # assign intervals to the bars
 
 music_matrix <- matrix(0,
-                       ncol = (48+128+(48*128)),
+                       ncol = ((96*4)+128+((96*4)*128)),
                        nrow = max(track_1$bars)
 )
 
@@ -170,7 +177,7 @@ for(i in 1:max(track_1$bars)){
   
   one_bar <- matrix(0,
                   nrow=dim(pyramidi::midi_defs)[1],
-                  ncol=48)
+                  ncol=(96*4))
   
   for(j in 1:dim(one_bar)[1]){
     one_bar[bar_midi$note[j],bar_midi$bar_steps[j]] <- 1
@@ -197,15 +204,15 @@ all_midi_bars <- all_midi_bars[-1,]
 for(i in 1:32){
 
 sum_music <- colSums(music_matrix)
-sum_music <- sum_music[(48+128+1):length(sum_music)]
+sum_music <- sum_music[((96*4)+128+1):length(sum_music)]
 prob_music <- sum_music/sum(sum_music)
 
 # figure out average number of notes
-#mean(rowSums(music_matrix[,(48+128+1):dim(music_matrix)[2]]))
+#mean(rowSums(music_matrix[,((96*4)+128+1):dim(music_matrix)[2]]))
 
 # note size parameter controls note density in the bar
-# 24 is about the average from the song
-prob_bar <- rbinom(length(sum_music),size = 48,prob_music)
+# 16 is about the average from the song
+prob_bar <- rbinom(length(sum_music),size = 32,prob_music)
 prob_bar[prob_bar > 1] <- 1
 #sum(prob_bar)
 #plot(prob_bar)
@@ -213,7 +220,7 @@ prob_bar[prob_bar > 1] <- 1
 #reconstitute matrix
 one_bar_matrix <- matrix(prob_bar,
                          nrow=128,
-                         ncol=48,
+                         ncol=(96*4),
                          byrow=F)
 
 #filter for notes and times
@@ -223,10 +230,10 @@ colnames(note_times) <- c("note_num","bar_step")
 # convert back to midi time in ticks
 note_times <- as_tibble(note_times)
 note_times <- note_times %>%
-  mutate(ticks = (bar_step *8) -8,
+  mutate(ticks = (bar_step *1) -1,
          note_id = 1:n(),
          note_on = ticks,
-         note_off = ticks+8) %>%
+         note_off = ticks+32) %>%
   pivot_longer(cols = c("note_on","note_off"), 
                names_to = "type",
                values_to = "cumulative_ticks") %>%
@@ -252,7 +259,6 @@ midi_bar <- midi_bar %>%
     control = NaN,
     value = NaN,
     channel = 0,
-    program = NaN,
     velocity = 64
          )
 
@@ -288,12 +294,12 @@ test_midi$midi_frame_unnested$update_unnested_mf(mod_df)
 
 # write midi file
 
-test_midi$write_file("mario_P48_allbar.mid")
+test_midi$write_file("heart_soul_A.mid")
 
 #########
 # bounce 
 
-track_name <- "mario_P48_allbar"
+track_name <- "heart_soul_A"
 
 wav_name <- paste0(track_name,".wav")
 midi_name <- paste0(track_name,".mid")
@@ -315,148 +321,32 @@ if(file.exists(wav_name)){
 }
 
 ```
+`r html_tag_audio("heart_soul_A.mp3", type = "wav")`
 
-I used the `rbinom()` function to randomly generate notes based on estimates of note x time feature probabilities. It's possible to control the amount of notes generated using the `size` parameter. The following examples have three levels of note density, from sparse to thick.
+rendered using a nintendo soundfont to increase the ridiculousness of this. It is approaching "modem-connecting-to-the-internet-sounds", but too melodic.
 
-About 12 notes/bar: `r html_tag_audio("mario_P12_allbar.mp3", type = "wav")`
+## thoughts
 
- About 24 notes/bar: `r html_tag_audio("mario_P24_allbar.mp3", type = "wav")`
+The main goal for today was to find out how generalizable my previous code would be to a midi file that I recorded myself playing piano.
 
-About 48 notes/bar: `r html_tag_audio("mario_P48_allbar.mp3", type = "wav")`
+I learned that ableton produced midi files with no tempo, so I need to set that myself. Ableton's midi files have 96 ticks per beat, at least mine do, I wonder if I can change that.
 
-## to do
+I played the piano duet heart and soul to a metronome set at 103 BPM. I was pretty messy with the timing, but played stuff all over the keyboard for about 184 bars. 
 
-lots of stuff to clean up here. currently bespoke.
+I did not quantize the midi file. The 96 ticks per bar resolution is not great at all, especially in terms of capturing live music performance, so a lot of the rhythm is really messed up (also sloppy playing, whatever). Nevertheless, I ended up with a matrix of 128 notes by (96x4) ticks, for each bar of music. 
 
-----------------------
+This is all very cool in terms of getting some of my own playing into a matrix form. 
 
-<!--
+The mp3 above is generated randomly from the note x tick probabilities that I calculated from my overall corpus of bars of notes that I played. It sounds like clown music, ha. At the present time, what is happening is that every note is treated completely independently from each other in terms of probabilistic sampling. It's very busy, and not particularly musical, still mildly interesting. I wonder what this would sound like with way more notes, until it approaches something like white noise. hmmm.
 
-## Adding more midi files
-
-The above worked for one midi file. Working on some code to process multiple midi files into a larger matrix. It would be nice to end up with some functions, we'll see what happens.
-
-```{r, eval=FALSE}
-# get list of midi file names
-f_names <- list.files("midi", full.names =  T)
-
-#####################################
-# IMPORT
-#####################################
-
-#import midi using miditapyr
-test_midi <- pyramidi::miditapyr$MidiFrames(f_names[1])
-
-#import using mido
-mido_import <- pyramidi::mido$MidiFile(f_names[1])
-
-# to R dataframe
-dfc <- pyramidi::miditapyr$frame_midi(mido_import)
-ticks_per_beat <- mido_import$ticks_per_beat
-
-# unnest the dataframe
-df <- pyramidi::miditapyr$unnest_midi(dfc)
-```
-
-1. Load in a midi file
-2. Which tracks should be converted?
-  - some tracks are only used for meta messages
-  - some are used for drums etc.
-3. Quick function to choose tracks that have more than 50 rows, and are not drums (channel 9 in the midi file)
-
-```{r, eval=FALSE}
-
-choose_tracks <- function(df) {
-  
-  df %>%
-    filter(channel != 9) %>%
-    group_by(i_track) %>%
-    count()
-  
-}
-
-tracks_to_convert <- choose_tracks(df)
-
-```
+There are a whole bunch more things to try to wrestle these probabilities into something more interesting. But, that's for another day.
 
 
 
-```{r, eval=FALSE}
-
-####################################
-# CONVERT TO MATRIX
-####################################
-
-# grab track 1
-track_1 <- df %>%
-  filter(i_track == tracks_to_convert$i_track[1],
-         type %in% c("note_on","note_off") ==TRUE) %>%
-  mutate(total_time = cumsum(time)) %>%
-  filter(type == "note_on")
-
-time_steps <- seq(0,max(track_1$total_time),8)
-total_bars <- round(length(time_steps)/48)+1
-bars <- rep(1:total_bars,each=48)
-bar_steps <- rep(1:48,total_bars)
-
-metric_tibble <- tibble(time_steps = time_steps,
-                        bars = bars[1:length(time_steps)],
-                        bar_steps =bar_steps[1:length(time_steps)])
-
-track_1 <- track_1 %>%
-  mutate(time_markers = 0,
-         bars = 0,
-         bar_steps = 0) 
-
-for(i in 1:dim(track_1)[1]){
-  track_1$time_markers[i] <- which(time_steps %in% track_1$total_time[i])
-}
-
-# get bar divisions, add them to track_1
-
-for(i in 1:dim(track_1)[1]){
-  get_timestep <- time_steps[track_1$time_markers[i]]
-  track_1$bars[i] <- metric_tibble %>%
-    filter(time_steps == get_timestep) %>%
-    pull(bars)
-  track_1$bar_steps[i] <- metric_tibble %>%
-    filter(time_steps == get_timestep) %>%
-    pull(bar_steps)
-}
-
-# assign intervals to the bars
-
-music_matrix <- matrix(0,
-                       ncol = (48+128+(48*128)),
-                       nrow = max(track_1$bars)
-)
-
-for(i in 1:max(track_1$bars)){
-  
-  bar_midi <- track_1%>%
-    filter(bars == i)
-  
-  one_bar <- matrix(0,
-                  nrow=dim(pyramidi::midi_defs)[1],
-                  ncol=48)
-  
-  for(j in 1:dim(one_bar)[1]){
-    one_bar[bar_midi$note[j],bar_midi$bar_steps[j]] <- 1
-  }
-  
-  
-  pitch_vector <- rowSums(one_bar)
-  time_vector <- colSums(one_bar)
-  pitch_by_time <- c(one_bar)
-
-  #concatenate_vector
-  music_vector <- c(pitch_vector,time_vector,pitch_by_time)
-  
-  music_matrix[i,] <- music_vector
-  
-}
-
-```
 
 
--->
+
+
+
+
+

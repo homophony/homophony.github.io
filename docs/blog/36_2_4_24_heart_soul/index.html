@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Matt Crump">
-<meta name="dcterms.date" content="2024-02-03">
-<meta name="description" content="Converting midi to feature vectors and back, with some probabilistic versions of the super mario overworld music.">
+<meta name="dcterms.date" content="2024-02-04">
+<meta name="description" content="A sunday synthesizer exploration.">
 
-<title>Homophony - Midi to matrix representation and probabilistic super mario music with R</title>
+<title>Homophony - Messing around with heart and soul</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -115,13 +115,13 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 
 
 <link rel="stylesheet" href="../../css/styles.css">
-<meta property="og:title" content="Homophony - Midi to matrix representation and probabilistic super mario music with R">
-<meta property="og:description" content="Converting midi to feature vectors and back, with some probabilistic versions of the super mario overworld music.">
-<meta property="og:image" content="https://homophony.quest/blog/35_2_3_24_matrix_midi/cover.jpg">
+<meta property="og:title" content="Homophony - Messing around with heart and soul">
+<meta property="og:description" content="A sunday synthesizer exploration.">
+<meta property="og:image" content="https://homophony.quest/blog/36_2_4_24_heart_soul/cover.jpg">
 <meta property="og:site_name" content="Homophony">
-<meta name="twitter:title" content="Homophony - Midi to matrix representation and probabilistic super mario music with R">
-<meta name="twitter:description" content="Converting midi to feature vectors and back, with some probabilistic versions of the super mario overworld music.">
-<meta name="twitter:image" content="https://homophony.quest/blog/35_2_3_24_matrix_midi/cover.jpg">
+<meta name="twitter:title" content="Homophony - Messing around with heart and soul">
+<meta name="twitter:description" content="A sunday synthesizer exploration.">
+<meta name="twitter:image" content="https://homophony.quest/blog/36_2_4_24_heart_soul/cover.jpg">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -197,8 +197,8 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#all-voices" id="toc-all-voices" class="nav-link active" data-scroll-target="#all-voices">all voices</a></li>
-  <li><a href="#to-do" id="toc-to-do" class="nav-link" data-scroll-target="#to-do">to do</a></li>
+  <li><a href="#try-stuff" id="toc-try-stuff" class="nav-link active" data-scroll-target="#try-stuff">Try stuff</a></li>
+  <li><a href="#thoughts" id="toc-thoughts" class="nav-link" data-scroll-target="#thoughts">thoughts</a></li>
   </ul>
 </nav>
     </div>
@@ -207,11 +207,10 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Midi to matrix representation and probabilistic super mario music with R</h1>
+<h1 class="title">Messing around with heart and soul</h1>
   <div class="quarto-categories">
     <div class="quarto-category">midi</div>
     <div class="quarto-category">generative</div>
-    <div class="quarto-category">mario</div>
     <div class="quarto-category">matrix</div>
     <div class="quarto-category">rstats</div>
   </div>
@@ -219,7 +218,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 
 <div>
   <div class="description">
-    Converting midi to feature vectors and back, with some probabilistic versions of the super mario overworld music.
+    A sunday synthesizer exploration.
   </div>
 </div>
 
@@ -236,7 +235,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 3, 2024</p>
+      <p class="date">February 4, 2024</p>
     </div>
   </div>
   
@@ -273,7 +272,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>pipeline.enable_attention_slicing(<span class="st">"max"</span>)</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> <span class="st">"super mario enters the matrix. mario matrix. feature vector encoding. binary representation. pixel art."</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> <span class="st">"heart and soul piano duet. probabilities. linear algebra. markov chain. thundercats cartoon."</span></span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> s <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">30</span>):</span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> n <span class="kw">in</span> [<span class="dv">5</span>,<span class="dv">10</span>]:</span>
@@ -295,13 +294,29 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </div>
 
 <div class="no-row-height column-margin column-container"><div class="">
-<p>super mario enters the matrix. mario matrix. feature vector encoding. binary representation. pixel art. - Dreamshaper v7</p>
-</div></div><p>For various reasons I’d like to convert midi into a matrix format and back again. In this example, I represent each bar in the midi file in a note x time step matrix. The matrix for each bar is concatenated into a long vector, and the whole song is represented as a bar x feature vector matrix. I then calculate the column sums, and divide by the total to get probabilities for each note x time cell. These probabilities can be used to generate new bars, by randomly creating notes in time as a function of those probabilities. After making new bars, I work backwards to generate midi files from the matrix representations to listen to everything.</p>
-<p>I used the mario overworld midi file, and this yields some probabilistic version of the overworld theme.</p>
-<p>Here’s a picture of roughly what’s happening:</p>
-<p><img src="images/figure.png" class="img-fluid"></p>
-<section id="all-voices" class="level2">
-<h2 class="anchored" data-anchor-id="all-voices">all voices</h2>
+<p>heart and soul piano duet. probabilities. linear algebra. markov chain. thundercats cartoon. - Dreamshaper v7</p>
+</div></div><p>I’m following similar steps <a href="https://homophony.quest/blog/35_2_3_24_matrix_midi/">from this post</a>, but with my own noodling around playing heart and soul on piano.</p>
+<p>Notes:</p>
+<ol type="1">
+<li>Riff on Heart and Soul on midi piano, BPM 103</li>
+<li>Load in midi</li>
+</ol>
+<ul>
+<li>check if i need to quantize it.</li>
+</ul>
+<ol start="3" type="1">
+<li>Turn it into a matrix</li>
+<li>Generate notes probabilistically</li>
+<li>listen to it</li>
+</ol>
+<section id="try-stuff" class="level2">
+<h2 class="anchored" data-anchor-id="try-stuff">Try stuff</h2>
+<ul>
+<li>ticks per beat is 96</li>
+<li>going with temporal units down to smallest tick (1).</li>
+<li>got it working, ya</li>
+<li>generate 1 minute of heart and soul nonsense with nintendo synth sound for fun</li>
+</ul>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
@@ -315,10 +330,10 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <details class="code-fold">
 <summary>Show the code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#import midi using miditapyr</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>test_midi <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">MidiFrames</span>(<span class="st">"all_overworld.mid"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>test_midi <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">MidiFrames</span>(<span class="st">"heart_soul_103_185b.mid"</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#import using mido</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>mido_import <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>mido<span class="sc">$</span><span class="fu">MidiFile</span>(<span class="st">"all_overworld.mid"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>mido_import <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>mido<span class="sc">$</span><span class="fu">MidiFile</span>(<span class="st">"heart_soul_103_185b.mid"</span>)</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># to R dataframe</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>dfc <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">frame_midi</span>(mido_import)</span>
@@ -337,10 +352,10 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">total_time =</span> <span class="fu">cumsum</span>(time)) <span class="sc">%&gt;%</span></span>
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"note_on"</span>)</span>
 <span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>time_steps <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="fu">max</span>(track_1<span class="sc">$</span>total_time),<span class="dv">8</span>)</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>total_bars <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">length</span>(time_steps)<span class="sc">/</span><span class="dv">48</span>)<span class="sc">+</span><span class="dv">1</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>bars <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>total_bars,<span class="at">each=</span><span class="dv">48</span>)</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>bar_steps <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>,total_bars)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>time_steps <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="fu">max</span>(track_1<span class="sc">$</span>total_time),<span class="dv">1</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>total_bars <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">length</span>(time_steps)<span class="sc">/</span>(<span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>))<span class="sc">+</span><span class="dv">1</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>bars <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>total_bars,<span class="at">each=</span>(<span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>))</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>bar_steps <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>(<span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>),total_bars)</span>
 <span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>metric_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">time_steps =</span> time_steps,</span>
 <span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>                        <span class="at">bars =</span> bars[<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(time_steps)],</span>
@@ -370,7 +385,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="co"># assign intervals to the bars</span></span>
 <span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>music_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>                       <span class="at">ncol =</span> (<span class="dv">48</span><span class="sc">+</span><span class="dv">128</span><span class="sc">+</span>(<span class="dv">48</span><span class="sc">*</span><span class="dv">128</span>)),</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>                       <span class="at">ncol =</span> ((<span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>)<span class="sc">+</span><span class="dv">128</span><span class="sc">+</span>((<span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>)<span class="sc">*</span><span class="dv">128</span>)),</span>
 <span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nrow =</span> <span class="fu">max</span>(track_1<span class="sc">$</span>bars)</span>
 <span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a></span>
@@ -381,7 +396,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>  one_bar <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,</span>
 <span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nrow=</span><span class="fu">dim</span>(pyramidi<span class="sc">::</span>midi_defs)[<span class="dv">1</span>],</span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ncol=</span><span class="dv">48</span>)</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ncol=</span>(<span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>))</span>
 <span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(one_bar)[<span class="dv">1</span>]){</span>
 <span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>    one_bar[bar_midi<span class="sc">$</span>note[j],bar_midi<span class="sc">$</span>bar_steps[j]] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
@@ -408,15 +423,15 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">32</span>){</span>
 <span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>sum_music <span class="ot">&lt;-</span> <span class="fu">colSums</span>(music_matrix)</span>
-<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>sum_music <span class="ot">&lt;-</span> sum_music[(<span class="dv">48</span><span class="sc">+</span><span class="dv">128</span><span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">length</span>(sum_music)]</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>sum_music <span class="ot">&lt;-</span> sum_music[((<span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>)<span class="sc">+</span><span class="dv">128</span><span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span><span class="fu">length</span>(sum_music)]</span>
 <span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>prob_music <span class="ot">&lt;-</span> sum_music<span class="sc">/</span><span class="fu">sum</span>(sum_music)</span>
 <span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a><span class="co"># figure out average number of notes</span></span>
-<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a><span class="co">#mean(rowSums(music_matrix[,(48+128+1):dim(music_matrix)[2]]))</span></span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a><span class="co">#mean(rowSums(music_matrix[,((96*4)+128+1):dim(music_matrix)[2]]))</span></span>
 <span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a><span class="co"># note size parameter controls note density in the bar</span></span>
-<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a><span class="co"># 24 is about the average from the song</span></span>
-<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>prob_bar <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="fu">length</span>(sum_music),<span class="at">size =</span> <span class="dv">48</span>,prob_music)</span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a><span class="co"># 16 is about the average from the song</span></span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>prob_bar <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="fu">length</span>(sum_music),<span class="at">size =</span> <span class="dv">32</span>,prob_music)</span>
 <span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>prob_bar[prob_bar <span class="sc">&gt;</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
 <span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a><span class="co">#sum(prob_bar)</span></span>
 <span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a><span class="co">#plot(prob_bar)</span></span>
@@ -424,7 +439,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a><span class="co">#reconstitute matrix</span></span>
 <span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>one_bar_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(prob_bar,</span>
 <span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>                         <span class="at">nrow=</span><span class="dv">128</span>,</span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>                         <span class="at">ncol=</span><span class="dv">48</span>,</span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>                         <span class="at">ncol=</span>(<span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>),</span>
 <span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>                         <span class="at">byrow=</span>F)</span>
 <span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a><span class="co">#filter for notes and times</span></span>
@@ -434,10 +449,10 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a><span class="co"># convert back to midi time in ticks</span></span>
 <span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>note_times <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(note_times)</span>
 <span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>note_times <span class="ot">&lt;-</span> note_times <span class="sc">%&gt;%</span></span>
-<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ticks =</span> (bar_step <span class="sc">*</span><span class="dv">8</span>) <span class="sc">-</span><span class="dv">8</span>,</span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ticks =</span> (bar_step <span class="sc">*</span><span class="dv">1</span>) <span class="sc">-</span><span class="dv">1</span>,</span>
 <span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>         <span class="at">note_id =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>(),</span>
 <span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>         <span class="at">note_on =</span> ticks,</span>
-<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>         <span class="at">note_off =</span> ticks<span class="sc">+</span><span class="dv">8</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>         <span class="at">note_off =</span> ticks<span class="sc">+</span><span class="dv">32</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">c</span>(<span class="st">"note_on"</span>,<span class="st">"note_off"</span>), </span>
 <span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"type"</span>,</span>
 <span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"cumulative_ticks"</span>) <span class="sc">%&gt;%</span></span>
@@ -463,215 +478,80 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>    <span class="at">control =</span> <span class="cn">NaN</span>,</span>
 <span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="cn">NaN</span>,</span>
 <span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a>    <span class="at">channel =</span> <span class="dv">0</span>,</span>
-<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>    <span class="at">program =</span> <span class="cn">NaN</span>,</span>
-<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>    <span class="at">velocity =</span> <span class="dv">64</span></span>
-<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>         )</span>
-<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>all_midi_bars <span class="ot">&lt;-</span> <span class="fu">rbind</span>(all_midi_bars,midi_bar)</span>
-<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a><span class="co"># get meta messages</span></span>
-<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>meta_midi  <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
-<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(meta <span class="sc">==</span><span class="cn">TRUE</span>,</span>
-<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>         i_track <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tempo =</span> <span class="cn">NaN</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(</span>
-<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>    <span class="at">i_track =</span> <span class="dv">0</span>,</span>
-<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>    <span class="at">time =</span> <span class="dv">0</span>,</span>
-<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>    <span class="at">meta =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">"set_tempo"</span>,</span>
-<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>    <span class="at">tempo =</span> <span class="dv">500000</span>,</span>
-<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>    <span class="at">.before =</span> <span class="dv">2</span></span>
-<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a><span class="co"># merge bar midi into full midi file</span></span>
-<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>midi_track <span class="ot">&lt;-</span> meta_midi <span class="sc">%&gt;%</span></span>
-<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(all_midi_bars,<span class="at">.after =</span> <span class="dv">3</span>)</span>
-<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a><span class="do">##########################</span></span>
-<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a><span class="co"># bounce</span></span>
-<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>mod_df <span class="ot">&lt;-</span> midi_track</span>
-<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a><span class="co"># update df</span></span>
-<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a>test_midi<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span><span class="fu">update_unnested_mf</span>(mod_df)</span>
-<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a><span class="co"># write midi file</span></span>
-<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a>test_midi<span class="sc">$</span><span class="fu">write_file</span>(<span class="st">"mario_P48_allbar.mid"</span>)</span>
-<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a><span class="do">#########</span></span>
-<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a><span class="co"># bounce </span></span>
-<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a>track_name <span class="ot">&lt;-</span> <span class="st">"mario_P48_allbar"</span></span>
-<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>wav_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".wav"</span>)</span>
-<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>midi_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mid"</span>)</span>
-<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a>mp3_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mp3"</span>)</span>
-<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a><span class="co"># write the midi file to disk</span></span>
-<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a><span class="co">#miditapyr$write_midi(dfc, ticks_per_beat, midi_name)</span></span>
-<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a><span class="co"># synthesize midi file to wav with fluid synth</span></span>
-<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a>system_command <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}'</span>)</span>
-<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(system_command)</span>
-<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a><span class="co"># convert wav to mp3</span></span>
-<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a>av<span class="sc">::</span><span class="fu">av_audio_convert</span>(wav_name,mp3_name)</span>
-<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a><span class="co"># clean up and delete wav</span></span>
-<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">file.exists</span>(wav_name)){</span>
-<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.remove</span>(wav_name)</span>
-<span id="cb3-210"><a href="#cb3-210" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>    <span class="at">velocity =</span> <span class="dv">64</span></span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>         )</span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>all_midi_bars <span class="ot">&lt;-</span> <span class="fu">rbind</span>(all_midi_bars,midi_bar)</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a><span class="co"># get meta messages</span></span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>meta_midi  <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(meta <span class="sc">==</span><span class="cn">TRUE</span>,</span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>         i_track <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tempo =</span> <span class="cn">NaN</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(</span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>    <span class="at">i_track =</span> <span class="dv">0</span>,</span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>    <span class="at">time =</span> <span class="dv">0</span>,</span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>    <span class="at">meta =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">"set_tempo"</span>,</span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>    <span class="at">tempo =</span> <span class="dv">500000</span>,</span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>    <span class="at">.before =</span> <span class="dv">2</span></span>
+<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a><span class="co"># merge bar midi into full midi file</span></span>
+<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>midi_track <span class="ot">&lt;-</span> meta_midi <span class="sc">%&gt;%</span></span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_row</span>(all_midi_bars,<span class="at">.after =</span> <span class="dv">3</span>)</span>
+<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a><span class="do">##########################</span></span>
+<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a><span class="co"># bounce</span></span>
+<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>mod_df <span class="ot">&lt;-</span> midi_track</span>
+<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a><span class="co"># update df</span></span>
+<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>test_midi<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span><span class="fu">update_unnested_mf</span>(mod_df)</span>
+<span id="cb3-182"><a href="#cb3-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-183"><a href="#cb3-183" aria-hidden="true" tabindex="-1"></a><span class="co"># write midi file</span></span>
+<span id="cb3-184"><a href="#cb3-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-185"><a href="#cb3-185" aria-hidden="true" tabindex="-1"></a>test_midi<span class="sc">$</span><span class="fu">write_file</span>(<span class="st">"heart_soul_A.mid"</span>)</span>
+<span id="cb3-186"><a href="#cb3-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-187"><a href="#cb3-187" aria-hidden="true" tabindex="-1"></a><span class="do">#########</span></span>
+<span id="cb3-188"><a href="#cb3-188" aria-hidden="true" tabindex="-1"></a><span class="co"># bounce </span></span>
+<span id="cb3-189"><a href="#cb3-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-190"><a href="#cb3-190" aria-hidden="true" tabindex="-1"></a>track_name <span class="ot">&lt;-</span> <span class="st">"heart_soul_A"</span></span>
+<span id="cb3-191"><a href="#cb3-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-192"><a href="#cb3-192" aria-hidden="true" tabindex="-1"></a>wav_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".wav"</span>)</span>
+<span id="cb3-193"><a href="#cb3-193" aria-hidden="true" tabindex="-1"></a>midi_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mid"</span>)</span>
+<span id="cb3-194"><a href="#cb3-194" aria-hidden="true" tabindex="-1"></a>mp3_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mp3"</span>)</span>
+<span id="cb3-195"><a href="#cb3-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-196"><a href="#cb3-196" aria-hidden="true" tabindex="-1"></a><span class="co"># write the midi file to disk</span></span>
+<span id="cb3-197"><a href="#cb3-197" aria-hidden="true" tabindex="-1"></a><span class="co">#miditapyr$write_midi(dfc, ticks_per_beat, midi_name)</span></span>
+<span id="cb3-198"><a href="#cb3-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-199"><a href="#cb3-199" aria-hidden="true" tabindex="-1"></a><span class="co"># synthesize midi file to wav with fluid synth</span></span>
+<span id="cb3-200"><a href="#cb3-200" aria-hidden="true" tabindex="-1"></a>system_command <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}'</span>)</span>
+<span id="cb3-201"><a href="#cb3-201" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(system_command)</span>
+<span id="cb3-202"><a href="#cb3-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-203"><a href="#cb3-203" aria-hidden="true" tabindex="-1"></a><span class="co"># convert wav to mp3</span></span>
+<span id="cb3-204"><a href="#cb3-204" aria-hidden="true" tabindex="-1"></a>av<span class="sc">::</span><span class="fu">av_audio_convert</span>(wav_name,mp3_name)</span>
+<span id="cb3-205"><a href="#cb3-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-206"><a href="#cb3-206" aria-hidden="true" tabindex="-1"></a><span class="co"># clean up and delete wav</span></span>
+<span id="cb3-207"><a href="#cb3-207" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">file.exists</span>(wav_name)){</span>
+<span id="cb3-208"><a href="#cb3-208" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.remove</span>(wav_name)</span>
+<span id="cb3-209"><a href="#cb3-209" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>I used the <code>rbinom()</code> function to randomly generate notes based on estimates of note x time feature probabilities. It’s possible to control the amount of notes generated using the <code>size</code> parameter. The following examples have three levels of note density, from sparse to thick.</p>
-<p>About 12 notes/bar: <audio controls=""> <source src="mario_P12_allbar.mp3" type="audio/wav"> </audio></p>
-<p>About 24 notes/bar: <audio controls=""> <source src="mario_P24_allbar.mp3" type="audio/wav"> </audio></p>
-<p>About 48 notes/bar: <audio controls=""> <source src="mario_P48_allbar.mp3" type="audio/wav"> </audio></p>
+<p><audio controls=""> <source src="heart_soul_A.mp3" type="audio/wav"> </audio></p>
+<p>rendered using a nintendo soundfont to increase the ridiculousness of this. It is approaching “modem-connecting-to-the-internet-sounds”, but too melodic.</p>
 </section>
-<section id="to-do" class="level2">
-<h2 class="anchored" data-anchor-id="to-do">to do</h2>
-<p>lots of stuff to clean up here. currently bespoke.</p>
-<hr>
-<!--
-
-## Adding more midi files
-
-The above worked for one midi file. Working on some code to process multiple midi files into a larger matrix. It would be nice to end up with some functions, we'll see what happens.
-
-
-::: {.cell}
-
-```{.r .cell-code}
-# get list of midi file names
-f_names <- list.files("midi", full.names =  T)
-
-#####################################
-# IMPORT
-#####################################
-
-#import midi using miditapyr
-test_midi <- pyramidi::miditapyr$MidiFrames(f_names[1])
-
-#import using mido
-mido_import <- pyramidi::mido$MidiFile(f_names[1])
-
-# to R dataframe
-dfc <- pyramidi::miditapyr$frame_midi(mido_import)
-ticks_per_beat <- mido_import$ticks_per_beat
-
-# unnest the dataframe
-df <- pyramidi::miditapyr$unnest_midi(dfc)
-```
-:::
-
-
-1. Load in a midi file
-2. Which tracks should be converted?
-  - some tracks are only used for meta messages
-  - some are used for drums etc.
-3. Quick function to choose tracks that have more than 50 rows, and are not drums (channel 9 in the midi file)
-
-
-::: {.cell}
-
-```{.r .cell-code}
-choose_tracks <- function(df) {
-  
-  df %>%
-    filter(channel != 9) %>%
-    group_by(i_track) %>%
-    count()
-  
-}
-
-tracks_to_convert <- choose_tracks(df)
-```
-:::
-
-::: {.cell}
-
-```{.r .cell-code}
-####################################
-# CONVERT TO MATRIX
-####################################
-
-# grab track 1
-track_1 <- df %>%
-  filter(i_track == tracks_to_convert$i_track[1],
-         type %in% c("note_on","note_off") ==TRUE) %>%
-  mutate(total_time = cumsum(time)) %>%
-  filter(type == "note_on")
-
-time_steps <- seq(0,max(track_1$total_time),8)
-total_bars <- round(length(time_steps)/48)+1
-bars <- rep(1:total_bars,each=48)
-bar_steps <- rep(1:48,total_bars)
-
-metric_tibble <- tibble(time_steps = time_steps,
-                        bars = bars[1:length(time_steps)],
-                        bar_steps =bar_steps[1:length(time_steps)])
-
-track_1 <- track_1 %>%
-  mutate(time_markers = 0,
-         bars = 0,
-         bar_steps = 0) 
-
-for(i in 1:dim(track_1)[1]){
-  track_1$time_markers[i] <- which(time_steps %in% track_1$total_time[i])
-}
-
-# get bar divisions, add them to track_1
-
-for(i in 1:dim(track_1)[1]){
-  get_timestep <- time_steps[track_1$time_markers[i]]
-  track_1$bars[i] <- metric_tibble %>%
-    filter(time_steps == get_timestep) %>%
-    pull(bars)
-  track_1$bar_steps[i] <- metric_tibble %>%
-    filter(time_steps == get_timestep) %>%
-    pull(bar_steps)
-}
-
-# assign intervals to the bars
-
-music_matrix <- matrix(0,
-                       ncol = (48+128+(48*128)),
-                       nrow = max(track_1$bars)
-)
-
-for(i in 1:max(track_1$bars)){
-  
-  bar_midi <- track_1%>%
-    filter(bars == i)
-  
-  one_bar <- matrix(0,
-                  nrow=dim(pyramidi::midi_defs)[1],
-                  ncol=48)
-  
-  for(j in 1:dim(one_bar)[1]){
-    one_bar[bar_midi$note[j],bar_midi$bar_steps[j]] <- 1
-  }
-  
-  
-  pitch_vector <- rowSums(one_bar)
-  time_vector <- colSums(one_bar)
-  pitch_by_time <- c(one_bar)
-
-  #concatenate_vector
-  music_vector <- c(pitch_vector,time_vector,pitch_by_time)
-  
-  music_matrix[i,] <- music_vector
-  
-}
-```
-:::
-
-
-
--->
+<section id="thoughts" class="level2">
+<h2 class="anchored" data-anchor-id="thoughts">thoughts</h2>
+<p>The main goal for today was to find out how generalizable my previous code would be to a midi file that I recorded myself playing piano.</p>
+<p>I learned that ableton produced midi files with no tempo, so I need to set that myself. Ableton’s midi files have 96 ticks per beat, at least mine do, I wonder if I can change that.</p>
+<p>I played the piano duet heart and soul to a metronome set at 103 BPM. I was pretty messy with the timing, but played stuff all over the keyboard for about 184 bars.</p>
+<p>I did not quantize the midi file. The 96 ticks per bar resolution is not great at all, especially in terms of capturing live music performance, so a lot of the rhythm is really messed up (also sloppy playing, whatever). Nevertheless, I ended up with a matrix of 128 notes by (96x4) ticks, for each bar of music.</p>
+<p>This is all very cool in terms of getting some of my own playing into a matrix form.</p>
+<p>The mp3 above is generated randomly from the note x tick probabilities that I calculated from my overall corpus of bars of notes that I played. It sounds like clown music, ha. At the present time, what is happening is that every note is treated completely independently from each other in terms of probabilistic sampling. It’s very busy, and not particularly musical, still mildly interesting. I wonder what this would sound like with way more notes, until it approaches something like white noise. hmmm.</p>
+<p>There are a whole bunch more things to try to wrestle these probabilities into something more interesting. But, that’s for another day.</p>
 
 
 </section>
