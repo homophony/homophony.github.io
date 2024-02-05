@@ -237,6 +237,11 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
   <li><a href="#conditionalized-sampling-on-starting-notes" id="toc-conditionalized-sampling-on-starting-notes" class="nav-link" data-scroll-target="#conditionalized-sampling-on-starting-notes">Conditionalized sampling on starting notes</a></li>
   </ul></li>
   <li><a href="#the-end" id="toc-the-end" class="nav-link" data-scroll-target="#the-end">The end</a></li>
+  <li><a href="#writing-functions" id="toc-writing-functions" class="nav-link" data-scroll-target="#writing-functions">Writing functions</a>
+  <ul class="collapse">
+  <li><a href="#importing-midi" id="toc-importing-midi" class="nav-link" data-scroll-target="#importing-midi">importing midi</a></li>
+  <li><a href="#converting-midi-to-a-feature-vector-matrix." id="toc-converting-midi-to-a-feature-vector-matrix." class="nav-link" data-scroll-target="#converting-midi-to-a-feature-vector-matrix.">converting midi to a feature vector matrix.</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -1378,9 +1383,224 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <section id="the-end" class="level2">
 <h2 class="anchored" data-anchor-id="the-end">The end</h2>
 <p>I’d like to start listening to these sequences. But, right now the code is pretty clunky to start generating lots of things to listen to. It’s probably time to refactor the code into functions so it’s all more generalizable, clear, and easier to use.</p>
+<hr>
+<p>And hello again</p>
+</section>
+<section id="writing-functions" class="level2">
+<h2 class="anchored" data-anchor-id="writing-functions">Writing functions</h2>
+<p>I’m at the point where note-book style code is getting frustrating, and I would like to have some functions at my disposal. I’m note quite ready to jump into developing an R package, so I’ll try a few things out down here for now.</p>
+<section id="importing-midi" class="level3">
+<h3 class="anchored" data-anchor-id="importing-midi">importing midi</h3>
+<p>I would just use <code>pyramidi::MidiFramer$new(path)</code> but some of my midi files don’t have set_tempo, so that fails. Need to wrap a few things and then return them to the global environment.</p>
+<p>Not sure it is a good or bad idea to put R6 objects into a list? So far it’s working.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>midi_to_object <span class="ot">&lt;-</span> <span class="cf">function</span>(file_path) {</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">#import midi using miditapyr</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  miditapyr_object <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">MidiFrames</span>(file_path)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#import using mido</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  mido_object <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>mido<span class="sc">$</span><span class="fu">MidiFile</span>(file_path)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># to R dataframe</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  message_list_df <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">frame_midi</span>(mido_object)</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  ticks_per_beat <span class="ot">&lt;-</span> mido_object<span class="sc">$</span>ticks_per_beat</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># unnest the dataframe</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  midi_df <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>miditapyr<span class="sc">$</span><span class="fu">unnest_midi</span>(message_list_df)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    midi_import_objects <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">miditapyr_object =</span> miditapyr_object,</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">mido_object =</span> mido_object,</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">message_list_df =</span> message_list_df,</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">ticks_per_beat =</span> ticks_per_beat,</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">midi_df =</span> midi_df</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a><span class="co"># test function</span></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>midi_import_objects <span class="ot">&lt;-</span> <span class="fu">midi_to_object</span>(<span class="st">"all_overworld.mid"</span>)</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a><span class="co"># import objects in list to global environment</span></span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a><span class="co"># bad form to put this in the above function?</span></span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a><span class="fu">list2env</span>(midi_import_objects, .GlobalEnv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="converting-midi-to-a-feature-vector-matrix." class="level3">
+<h3 class="anchored" data-anchor-id="converting-midi-to-a-feature-vector-matrix.">converting midi to a feature vector matrix.</h3>
+<p>I’m not confident that I have processed enough midi files to know how well any of this will generalize. I might start with small functions…</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>copy_and_extend_midi_df <span class="ot">&lt;-</span> <span class="cf">function</span>(midi_df, <span class="at">track_num =</span> <span class="dv">0</span>) {</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Select a particular track from the midi file</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  copy_df <span class="ot">&lt;-</span> midi_df <span class="sc">%&gt;%</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(i_track <span class="sc">==</span> track_num,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>           type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"note_on"</span>, <span class="st">"note_off"</span>) <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add column to sum cumulative time</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">total_time =</span> <span class="fu">cumsum</span>(time)) <span class="sc">%&gt;%</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># return only note_on</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"note_on"</span>)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>track_1 <span class="ot">&lt;-</span> <span class="fu">copy_and_extend_midi_df</span>(midi_df, <span class="dv">0</span>)</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a><span class="do">########################################</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a><span class="co"># work out new time divisions</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>make_metric_tibble <span class="ot">&lt;-</span> <span class="cf">function</span>(df, ticks_per_beat, <span class="at">bars=</span><span class="cn">NULL</span>, <span class="at">smallest_tick=</span><span class="cn">NULL</span> ) {</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">is.null</span>(smallest_tick) <span class="sc">==</span> <span class="cn">TRUE</span>){</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># if not set by user</span></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># set smallest temporal unit to smallest observed unit in time column</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>    smallest_tick <span class="ot">&lt;-</span> <span class="fu">min</span>(df<span class="sc">$</span>time[df<span class="sc">$</span>time <span class="sc">&gt;</span> <span class="dv">0</span>])</span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>  time_steps <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fu">max</span>(track_1<span class="sc">$</span>total_time), smallest_tick)</span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">is.null</span>(bars) <span class="sc">==</span> <span class="cn">TRUE</span>){</span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># only 4/4 for now</span></span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>    bars <span class="ot">&lt;-</span> <span class="fu">max</span>(df<span class="sc">$</span>total_time)<span class="sc">/</span>(ticks_per_beat<span class="sc">*</span><span class="dv">4</span>)</span>
+<span id="cb26-32"><a href="#cb26-32" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb26-33"><a href="#cb26-33" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-34"><a href="#cb26-34" aria-hidden="true" tabindex="-1"></a>  total_bars <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">length</span>(time_steps) <span class="sc">/</span> bars) <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb26-35"><a href="#cb26-35" aria-hidden="true" tabindex="-1"></a>  bar_vector <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>total_bars, <span class="at">each =</span> bars)</span>
+<span id="cb26-36"><a href="#cb26-36" aria-hidden="true" tabindex="-1"></a>  bar_steps <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>bars, total_bars)</span>
+<span id="cb26-37"><a href="#cb26-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-38"><a href="#cb26-38" aria-hidden="true" tabindex="-1"></a>  metric_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">time_steps =</span> time_steps,</span>
+<span id="cb26-39"><a href="#cb26-39" aria-hidden="true" tabindex="-1"></a>                          <span class="at">bars =</span> bar_vector[<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(time_steps)],</span>
+<span id="cb26-40"><a href="#cb26-40" aria-hidden="true" tabindex="-1"></a>                          <span class="at">bar_steps =</span> bar_steps[<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(time_steps)])</span>
+<span id="cb26-41"><a href="#cb26-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(metric_tibble)</span>
+<span id="cb26-42"><a href="#cb26-42" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-43"><a href="#cb26-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-44"><a href="#cb26-44" aria-hidden="true" tabindex="-1"></a>metric_tibble <span class="ot">&lt;-</span> <span class="fu">make_metric_tibble</span>(track_1,</span>
+<span id="cb26-45"><a href="#cb26-45" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">ticks_per_beat =</span> <span class="dv">96</span>,</span>
+<span id="cb26-46"><a href="#cb26-46" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">bars =</span> <span class="dv">48</span>,</span>
+<span id="cb26-47"><a href="#cb26-47" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">smallest_tick =</span> <span class="dv">8</span>)</span>
+<span id="cb26-48"><a href="#cb26-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-49"><a href="#cb26-49" aria-hidden="true" tabindex="-1"></a><span class="do">##########################################</span></span>
+<span id="cb26-50"><a href="#cb26-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-51"><a href="#cb26-51" aria-hidden="true" tabindex="-1"></a>add_bars_to_copy_df <span class="ot">&lt;-</span> <span class="cf">function</span>(df, metric_tibble) {</span>
+<span id="cb26-52"><a href="#cb26-52" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-53"><a href="#cb26-53" aria-hidden="true" tabindex="-1"></a>  <span class="co"># add new columns</span></span>
+<span id="cb26-54"><a href="#cb26-54" aria-hidden="true" tabindex="-1"></a>  df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb26-55"><a href="#cb26-55" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">time_markers =</span> <span class="dv">0</span>,</span>
+<span id="cb26-56"><a href="#cb26-56" aria-hidden="true" tabindex="-1"></a>           <span class="at">bars =</span> <span class="dv">0</span>,</span>
+<span id="cb26-57"><a href="#cb26-57" aria-hidden="true" tabindex="-1"></a>           <span class="at">bar_steps =</span> <span class="dv">0</span>)</span>
+<span id="cb26-58"><a href="#cb26-58" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-59"><a href="#cb26-59" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(df)[<span class="dv">1</span>]) {</span>
+<span id="cb26-60"><a href="#cb26-60" aria-hidden="true" tabindex="-1"></a>    df<span class="sc">$</span>time_markers[i] <span class="ot">&lt;-</span></span>
+<span id="cb26-61"><a href="#cb26-61" aria-hidden="true" tabindex="-1"></a>      <span class="fu">which</span>(metric_tibble<span class="sc">$</span>time_steps <span class="sc">%in%</span> df<span class="sc">$</span>total_time[i])</span>
+<span id="cb26-62"><a href="#cb26-62" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb26-63"><a href="#cb26-63" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-64"><a href="#cb26-64" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get bar divisions, add them to df</span></span>
+<span id="cb26-65"><a href="#cb26-65" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-66"><a href="#cb26-66" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(df)[<span class="dv">1</span>]) {</span>
+<span id="cb26-67"><a href="#cb26-67" aria-hidden="true" tabindex="-1"></a>    get_timestep <span class="ot">&lt;-</span> metric_tibble<span class="sc">$</span>time_steps[df<span class="sc">$</span>time_markers[i]]</span>
+<span id="cb26-68"><a href="#cb26-68" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-69"><a href="#cb26-69" aria-hidden="true" tabindex="-1"></a>    df<span class="sc">$</span>bars[i] <span class="ot">&lt;-</span> metric_tibble <span class="sc">%&gt;%</span></span>
+<span id="cb26-70"><a href="#cb26-70" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(time_steps <span class="sc">==</span> get_timestep) <span class="sc">%&gt;%</span></span>
+<span id="cb26-71"><a href="#cb26-71" aria-hidden="true" tabindex="-1"></a>      <span class="fu">pull</span>(bars)</span>
+<span id="cb26-72"><a href="#cb26-72" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-73"><a href="#cb26-73" aria-hidden="true" tabindex="-1"></a>    df<span class="sc">$</span>bar_steps[i] <span class="ot">&lt;-</span> metric_tibble <span class="sc">%&gt;%</span></span>
+<span id="cb26-74"><a href="#cb26-74" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(time_steps <span class="sc">==</span> get_timestep) <span class="sc">%&gt;%</span></span>
+<span id="cb26-75"><a href="#cb26-75" aria-hidden="true" tabindex="-1"></a>      <span class="fu">pull</span>(bar_steps)</span>
+<span id="cb26-76"><a href="#cb26-76" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb26-77"><a href="#cb26-77" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-78"><a href="#cb26-78" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(df)</span>
+<span id="cb26-79"><a href="#cb26-79" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-80"><a href="#cb26-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-81"><a href="#cb26-81" aria-hidden="true" tabindex="-1"></a>track_1 <span class="ot">&lt;-</span> <span class="fu">add_bars_to_copy_df</span>(track_1,metric_tibble)</span>
+<span id="cb26-82"><a href="#cb26-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-83"><a href="#cb26-83" aria-hidden="true" tabindex="-1"></a><span class="do">##########################################</span></span>
+<span id="cb26-84"><a href="#cb26-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-85"><a href="#cb26-85" aria-hidden="true" tabindex="-1"></a><span class="co"># create the matrix</span></span>
+<span id="cb26-86"><a href="#cb26-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-87"><a href="#cb26-87" aria-hidden="true" tabindex="-1"></a>create_midi_matrix <span class="ot">&lt;-</span> <span class="cf">function</span>(df, <span class="at">num_notes =</span> <span class="dv">128</span>, <span class="at">intervals_per_bar =</span> <span class="dv">48</span>){</span>
+<span id="cb26-88"><a href="#cb26-88" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-89"><a href="#cb26-89" aria-hidden="true" tabindex="-1"></a>  <span class="co">#initialize matrix</span></span>
+<span id="cb26-90"><a href="#cb26-90" aria-hidden="true" tabindex="-1"></a>  music_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,</span>
+<span id="cb26-91"><a href="#cb26-91" aria-hidden="true" tabindex="-1"></a>                       <span class="at">ncol =</span> (intervals_per_bar<span class="sc">+</span>num_notes<span class="sc">+</span>(intervals_per_bar<span class="sc">*</span>num_notes)),</span>
+<span id="cb26-92"><a href="#cb26-92" aria-hidden="true" tabindex="-1"></a>                       <span class="at">nrow =</span> <span class="fu">max</span>(df<span class="sc">$</span>bars)</span>
+<span id="cb26-93"><a href="#cb26-93" aria-hidden="true" tabindex="-1"></a>                       )</span>
+<span id="cb26-94"><a href="#cb26-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-95"><a href="#cb26-95" aria-hidden="true" tabindex="-1"></a>  <span class="co">#loop to assign note_ons to </span></span>
+<span id="cb26-96"><a href="#cb26-96" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">max</span>(df<span class="sc">$</span>bars)) {</span>
+<span id="cb26-97"><a href="#cb26-97" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-98"><a href="#cb26-98" aria-hidden="true" tabindex="-1"></a>    <span class="co"># get the bar </span></span>
+<span id="cb26-99"><a href="#cb26-99" aria-hidden="true" tabindex="-1"></a>    bar_midi <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb26-100"><a href="#cb26-100" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(bars <span class="sc">==</span> i)</span>
+<span id="cb26-101"><a href="#cb26-101" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-102"><a href="#cb26-102" aria-hidden="true" tabindex="-1"></a>    <span class="co"># make a temporary little matrix</span></span>
+<span id="cb26-103"><a href="#cb26-103" aria-hidden="true" tabindex="-1"></a>    one_bar <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,</span>
+<span id="cb26-104"><a href="#cb26-104" aria-hidden="true" tabindex="-1"></a>                      <span class="at">nrow =</span> num_notes,</span>
+<span id="cb26-105"><a href="#cb26-105" aria-hidden="true" tabindex="-1"></a>                      <span class="at">ncol =</span> intervals_per_bar)</span>
+<span id="cb26-106"><a href="#cb26-106" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-107"><a href="#cb26-107" aria-hidden="true" tabindex="-1"></a>    <span class="co"># assign 1s to note positions</span></span>
+<span id="cb26-108"><a href="#cb26-108" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(one_bar)[<span class="dv">1</span>]) {</span>
+<span id="cb26-109"><a href="#cb26-109" aria-hidden="true" tabindex="-1"></a>      one_bar[bar_midi<span class="sc">$</span>note[j], bar_midi<span class="sc">$</span>bar_steps[j]] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb26-110"><a href="#cb26-110" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb26-111"><a href="#cb26-111" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-112"><a href="#cb26-112" aria-hidden="true" tabindex="-1"></a>    <span class="co"># get summary vectors</span></span>
+<span id="cb26-113"><a href="#cb26-113" aria-hidden="true" tabindex="-1"></a>    pitch_vector <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(one_bar)</span>
+<span id="cb26-114"><a href="#cb26-114" aria-hidden="true" tabindex="-1"></a>    time_vector <span class="ot">&lt;-</span> <span class="fu">colSums</span>(one_bar)</span>
+<span id="cb26-115"><a href="#cb26-115" aria-hidden="true" tabindex="-1"></a>    pitch_by_time <span class="ot">&lt;-</span> <span class="fu">c</span>(one_bar)</span>
+<span id="cb26-116"><a href="#cb26-116" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-117"><a href="#cb26-117" aria-hidden="true" tabindex="-1"></a>    <span class="co">#concatenate_vector</span></span>
+<span id="cb26-118"><a href="#cb26-118" aria-hidden="true" tabindex="-1"></a>    music_vector <span class="ot">&lt;-</span> <span class="fu">c</span>(pitch_vector, time_vector, pitch_by_time)</span>
+<span id="cb26-119"><a href="#cb26-119" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-120"><a href="#cb26-120" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add to matrix</span></span>
+<span id="cb26-121"><a href="#cb26-121" aria-hidden="true" tabindex="-1"></a>    music_matrix[i, ] <span class="ot">&lt;-</span> music_vector</span>
+<span id="cb26-122"><a href="#cb26-122" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb26-123"><a href="#cb26-123" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb26-124"><a href="#cb26-124" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-125"><a href="#cb26-125" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(music_matrix)</span>
+<span id="cb26-126"><a href="#cb26-126" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-127"><a href="#cb26-127" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb26-128"><a href="#cb26-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-129"><a href="#cb26-129" aria-hidden="true" tabindex="-1"></a>music_matrix <span class="ot">&lt;-</span> <span class="fu">create_midi_matrix</span>(track_1,<span class="dv">128</span>,<span class="dv">48</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Starting to look more manageable. Testing the functions so far.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#import</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>midi_import_objects <span class="ot">&lt;-</span> <span class="fu">midi_to_object</span>(<span class="st">"all_overworld.mid"</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">list2env</span>(midi_import_objects, .GlobalEnv) <span class="co"># add to global env</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># extract midi df and add new timing information</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>track_1 <span class="ot">&lt;-</span> <span class="fu">copy_and_extend_midi_df</span>(midi_df, <span class="dv">0</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>metric_tibble <span class="ot">&lt;-</span> <span class="fu">make_metric_tibble</span>(track_1,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">ticks_per_beat =</span> <span class="dv">96</span>,</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">bars =</span> <span class="dv">48</span>,</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">smallest_tick =</span> <span class="dv">8</span>)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>track_1 <span class="ot">&lt;-</span> <span class="fu">add_bars_to_copy_df</span>(track_1,metric_tibble)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="co"># convert all bars to a feature vector matrix, with one bar per row.</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>music_matrix <span class="ot">&lt;-</span> <span class="fu">create_midi_matrix</span>(track_1,<span class="dv">128</span>,<span class="dv">48</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 
 
 
+</section>
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">

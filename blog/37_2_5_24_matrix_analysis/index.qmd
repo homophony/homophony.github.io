@@ -612,3 +612,232 @@ plot(new_sequence_matrix)
 ## The end
 
 I'd like to start listening to these sequences. But, right now the code is pretty clunky to start generating lots of things to listen to. It's probably time to refactor the code into functions so it's all more generalizable, clear, and easier to use.
+
+-------------
+
+And hello again
+
+## Writing functions
+
+I'm at the point where note-book style code is getting frustrating, and I would like to have some functions at my disposal. I'm note quite ready to jump into developing an R package, so I'll try a few things out down here for now.
+
+### importing midi
+
+I would just use `pyramidi::MidiFramer$new(path)` but some of my midi files don't have set_tempo, so that fails. Need to wrap a few things and then return them to the global environment.
+
+Not sure it is a good or bad idea to put R6 objects into a list? So far it's working.
+
+```{r}
+midi_to_object <- function(file_path) {
+  #import midi using miditapyr
+  miditapyr_object <- pyramidi::miditapyr$MidiFrames(file_path)
+  
+  #import using mido
+  mido_object <- pyramidi::mido$MidiFile(file_path)
+  
+  # to R dataframe
+  message_list_df <- pyramidi::miditapyr$frame_midi(mido_object)
+  ticks_per_beat <- mido_object$ticks_per_beat
+  
+  # unnest the dataframe
+  midi_df <- pyramidi::miditapyr$unnest_midi(message_list_df)
+  
+  return(
+    midi_import_objects <- list(
+      miditapyr_object = miditapyr_object,
+      mido_object = mido_object,
+      message_list_df = message_list_df,
+      ticks_per_beat = ticks_per_beat,
+      midi_df = midi_df
+    )
+  )
+}
+
+# test function
+midi_import_objects <- midi_to_object("all_overworld.mid")
+
+# import objects in list to global environment
+# bad form to put this in the above function?
+list2env(midi_import_objects, .GlobalEnv)
+```
+
+### converting midi to a feature vector matrix.
+
+I'm not confident that I have processed enough midi files to know how well any of this will generalize. I might start with small functions...
+
+```{r}
+
+copy_and_extend_midi_df <- function(midi_df, track_num = 0) {
+  # Select a particular track from the midi file
+  copy_df <- midi_df %>%
+    filter(i_track == track_num,
+           type %in% c("note_on", "note_off") == TRUE) %>%
+    # add column to sum cumulative time
+    mutate(total_time = cumsum(time)) %>%
+    # return only note_on
+    filter(type == "note_on")
+  
+}
+
+track_1 <- copy_and_extend_midi_df(midi_df, 0)
+
+########################################
+
+# work out new time divisions
+
+make_metric_tibble <- function(df, ticks_per_beat, bars=NULL, smallest_tick=NULL ) {
+  
+  if(is.null(smallest_tick) == TRUE){
+    # if not set by user
+    # set smallest temporal unit to smallest observed unit in time column
+    smallest_tick <- min(df$time[df$time > 0])
+  }
+  
+  time_steps <- seq(0, max(track_1$total_time), smallest_tick)
+  
+  if(is.null(bars) == TRUE){
+    # only 4/4 for now
+    bars <- max(df$total_time)/(ticks_per_beat*4)
+  }
+  
+  total_bars <- round(length(time_steps) / bars) + 1
+  bar_vector <- rep(1:total_bars, each = bars)
+  bar_steps <- rep(1:bars, total_bars)
+  
+  metric_tibble <- tibble(time_steps = time_steps,
+                          bars = bar_vector[1:length(time_steps)],
+                          bar_steps = bar_steps[1:length(time_steps)])
+  return(metric_tibble)
+}
+
+metric_tibble <- make_metric_tibble(track_1,
+                                    ticks_per_beat = 96,
+                                    bars = 48,
+                                    smallest_tick = 8)
+
+##########################################
+
+add_bars_to_copy_df <- function(df, metric_tibble) {
+  
+  # add new columns
+  df <- df %>%
+    mutate(time_markers = 0,
+           bars = 0,
+           bar_steps = 0)
+  
+  for (i in 1:dim(df)[1]) {
+    df$time_markers[i] <-
+      which(metric_tibble$time_steps %in% df$total_time[i])
+  }
+  
+  # get bar divisions, add them to df
+  
+  for (i in 1:dim(df)[1]) {
+    get_timestep <- metric_tibble$time_steps[df$time_markers[i]]
+    
+    df$bars[i] <- metric_tibble %>%
+      filter(time_steps == get_timestep) %>%
+      pull(bars)
+    
+    df$bar_steps[i] <- metric_tibble %>%
+      filter(time_steps == get_timestep) %>%
+      pull(bar_steps)
+  }
+  
+  return(df)
+}
+
+track_1 <- add_bars_to_copy_df(track_1,metric_tibble)
+
+##########################################
+
+# create the matrix
+
+create_midi_matrix <- function(df, num_notes = 128, intervals_per_bar = 48){
+  
+  #initialize matrix
+  music_matrix <- matrix(0,
+                       ncol = (intervals_per_bar+num_notes+(intervals_per_bar*num_notes)),
+                       nrow = max(df$bars)
+                       )
+
+  #loop to assign note_ons to 
+  for(i in 1:max(df$bars)) {
+    
+    # get the bar 
+    bar_midi <- df %>%
+      filter(bars == i)
+    
+    # make a temporary little matrix
+    one_bar <- matrix(0,
+                      nrow = num_notes,
+                      ncol = intervals_per_bar)
+    
+    # assign 1s to note positions
+    for (j in 1:dim(one_bar)[1]) {
+      one_bar[bar_midi$note[j], bar_midi$bar_steps[j]] <- 1
+    }
+    
+    # get summary vectors
+    pitch_vector <- rowSums(one_bar)
+    time_vector <- colSums(one_bar)
+    pitch_by_time <- c(one_bar)
+    
+    #concatenate_vector
+    music_vector <- c(pitch_vector, time_vector, pitch_by_time)
+    
+    # add to matrix
+    music_matrix[i, ] <- music_vector
+    
+  }
+  
+  return(music_matrix)
+  
+}
+
+music_matrix <- create_midi_matrix(track_1,128,48)
+
+
+```
+
+Starting to look more manageable. Testing the functions so far.
+
+```{r}
+#import
+midi_import_objects <- midi_to_object("all_overworld.mid")
+list2env(midi_import_objects, .GlobalEnv) # add to global env
+
+# extract midi df and add new timing information
+track_1 <- copy_and_extend_midi_df(midi_df, 0)
+
+metric_tibble <- make_metric_tibble(track_1,
+                                    ticks_per_beat = 96,
+                                    bars = 48,
+                                    smallest_tick = 8)
+
+track_1 <- add_bars_to_copy_df(track_1,metric_tibble)
+
+# convert all bars to a feature vector matrix, with one bar per row.
+music_matrix <- create_midi_matrix(track_1,128,48)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
