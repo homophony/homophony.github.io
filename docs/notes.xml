@@ -15,7 +15,2454 @@
 <link>https://homophony.quest/notes.html</link>
 </image>
 <generator>quarto-1.4.549</generator>
-<lastBuildDate>Sun, 04 Feb 2024 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 05 Feb 2024 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>MIDI analysis, bags of notes, and probabilistic generation</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/37_2_5_24_matrix_analysis/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> set_seed</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Image</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> random</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ssl</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#locate library</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mps"</span>)</span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"max"</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"cartoon musical notes in bags. Scrooge mcduck hoarding bags of musical notes. A huge room with a pile of musical notes. ducktales."</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>):</span>
+<span id="cb1-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]:</span>
+<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span></span>
+<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-29">    set_seed(seed)</span>
+<span id="cb1-30">    </span>
+<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>num_steps)</span>
+<span id="cb1-32">    </span>
+<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpeg"</span></span>
+<span id="cb1-34">    </span>
+<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/37_2_5_24_matrix_analysis/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>cartoon musical notes in bags. Scrooge mcduck hoarding bags of musical notes. A huge room with a pile of musical notes. ducktales. - Dreamshaper v7</p>
+</div></div><p>Over the past few posts I’ve been exploring probabilistic MIDI generation derived from note probabilities in existing MIDI files, using R.</p>
+<p>Aside from having a bit of fun with this, I have a musical interest in finding out whether this approach can be inspiring to my own playing somehow, and in terms of my day job as a cognition researcher, I have an interest in pushing my particular method of choice into this arena as a way to understand the method from a new perspective. This post is mainly notes to self along with some R code.</p>
+<section id="bags-of-notes" class="level2">
+<h2 class="anchored" data-anchor-id="bags-of-notes">Bags of notes</h2>
+<p>I’m representing midi files in one bar increments using a technique borrowed from language processing and semantic cognition research, sometimes called “bags of words” <span class="citation" data-cites="landauer1997">(Landauer and Dumais 1997)</span>. The technique represents chunks of written language as an n-gram frequency vector. For example, take a book and find all of the unique words in the book. Create a matrix with the same number of columns as unique words in the book. Split the book up into “bags”, which is a collection of words of some size. For example, the bag size could be at the sentence level or paragraph level. Let’s say paragraphs. For each paragraph count how many times each word appears in the paragraph. Finally, create a frequency count vector for the paragraph that has zeros for all words not found in the paragraph, and the individual frequency counts for all words in the paragraph. Repeat as necessary for all bags of words. This procedure creates a document x term matrix that represents aspects of how words co-occur with other words in natural language. I’ve been doing something similar with midi files.</p>
+<p>As this isn’t an academic paper, I won’t review much more literature, but suffice it to say, several variations on the “bags of words” approach have been used for MIDI representation and analysis, especially to aid MIDI similarity analysis.</p>
+<p>My current ’bags of notes” representation is as follows.</p>
+<ol type="1">
+<li>Split a midi file into bars</li>
+<li>Choose a unit for temporal resolution (e.g., quarter notes, eighth notes, down to the smallest possible representation, midi ticks).</li>
+<li>Create a note by time matrix. If the midi file has 96 ticks per beat, then the matrix will have 128 rows (for each possible midi note 0-127), and 96 x 4 = 384 columns.</li>
+<li>For each note occurrence in a bar, assign a 1 to the “note on” location in the matrix. Otherwise, assign a 0.</li>
+</ol>
+<p>This allows a midi file to be represented as “bags of notes” in successive note x time frequency matrices. Although I am presently disregarding note length, the resulting matrix contains all of the information necessary to reconstruct the note on messages back into MIDI format.</p>
+<p>I have some background modeling aims that involve training theories of learning and memory on patterns from MIDI files, so I’m also choosing representations that would work for those models. In this case, I am most interested in training a MINERVA-II style model on MIDI patterns <span class="citation" data-cites="hintzman1984">(Hintzman 1984)</span>. That model represents patterns in individual memory trace as feature vectors. I’d like to put bars of music as individual patterns into the model, and to do that I concatenate the note x time matrix into a single feature vector.</p>
+<p>I’ve decided to proceed by examples instead.</p>
+</section>
+<section id="mario-example" class="level2">
+<h2 class="anchored" data-anchor-id="mario-example">Mario example</h2>
+<p>In [this previous post](<a href="https://homophony.quest/blog/35_2_3_24_matrix_midi/" class="uri">https://homophony.quest/blog/35_2_3_24_matrix_midi/</a>) I imported the Super Mario overworld music, represented it in the above matrix format, and then generated probabilistic versions of the music. My plan here is to walk through the example in a little bit more detail, and then consider methods for potentially improving the musicality of generated sequences.</p>
+<p>The following code reads in the <code>overworld.mid</code> file, and converts it to a matrix. Let’s take a closer look.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(pyramidi)</span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr)</span>
+<span id="cb2-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyr)</span>
+<span id="cb2-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(purrr)</span></code></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#import midi using miditapyr</span></span>
+<span id="cb3-2">test_midi <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>miditapyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">MidiFrames</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"all_overworld.mid"</span>)</span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#import using mido</span></span>
+<span id="cb3-5">mido_import <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>mido<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">MidiFile</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"all_overworld.mid"</span>)</span>
+<span id="cb3-6"></span>
+<span id="cb3-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># to R dataframe</span></span>
+<span id="cb3-8">dfc <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>miditapyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">frame_midi</span>(mido_import)</span>
+<span id="cb3-9">ticks_per_beat <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> mido_import<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>ticks_per_beat</span>
+<span id="cb3-10"></span>
+<span id="cb3-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># unnest the dataframe</span></span>
+<span id="cb3-12">df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>miditapyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unnest_midi</span>(dfc)</span>
+<span id="cb3-13"></span>
+<span id="cb3-14"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">##############################################</span></span>
+<span id="cb3-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># convert to matrix</span></span>
+<span id="cb3-16"></span>
+<span id="cb3-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># grab track 1</span></span>
+<span id="cb3-18">track_1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> df <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-19">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(i_track <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb3-20">         type <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"note_on"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"note_off"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-21">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">total_time =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cumsum</span>(time)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-22">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(type <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"note_on"</span>)</span>
+<span id="cb3-23"></span>
+<span id="cb3-24">time_steps <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(track_1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>total_time),<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>)</span>
+<span id="cb3-25">total_bars <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(time_steps)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb3-26">bars <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>total_bars,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">each=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>)</span>
+<span id="cb3-27">bar_steps <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>,total_bars)</span>
+<span id="cb3-28"></span>
+<span id="cb3-29">metric_tibble <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time_steps =</span> time_steps,</span>
+<span id="cb3-30">                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bars =</span> bars[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(time_steps)],</span>
+<span id="cb3-31">                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bar_steps =</span>bar_steps[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(time_steps)])</span>
+<span id="cb3-32"></span>
+<span id="cb3-33">track_1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> track_1 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-34">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time_markers =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb3-35">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bars =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb3-36">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bar_steps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) </span>
+<span id="cb3-37"></span>
+<span id="cb3-38"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(track_1)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]){</span>
+<span id="cb3-39">  track_1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>time_markers[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(time_steps <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> track_1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>total_time[i])</span>
+<span id="cb3-40">}</span>
+<span id="cb3-41"></span>
+<span id="cb3-42"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># get bar divisions, add them to track_1</span></span>
+<span id="cb3-43"></span>
+<span id="cb3-44"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(track_1)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]){</span>
+<span id="cb3-45">  get_timestep <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> time_steps[track_1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>time_markers[i]]</span>
+<span id="cb3-46">  track_1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>bars[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> metric_tibble <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-47">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(time_steps <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> get_timestep) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-48">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pull</span>(bars)</span>
+<span id="cb3-49">  track_1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>bar_steps[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> metric_tibble <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-50">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(time_steps <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> get_timestep) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-51">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pull</span>(bar_steps)</span>
+<span id="cb3-52">}</span>
+<span id="cb3-53"></span>
+<span id="cb3-54"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># assign intervals to the bars</span></span>
+<span id="cb3-55"></span>
+<span id="cb3-56">music_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb3-57">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ncol =</span> (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>)),</span>
+<span id="cb3-58">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(track_1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>bars)</span>
+<span id="cb3-59">)</span>
+<span id="cb3-60"></span>
+<span id="cb3-61"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(track_1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>bars)){</span>
+<span id="cb3-62">  </span>
+<span id="cb3-63">  bar_midi <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> track_1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-64">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(bars <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> i)</span>
+<span id="cb3-65">  </span>
+<span id="cb3-66">  one_bar <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb3-67">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nrow=</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(pyramidi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>midi_defs)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>],</span>
+<span id="cb3-68">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ncol=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>)</span>
+<span id="cb3-69">  </span>
+<span id="cb3-70">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(j <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(one_bar)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]){</span>
+<span id="cb3-71">    one_bar[bar_midi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>note[j],bar_midi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>bar_steps[j]] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb3-72">  }</span>
+<span id="cb3-73">  </span>
+<span id="cb3-74">  </span>
+<span id="cb3-75">  pitch_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rowSums</span>(one_bar)</span>
+<span id="cb3-76">  time_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>(one_bar)</span>
+<span id="cb3-77">  pitch_by_time <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(one_bar)</span>
+<span id="cb3-78"></span>
+<span id="cb3-79">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#concatenate_vector</span></span>
+<span id="cb3-80">  music_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(pitch_vector,time_vector,pitch_by_time)</span>
+<span id="cb3-81">  </span>
+<span id="cb3-82">  music_matrix[i,] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> music_vector</span>
+<span id="cb3-83">  </span>
+<span id="cb3-84">}</span></code></pre></div>
+</details>
+</div>
+<section id="the-first-bar-of-the-midi-file" class="level3">
+<h3 class="anchored" data-anchor-id="the-first-bar-of-the-midi-file">The first bar of the midi file</h3>
+<p>The table shows a tibble of the first bar. I’ve added a few columns to code which bars the notes are occurring (not represented in a midi file), along with when each note occurs inside the bar. In this case, I’m using 8 ticks as the smallest unit of time inside a bar.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">first_bar <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> track_1 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(bars <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb4-3">knitr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">kable</span>(first_bar)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 4%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 9%">
+<col style="width: 15%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 4%">
+<col style="width: 3%">
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 7%">
+<col style="width: 2%">
+<col style="width: 5%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">i_track</th>
+<th style="text-align: left;">meta</th>
+<th style="text-align: left;">type</th>
+<th style="text-align: left;">name</th>
+<th style="text-align: right;">time</th>
+<th style="text-align: right;">numerator</th>
+<th style="text-align: right;">denominator</th>
+<th style="text-align: right;">clocks_per_click</th>
+<th style="text-align: right;">notated_32nd_notes_per_beat</th>
+<th style="text-align: right;">program</th>
+<th style="text-align: right;">channel</th>
+<th style="text-align: right;">control</th>
+<th style="text-align: right;">value</th>
+<th style="text-align: right;">note</th>
+<th style="text-align: right;">velocity</th>
+<th style="text-align: right;">total_time</th>
+<th style="text-align: right;">time_markers</th>
+<th style="text-align: right;">bars</th>
+<th style="text-align: right;">bar_steps</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">72</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">76</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">19</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">192</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">192</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">192</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">25</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">288</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">37</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">FALSE</td>
+<td style="text-align: left;">note_on</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">NaN</td>
+<td style="text-align: right;">67</td>
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">288</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">37</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="bags-of-notes-representation" class="level3">
+<h3 class="anchored" data-anchor-id="bags-of-notes-representation">Bags of notes representation</h3>
+<p>The big code chunk has a loop that processes all bars into a vector representation. Below, I unpack this and describe each step.</p>
+<p>This code chunk takes the notes from a midi tibble that pertain to a single bar (e.g., the table above), creates an empty note by time interval matrix, and then assigns the notes in the bar to their respective intervals.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># take a bar from the tibble</span></span>
+<span id="cb5-2">bar_midi <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> first_bar</span>
+<span id="cb5-3"></span>
+<span id="cb5-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># make a note by time unit matrix</span></span>
+<span id="cb5-5">one_bar <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb5-6">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(pyramidi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>midi_defs)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>],</span>
+<span id="cb5-7">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ncol =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>)</span>
+<span id="cb5-8"></span>
+<span id="cb5-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># assign 1s to note locations in time</span></span>
+<span id="cb5-10"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> (j <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(one_bar)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]) {</span>
+<span id="cb5-11">  one_bar[bar_midi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>note[j], bar_midi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>bar_steps[j]] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb5-12">}</span></code></pre></div>
+</details>
+</div>
+<p>The note x time matrix is 128 rows by 48 columns. There are 0-127 possible notes in MIDI, and I divided one bar (4/4 time) into 48 individual slices of time. The note occurrences in the first bar of mario are coded as 1s in the matrix.</p>
+<p>Here is a plot of the matrix showing note locations. It looks like a typical piano roll.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(plot.matrix)</span>
+<span id="cb6-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(one_bar)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/37_2_5_24_matrix_analysis/index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="counting-and-concatenating" class="level3">
+<h3 class="anchored" data-anchor-id="counting-and-concatenating">Counting and concatenating</h3>
+<p>I create three vectors that will be appended together as the final feature vector for a bar of music.</p>
+<p>The first two are frequency summarizers. The pitch vector takes the sum across the rows of the matrix. This yields a single vector with 128 elements corresponding to each note. The values are simply the counts of each note in the bar. The time vector takes the column sums, and provides a count of each temporal unit occurrence in the matrix. These summary representations will be useful later on for conditionalizing sequence generation based on notes and time in general.</p>
+<p>The last vector concatenates the matrix into a single vector by starting at the first column, and then appending column after column, until the matrix is one long vector.</p>
+<p>Finally, I append the pitch vector, the time vector, and the pitch x time vector into a single vector, called the music vector.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">pitch_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rowSums</span>(one_bar)</span>
+<span id="cb7-2">time_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>(one_bar)</span>
+<span id="cb7-3">pitch_by_time <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(one_bar)</span>
+<span id="cb7-4"></span>
+<span id="cb7-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#concatenate_vector</span></span>
+<span id="cb7-6">music_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(pitch_vector, time_vector, pitch_by_time)</span></code></pre></div>
+</details>
+</div>
+</section>
+<section id="the-music-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="the-music-matrix">The music matrix</h3>
+<p>The above steps are applied to all of the bars in a midi file, and the resulting music feature vector is added to a matrix. For mario, I get a 37 (bars) by 6320 (features) matrix.</p>
+<p>Oooh, and it can be plotted! Hurrah for the <code>plot.matrix</code> library!</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(plot.matrix)</span>
+<span id="cb8-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(music_matrix, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">border=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">breaks=</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>),<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col=</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>))</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/37_2_5_24_matrix_analysis/index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="1920"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="probabilistic-generation" class="level2">
+<h2 class="anchored" data-anchor-id="probabilistic-generation">Probabilistic generation</h2>
+<p>The above matrix has a few different properties, but the main one is that it counts how often particular notes occur in particular units of time across all of the bars of music. And, aside from the fact that I threw out the the note off information, this matrix representation is pretty much the same as the original MIDI file, so it is possible to convert back to a MIDI file from this matrix representation.</p>
+<p>However, the matrix representation provides interesting opportunities for manipulating MIDI. Today I am focusing on generating sequences from the statistical structure of a musical corpus. I’ll take the above matrix as a small corpus of musical bars.</p>
+<section id="note-x-time-probabilities" class="level3">
+<h3 class="anchored" data-anchor-id="note-x-time-probabilities">Note x time probabilities</h3>
+<p>In previous posts where I generated some “mario-esque” sequences, I only got as far as generating them based on fairly simple, unconditionalized probabilities.</p>
+<p>For example, columns 177 to 6320 in the music matrix contain the note x time frequency vectors for each bar. We can compute the total number of occurrences of all individual features by summing that whole part of the matrix. The answer is 901 note x time features occurred across all of mario.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">total_sum <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(music_matrix[,(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(music_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>]])</span>
+<span id="cb9-2">total_sum</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 901</code></pre>
+</div>
+</div>
+<p>What about individual note x time features, how often did they occur? We can compute the column sums. This vector has too many numbers to print, but here’s a sense of how it looks (y-axis is frequency counts).</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1">note_times_sum <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>(music_matrix[,(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(music_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>]])</span>
+<span id="cb11-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(note_times_sum)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/37_2_5_24_matrix_analysis/index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="1920"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Dividing the column sums by the total sum gives a vector of proportions that sum to 1.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1">note_times_prob <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> note_times_sum<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>total_sum</span>
+<span id="cb12-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(note_times_prob)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+</div>
+<p>The vector of proportions can be treated as probabilities and used to generate new notes in time based on this statistical structure. R has a convenient function for this called <code>rbinom()</code>. The goal is to produce a vector with the same length as the probability vector, but populated with 1s and 0s, where the 1 is a note occurrence and a 0 is the absence of a note.</p>
+<p>This code chunk generates a new vector of note x time features based on the probabilities, restores the vector to a matrix format, and then plots the matrix of notes as a piano roll.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># generate new vector based on probabilities</span></span>
+<span id="cb14-2">new_sequence <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(note_times_prob),</span>
+<span id="cb14-3">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>,</span>
+<span id="cb14-4">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prob =</span> note_times_prob)</span>
+<span id="cb14-5"></span>
+<span id="cb14-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ensure any element greater than 1 is set to 1</span></span>
+<span id="cb14-7">new_sequence[new_sequence <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb14-8"></span>
+<span id="cb14-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#</span></span>
+<span id="cb14-10">new_sequence_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(</span>
+<span id="cb14-11">  new_sequence,</span>
+<span id="cb14-12">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ncol =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>,</span>
+<span id="cb14-13">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nrow =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>,</span>
+<span id="cb14-14">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">byrow =</span> F</span>
+<span id="cb14-15">)</span>
+<span id="cb14-16"></span>
+<span id="cb14-17"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(plot.matrix)</span>
+<span id="cb14-18"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(new_sequence_matrix)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/37_2_5_24_matrix_analysis/index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The new sequence is generated from independent probabilities. Essentially every note is sampled based on the probability that it appeared in a particular time slot across the whole corpus of bars. This creates a sonic mishmash where very global statistics of how notes appear in time across bars determine which notes get sampled and when they are placed in time.</p>
+<p>The size parameter of the <code>rbinom()</code> function controls how many trials are simulated by the binomial sampling process, which controls the total number of notes sampled into a new bar.</p>
+<p>One option is to set the size parameter to the mean number of notes that are found per bar in the corpus. I get about 24.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rowSums</span>(music_matrix[,(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(music_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>]]))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 24.35135</code></pre>
+</div>
+</div>
+<p>And, using 24 as the size parameter generates new bars that should have some more notes:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># generate new vector based on probabilities</span></span>
+<span id="cb17-2">new_sequence <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(note_times_prob),</span>
+<span id="cb17-3">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">24</span>,</span>
+<span id="cb17-4">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prob =</span> note_times_prob)</span>
+<span id="cb17-5"></span>
+<span id="cb17-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ensure any element greater than 1 is set to 1</span></span>
+<span id="cb17-7">new_sequence[new_sequence <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb17-8"></span>
+<span id="cb17-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#</span></span>
+<span id="cb17-10">new_sequence_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(</span>
+<span id="cb17-11">  new_sequence,</span>
+<span id="cb17-12">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ncol =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>,</span>
+<span id="cb17-13">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nrow =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>,</span>
+<span id="cb17-14">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">byrow =</span> F</span>
+<span id="cb17-15">)</span>
+<span id="cb17-16"></span>
+<span id="cb17-17"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(plot.matrix)</span>
+<span id="cb17-18"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(new_sequence_matrix)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/37_2_5_24_matrix_analysis/index_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Or, this one has a size of 48, and starts looking even more busy:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># generate new vector based on probabilities</span></span>
+<span id="cb18-2">new_sequence <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(note_times_prob),</span>
+<span id="cb18-3">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>,</span>
+<span id="cb18-4">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prob =</span> note_times_prob)</span>
+<span id="cb18-5"></span>
+<span id="cb18-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ensure any element greater than 1 is set to 1</span></span>
+<span id="cb18-7">new_sequence[new_sequence <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb18-8"></span>
+<span id="cb18-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#</span></span>
+<span id="cb18-10">new_sequence_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(</span>
+<span id="cb18-11">  new_sequence,</span>
+<span id="cb18-12">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ncol =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>,</span>
+<span id="cb18-13">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nrow =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>,</span>
+<span id="cb18-14">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">byrow =</span> F</span>
+<span id="cb18-15">)</span>
+<span id="cb18-16"></span>
+<span id="cb18-17"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(plot.matrix)</span>
+<span id="cb18-18"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(new_sequence_matrix)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/37_2_5_24_matrix_analysis/index_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="a-eurorack-digression" class="level3">
+<h3 class="anchored" data-anchor-id="a-eurorack-digression">A eurorack digression</h3>
+<p>As a quick side note, in terms of sonic exploration, it would be so fun to get matrix manipulation of midi for probabilistic sequence generation into a eurorack format.</p>
+<p>One of my favorite modules to play with is Marbles by Mutable Instruments.</p>
+<p><img src="https://homophony.quest/blog/37_2_5_24_matrix_analysis/images/mutableinstruments_marbles_01_1_1.jpg" class="img-fluid"></p>
+<p>This module is a random CV generator for time and pitch, and it can do some things in the direction I’m headed. For example, you can play in a series of notes, and it will calculate pitch frequencies, and then playback notes based on the sampled frequencies. That’s pretty cool.</p>
+<p>The documentation for Marbles even hints at a secret “markov” mode which is more similar to what I’m doing here:</p>
+<p><a href="https://pichenettes.github.io/mutable-instruments-documentation/modules/marbles/secrets/" class="uri">https://pichenettes.github.io/mutable-instruments-documentation/modules/marbles/secrets/</a></p>
+<p>Once I figure out what I’m doing in R, I wonder how easy it would be to get these algorithms working in a eurorack module…hmmm.</p>
+</section>
+</section>
+<section id="alternative-note-and-time-feature-generation" class="level2">
+<h2 class="anchored" data-anchor-id="alternative-note-and-time-feature-generation">Alternative note and time feature generation</h2>
+<p>The matrix of bars also has pitch vectors and time vectors that summarize counts within their respective dimensions. These vectors can be turned into probabilistic generators as well.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1">pitch_probabilities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>(music_matrix[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>])<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(music_matrix[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>])</span>
+<span id="cb19-2"></span>
+<span id="cb19-3">time_probabilities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>(music_matrix[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">129</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>)])<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(music_matrix[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">129</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>)])</span>
+<span id="cb19-4"></span>
+<span id="cb19-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># get new pitches</span></span>
+<span id="cb19-6">new_pitches <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(pitch_probabilities),</span>
+<span id="cb19-7">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">24</span>,</span>
+<span id="cb19-8">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prob =</span> pitch_probabilities)</span>
+<span id="cb19-9">new_pitches[new_pitches <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb19-10"></span>
+<span id="cb19-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># get new times</span></span>
+<span id="cb19-12">new_times <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(time_probabilities),</span>
+<span id="cb19-13">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">24</span>,</span>
+<span id="cb19-14">       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prob =</span> time_probabilities)</span>
+<span id="cb19-15">new_times[new_times <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb19-16"></span>
+<span id="cb19-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># get row column ids</span></span>
+<span id="cb19-18">sampled_notes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(new_pitches <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb19-19">sampled_times <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(new_times <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb19-20"></span>
+<span id="cb19-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># combine, make sure equal length</span></span>
+<span id="cb19-22"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(sampled_notes) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(sampled_times)){</span>
+<span id="cb19-23">  sampled_ids <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">notes =</span> sampled_notes[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(sampled_times)],</span>
+<span id="cb19-24">                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">times =</span> sampled_times)</span>
+<span id="cb19-25">} <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> {</span>
+<span id="cb19-26">  sampled_ids <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">notes =</span> sampled_notes,</span>
+<span id="cb19-27">                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">times =</span> sampled_times[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(sampled_notes)])</span>
+<span id="cb19-28">}</span>
+<span id="cb19-29"></span>
+<span id="cb19-30"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># shuffle the notes across the times so the sampling is uniform</span></span>
+<span id="cb19-31">sampled_ids<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>notes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sample</span>(sampled_ids<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>notes)</span>
+<span id="cb19-32"></span>
+<span id="cb19-33"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># make a note by time unit matrix</span></span>
+<span id="cb19-34">one_bar <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb19-35">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(pyramidi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>midi_defs)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>],</span>
+<span id="cb19-36">                  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ncol =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>)</span>
+<span id="cb19-37"></span>
+<span id="cb19-38"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># assign 1s to note locations in time</span></span>
+<span id="cb19-39"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(sampled_ids)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]) {</span>
+<span id="cb19-40">  one_bar[sampled_ids<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>notes[i], sampled_ids<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>times[i]] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb19-41">}</span>
+<span id="cb19-42"></span>
+<span id="cb19-43"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(plot.matrix)</span>
+<span id="cb19-44"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(one_bar)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/37_2_5_24_matrix_analysis/index_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This should produce sequences that reflect even more general statistical structure from the corpus. I haven’t tried listening to lots of bars generated this way. Something to look forward to :)</p>
+</section>
+<section id="conditionalized-sampling" class="level2">
+<h2 class="anchored" data-anchor-id="conditionalized-sampling">Conditionalized sampling</h2>
+<p>So far I’ve looked at fairly global note and time probabilities. It’s possible to conditionalize these probabilities by other events. For example, given that the first note in a bar is in the first time step, and that the first note is MIDI note 50, what are the probabilities of other notes in time?</p>
+<p>One way to do this is to first filter the music matrix for only rows containing features to conditionalize on (e.g., only rows where the first note is MIDI note 50 in the first time slot.), and then compute the probabilities based on the filter matrix. In the case of mario, we only have 30+ bars of music, which doesn’t give a great estimate of the probabilities.</p>
+<p>At the same time, I could change the size of matrix and ask different questions. Currently, the matrix is set up to ask questions about a whole bar of notes. For example, I could ask the question, given the first note is MIDI 50, what are the probabilities for all of the remaining notes in the whole bar.</p>
+<p>The matrix could be re-arranged in larger or smaller collections of time. Let’s try re-arranging the matrix in slices of 1 beat instead of 1 bar. This will produce many more “bags” of notes than we currently have, and should do a better job of capturing local statistics for note-to-note transitions.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># this can be improved, but works for now</span></span>
+<span id="cb20-2"></span>
+<span id="cb20-3"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(music_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]) {</span>
+<span id="cb20-4">  extract_bar <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> music_matrix[i, (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(music_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>]]</span>
+<span id="cb20-5">  </span>
+<span id="cb20-6">  bar_to_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(extract_bar,</span>
+<span id="cb20-7">                          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ncol =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>,</span>
+<span id="cb20-8">                          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nrow =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>,</span>
+<span id="cb20-9">                          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">byrow =</span> F)</span>
+<span id="cb20-10">  </span>
+<span id="cb20-11">  divisions <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)</span>
+<span id="cb20-12">  </span>
+<span id="cb20-13">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> (j <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(divisions)) {</span>
+<span id="cb20-14">    beat_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> bar_to_matrix[, divisions[j]<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>(divisions[j] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)]</span>
+<span id="cb20-15">    beat_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(beat_vector)</span>
+<span id="cb20-16">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> (i <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;&amp;</span> j <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) {</span>
+<span id="cb20-17">      beat_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.matrix</span>(beat_vector))</span>
+<span id="cb20-18">    } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span> {</span>
+<span id="cb20-19">      beat_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbind</span>(beat_matrix, beat_vector)</span>
+<span id="cb20-20">    }</span>
+<span id="cb20-21">  }</span>
+<span id="cb20-22">  </span>
+<span id="cb20-23">}</span></code></pre></div>
+</details>
+</div>
+<p>A plot of the new beats matrix, with 4 times as many rows as before.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(plot.matrix)</span>
+<span id="cb21-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(beat_matrix, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">border=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">breaks=</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>),<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col=</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"white"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"red"</span>,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"black"</span>))</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/37_2_5_24_matrix_analysis/index_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>I’d like to contrast probabilistic playback from this matrix in general versus condtionalized on some starting notes.</p>
+<section id="general-probabilistic-sampling-from-beat-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="general-probabilistic-sampling-from-beat-matrix">General probabilistic sampling from beat matrix</h3>
+<p>I’m going to repeat some steps from before. This is where I wish I had some functions to do this quickly. However, this lengthy note-book style approach is also helping me understand what I might functionalize later.</p>
+<p>This code chunk should generate a new “beats” worth of notes every time it is run.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1">total_sum <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(beat_matrix[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(beat_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>]])</span>
+<span id="cb22-2">note_times_sum <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>(beat_matrix[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(beat_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>]])</span>
+<span id="cb22-3">note_times_prob <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> note_times_sum<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>total_sum</span>
+<span id="cb22-4"></span>
+<span id="cb22-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#mean(rowSums(beat_matrix[,1:dim(beat_matrix)[2]]))</span></span>
+<span id="cb22-6"></span>
+<span id="cb22-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># generate new vector based on probabilities</span></span>
+<span id="cb22-8">new_sequence <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(note_times_prob),</span>
+<span id="cb22-9">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>,</span>
+<span id="cb22-10">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prob =</span> note_times_prob)</span>
+<span id="cb22-11"></span>
+<span id="cb22-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ensure any element greater than 1 is set to 1</span></span>
+<span id="cb22-13">new_sequence[new_sequence <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb22-14"></span>
+<span id="cb22-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#</span></span>
+<span id="cb22-16">new_sequence_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(</span>
+<span id="cb22-17">  new_sequence,</span>
+<span id="cb22-18">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ncol =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>,</span>
+<span id="cb22-19">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nrow =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>,</span>
+<span id="cb22-20">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">byrow =</span> F</span>
+<span id="cb22-21">)</span>
+<span id="cb22-22"></span>
+<span id="cb22-23"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(new_sequence_matrix)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/37_2_5_24_matrix_analysis/index_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="conditionalized-sampling-1" class="level2">
+<h2 class="anchored" data-anchor-id="conditionalized-sampling-1">Conditionalized sampling</h2>
+<p>This example conditions on some starting notes.</p>
+<p>The first three notes in mario overworld are a chord composed of MIDI notes 50, 66, and 70.</p>
+<p>The following code grabs only the rows in the beat matrix that have these exact notes in the first time unit. The, new note x time probabilities are calculated from the reduced matrix, and then used to generate a new “beats” worth of notes. This type of sequence should be much more similar to the rows from which it was composed, compared to all rows in general.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># create conditional vector</span></span>
+<span id="cb23-2">conditional_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(beat_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>])</span>
+<span id="cb23-3">conditional_vector[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">66</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">70</span>)] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> </span>
+<span id="cb23-4"></span>
+<span id="cb23-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># compute cosine to find same items</span></span>
+<span id="cb23-6">similarities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> RsemanticLibrarian<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cosine_x_to_m</span>(conditional_vector,beat_matrix)</span>
+<span id="cb23-7"></span>
+<span id="cb23-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># choose only rows that have the conditional vector in them</span></span>
+<span id="cb23-9">conditionalized_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> beat_matrix[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(similarities <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>),]</span>
+<span id="cb23-10"></span>
+<span id="cb23-11">total_sum <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(conditionalized_matrix[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(conditionalized_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>]])</span>
+<span id="cb23-12">note_times_sum <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>(conditionalized_matrix[,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(conditionalized_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>]])</span>
+<span id="cb23-13">note_times_prob <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> note_times_sum<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>total_sum</span>
+<span id="cb23-14"></span>
+<span id="cb23-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#mean(rowSums(beat_matrix[,1:dim(beat_matrix)[2]]))</span></span>
+<span id="cb23-16"></span>
+<span id="cb23-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># generate new vector based on probabilities</span></span>
+<span id="cb23-18">new_sequence <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbinom</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(note_times_prob),</span>
+<span id="cb23-19">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>,</span>
+<span id="cb23-20">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">prob =</span> note_times_prob)</span>
+<span id="cb23-21"></span>
+<span id="cb23-22"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ensure any element greater than 1 is set to 1</span></span>
+<span id="cb23-23">new_sequence[new_sequence <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb23-24"></span>
+<span id="cb23-25"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#</span></span>
+<span id="cb23-26">new_sequence_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(</span>
+<span id="cb23-27">  new_sequence,</span>
+<span id="cb23-28">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ncol =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>,</span>
+<span id="cb23-29">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nrow =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>,</span>
+<span id="cb23-30">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">byrow =</span> F</span>
+<span id="cb23-31">)</span>
+<span id="cb23-32"></span>
+<span id="cb23-33"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(new_sequence_matrix)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/37_2_5_24_matrix_analysis/index_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="the-end" class="level2">
+<h2 class="anchored" data-anchor-id="the-end">The end</h2>
+<p>I’d like to start listening to these sequences. But, right now the code is pretty clunky to start generating lots of things to listen to. It’s probably time to refactor the code into functions so it’s all more generalizable, clear, and easier to use.</p>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0">
+<div id="ref-hintzman1984" class="csl-entry">
+Hintzman, Douglas L. 1984. <span>“MINERVA 2: A Simulation Model of Human Memory.”</span> <em>Behavior Research Methods, Instruments, &amp; Computers</em> 16 (2): 96101. <a href="https://doi.org/10.3758/BF03202365">https://doi.org/10.3758/BF03202365</a>.
+</div>
+<div id="ref-landauer1997" class="csl-entry">
+Landauer, Thomas K, and Susan T Dumais. 1997. <span>“A Solution to Plato’s Problem: The Latent Semantic Analysis Theory of Acquisition, Induction, and Representation of Knowledge.”</span> <em>Psychological Review</em> 104: 211–40. <a href="https://doi.org/dcpw35">https://doi.org/dcpw35</a>.
+</div>
+</div></section></div> ]]></description>
+  <category>midi</category>
+  <category>nlp</category>
+  <category>matrix</category>
+  <category>rstats</category>
+  <guid>https://homophony.quest/blog/37_2_5_24_matrix_analysis/</guid>
+  <pubDate>Mon, 05 Feb 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/37_2_5_24_matrix_analysis/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Messing around with heart and soul</title>
   <dc:creator>Matt Crump</dc:creator>
@@ -194,7 +2641,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 </ul>
 <ol start="3" type="1">
 <li>Turn it into a matrix</li>
-<li>Generate notes probabilistic ally</li>
+<li>Generate notes probabilistically</li>
 <li>listen to it</li>
 </ol>
 <section id="try-stuff" class="level2">
@@ -202,6 +2649,8 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <ul>
 <li>ticks per beat is 96</li>
 <li>going with temporal units down to smallest tick (1).</li>
+<li>got it working, ya</li>
+<li>generate 1 minute of heart and soul nonsense with nintendo synth sound for fun</li>
 </ul>
 <div class="cell">
 <details class="code-fold">
@@ -1243,7 +3692,7 @@ font-style: inherit;">file.remove</span>(wav_name)</span>
 </details>
 </div>
 <p><audio controls=""> <source src="heart_soul_A.mp3" type="audio/wav"> </audio></p>
-<p>rendered using a nintendo soundfont to increase the ridiculousness of this. It is approaching modem connecting to the internet sounds, but too melodic.</p>
+<p>rendered using a nintendo soundfont to increase the ridiculousness of this. It is approaching “modem-connecting-to-the-internet-sounds”, but too melodic.</p>
 </section>
 <section id="thoughts" class="level2">
 <h2 class="anchored" data-anchor-id="thoughts">thoughts</h2>
@@ -24810,637 +27259,6 @@ F-statistic: 266.2 on 1 and 34 DF,  p-value: &lt; 2.2e-16</code></pre>
   <guid>https://homophony.quest/blog/17_1_17_24_BarryHarris/</guid>
   <pubDate>Wed, 17 Jan 2024 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/17_1_17_24_BarryHarris/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Transitions in wonderland</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/16_1_16_24_transitions/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/16_1_16_24_transitions/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>“piano chords arrows. Moving from one chord to another. Transitioning. morphing. colorful jazz piano. cartoon. graffiti. retro 80s.” - dreamshaper-xl-turbo</p>
-</div></div><p>Not sure where today’s post will take me, exciting times! The plan is to write a little bit in the morning, go play, write a little bit more, and so on. I’m hoping the writing will help focus my playing goals. Plus, I need to get back in the habit of writing everyday as the new semester approaches. So, win win.</p>
-<section id="explanatory-and-descriptive-theory" class="level2 page-columns page-full">
-<h2 class="anchored" data-anchor-id="explanatory-and-descriptive-theory">Explanatory and descriptive theory</h2>
-<p>The title of this post is transitions. Mostly, I want to focus this on changes from one musical element to another. Before I head in that direction, I’ve been mulling over a more theoretical transition that has been helpful. My own mental transition from thinking about music theory as explanatory versus descriptive.</p>
-<p>When I was first learning music theory (Royal Conservatory of Music, Canadian styles) I was a kid and didn’t have a wide exposure to different ways of thinking about music or theory in general. I remember working through music theory exercise books as homework. I don’t remember what was in those books necessarily, but probably they gave me a lot of basic names and definitions for musical elements.</p>
-<p>In high school and early undergrad years I was still playing music when I could, and was getting much more heavily into jazz and improvising. I was also learning more about science, philosophy of science, and cognitive psychology, which shaped a general interest in theory. My day job is now as a cognitive psychology prof, and after many years of that job, the topic of theory still holds my interest. For example, in cognitive psychology a common goal is to develop theories that “explain” some phenomena of interest. Given the complexity of human/animal cognition, explaining how something works is usually a very tall order. This also raises the question of what gets to count as a successful explanation. Mechanistic theories are often held in high regard, as they would describe how individual components of some system work together to produce the phenomena of interest. Here, a phenomena is “explained” in terms of the way that it’s component pieces/processes work together.</p>
-<p>When I became interested in learning “jazz” chords I was also scrambling to connect what I was learning back to music theory concepts I had been taught growing up. I can’t remember what my piano teachers had told me about what kind of “theory” music theory was supposed to be…I’m not sure that issue ever came up. Looking back, there were definitely a few years where I thought that music theory was somehow “explanatory”. For example, I would be analyzing a lead sheet trying to use music theory concepts to “understand” and “explain” why the melody went from here to there, or why the chord changed from this to that. Although sizeable chunks of a given song could be readily described using music theory concepts I had learned, there would be lots of changes that didn’t make sense to me. Sometimes a particularly inexplicable change would lead to hours of pondering possible contortions of music theory that might explain why something sounded good or made sense. I’ll give an example soon, but this is all to say that I was frustrated by looking toward music theory for explanation.</p>
-<p>At that time I think I was missing the concept of “descriptive theory”. In cognitive science there are lots of examples of researchers using descriptive theories. Many of theses example derive from a logical positivist approach to science. Here, a primary goal is to predict and control a phenomena of interest. A common strategy is to create a descriptive system that can provide names for elements of a system, and mathematical functions to relate how elements move together or interact with one another. If a system can be well described using mathematical functions then it can be predicted and controlled. In this framework, the correspondence between reality and the descriptive system matters less than the amount of prediction and control achieved by the system. I’m getting too caught up here, and need to get back on track so I can practice more piano.</p>
-<p>Here’s a point I have been slowly internalizing. Music theory provides a systematic way of describing some musical elements. But, it’s a descriptive theory, not an explanatory theory. Music theory doesn’t explain many important aspects of music. For example, it doesn’t explain how feelings of tension and resolution and created by musical elements. Music theory is not very generative. I may understand the C major scale, and the modes, and the chords that come from the C major scale, but this understanding does not show me how to compose any given song with C as a tonal center.</p>
-<p>At least in my experience (and I don’t have an advanced degree in music theory), music theory is less of a theory and more of a naming convention system, rather than a fully worked out descriptive theory that a logical positivist would be proud of. Potato, tomato.</p>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p><img src="https://homophony.quest/blog/16_1_16_24_transitions/images/2fg4dr.jpg" class="img-fluid"></p>
-</div></div><p>Whereas earlier I would go down “beautiful mind” rabbit holes trying to “explain” a lead sheet from a music theory point of view, now I’m much more content for music theory to be the exceptional descriptive system that it is. Exceptional in the sense that exceptions are used whenever they are needed. And, that’s just the way it is.</p>
-<section id="alice-in-wonderland" class="level3">
-<h3 class="anchored" data-anchor-id="alice-in-wonderland">Alice in wonderland</h3>
-<p>Here’s an example of the rabbit holes I go down from “Alice in Wonderland”. And, maybe it would all “make sense” if only I knew more music theory 🤷.</p>
-<p><img src="https://homophony.quest/blog/16_1_16_24_transitions/images/IMG_0428.jpeg" class="img-fluid"></p>
-<p>The first seven chords follow a similar pattern, and there is more than one way to describe it. I used the blue pen to show the pattern in terms of leading 7ths being resolved to thirds in the next chord. For example, the first chord change is from D-7 to G7. In D-7, C is the 7th note, which moves down one semitone to a B, or major third in G7. In G7, F is the 7th note, which moves down one semitone to an E, or major third of C∆7.</p>
-<p>Aspects of this pattern repeat until it starts breaking. The transition between B-7b5 and E7 is a little bit exceptional. Up until this point all of the notes are in the C major scale. If I was focusing on music theory as explanation I would ask, “what is G# doing in there?”. It sort of fits the pattern in that the 7th of of B-7b5 (A) is resolved to the third of E7 (G#). But, the pattern really breaks when going from A-7 to Eb7. Now, the 7th of A-7 (G) is repeated as the third in Eb7 (G), and all of the other notes in Eb7 (Eb Bb Db) are not in C major. There is also some interesting symmetry in the exceptions. The -iii7 chord in C is E-7, or EGBD. The E7 chord is close, and it sharpens the third EG#BD. Similarly, the Eb7 chord is close, but it keeps the G, and flattens the other notes, EbGBbDb. A kind of chordal call and response in terms of playing with exceptions to the C major scale.</p>
-<p>It’s also possible to describe the chord changes from other perspectives. For example, instead of 7ths to 3rds, the pattern is also 1sts to 5ths. The root in D-7 becomes the fifth in G7. The root in G7 becomes the fifth in C∆7, and so on. This keeps repeating until the root in A-7 becomes a Bb in Eb7, which I guess is close enough.</p>
-<p>My younger, and even older self on occasion, would get flustered by the Eb7, and consider questions like, “what music theory concepts make sense of these exceptions?”. It’s a fun question kind of question to ponder, but I’m more aware now of not getting too lost in pondering for too long.</p>
-<p>Now it’s flavor over explanation every time.</p>
-</section>
-<section id="cocktail-music" class="level3">
-<h3 class="anchored" data-anchor-id="cocktail-music">Cocktail music</h3>
-<p>Music is more like mixing cocktails. It should taste good and be interesting. I’m no mixologist, but I’ll mix up a Negroni once in a while with 1 part gin, 1 part vermouth, and 1 part campari. This cocktail is amenable to lots of variations. Switch the gin to bourbon for a boulevardier. Add a twist. Play with the ratios. Add little bits of more stuff for extra fun.</p>
-<p>With the cocktail metaphor we can have an almost useless generic descriptive theory of cocktails. Cocktails are composed of multiple component parts, usually liquids, but not always, in particular ratios to each other. This kind of theory isn’t useful for making any cocktails. It can be useful to describe a cocktail using the system and then notice elements that might be analogized to other cocktails. For example, a negroni is 3 equal parts with lots of options for substitutions, implying a whole family of negroni-like drinks. So, the system could be used to explore negroni-style drinks by switching out pieces, trying different amaros instead of campari, etc. And, by giving names to components of cocktails, similarities may appear to arise between cocktails based on the collections of components. For example, the Manhattan is 2 parts bourbon 1 part red vermouth. It’s like a boulevardier, but substituting campari for more whiskey. In any case, I don’t need cocktails to make sense, they just need to taste good. And, they often taste exceptional when they contain some random stuff from left field that I never expected.</p>
-<p>So, with music, the mood is to trod around in places that seem to have nice regular structure, and then throw in the good tasty flavors as much as possible.</p>
-<p>And, now to the thing I actually wanted to write about.</p>
-</section>
-</section>
-<section id="transitions-and-movement" class="level2">
-<h2 class="anchored" data-anchor-id="transitions-and-movement">Transitions and movement</h2>
-<p>This should probably be a second post, but the above is a preface on transitions. I actually failed to state one of the main points I intended to make in the above discussion—perspective does make things seem different. Even though music theory is more of a descriptive than explanatory theory, the descriptions change perspective, even if they are describing the same thing. For example, a D-7 chord invokes certain concepts for me. It’s the -ii in C major. It’s D Dorian. It sounds a certain way, etc. That same chord in the 1st inversion is FACD, which is also an Fmaj6 chord that invites a different set of musical ideas. As a sidenote, it would be interesting to discuss these perspective shifts a bit further from a cognitive psychology perspective (e.g., in terms of the associative fan effect, and other phenomena).</p>
-<p>Now, onto the main post.</p>
-<p>On review, much of the exercises I have been working on lately are “noun” focused. I’ve been working on chords and modes mostly in the major scale, and trying to get all of that stuff more accessible to my fingers when I am playing. I could also call this “object” focused, where I’m trying to increase the fluency in my object production, where the objects are chords or scales. I’m getting better, so that’s good.</p>
-<p>But, a question is looming that I have not been very actively addressing. These are questions about movement and transition. If I am here…where do I go from here. Where is there?</p>
-<p>I need to start shifting my exercise into a verb focus, where I’m taking actions with musical elements, rather than just being a finger factory that produces musical doo-dads with high fluency for no reason.</p>
-<p>Enter dominant chords, piano YouTube, and Barry Harris.</p>
-<p>I’m not sure how organized the next stuff will be. Mostly a scratch pad.</p>
-</section>
-<section id="fully-diminished-chords-and-more" class="level2">
-<h2 class="anchored" data-anchor-id="fully-diminished-chords-and-more">Fully diminished chords and more</h2>
-<p>I feel confident that I learned important things about fully diminished 7th chords when I was younger. But, I completely forget about them until yesterday when I started watching Shan Verma discussing <a href="https://www.youtube.com/watch?v=kbvxlzGReVA">Alice in Wonderland on youtube</a>.</p>
-<p>This quickly led to a series of rabbit holes about fully diminished 7th chords, <a href="https://barryharrisinstituteofjazz.org">Barry Harris</a> and his system, and the major 6th diminished scale.</p>
-<p>But, before I get to that. I need to go make lunch.</p>
-<hr>
-<p>Lunch break is over. Now, my goal is to put down some breadcrumbs and then get back to the piano.</p>
-<section id="breadcrumb-1---fully-diminished-7th-chords" class="level3">
-<h3 class="anchored" data-anchor-id="breadcrumb-1---fully-diminished-7th-chords">Breadcrumb 1 - Fully Diminished 7th chords</h3>
-<p>These are composed of entirely of minor 3rds. So, a fully diminished Cbb7 is CEbGbA.</p>
-<p>Randomly came across this <a href="https://vi-control.net/community/threads/dim7-chord-modulation-map-doorways-to-anywhere.99826/">series of observations about using these chords for transitions</a></p>
-<p>There are only three different versions of this chord–C, Db and D–as the inversions cover all of the roots.</p>
-<p>They are very useful for transitions.</p>
-<p>Moving any note down a semitone turns the chord into a dominant 7th chord. Very useful for modulation.</p>
-</section>
-<section id="breadcrumb-2---major-6th-diminished-scale" class="level3">
-<h3 class="anchored" data-anchor-id="breadcrumb-2---major-6th-diminished-scale">Breadcrumb 2 - major 6th diminished scale</h3>
-<p>This scale has 8 notes, adding a flat 6 to the major scale</p>
-<p>C D E F G A Ab B</p>
-</section>
-<section id="breadcrumb-3---barry-harriss-system" class="level3">
-<h3 class="anchored" data-anchor-id="breadcrumb-3---barry-harriss-system">Breadcrumb 3 - Barry Harris’s system</h3>
-<p>I haven’t had enough to time to learn what this whole system is. So far, I have just watched one youtube <a href="https://www.youtube.com/watch?v=Q41nPrt0Ji0&amp;t=726s">video from Shan Verma</a> on this.</p>
-<p>The trail of breadcrumbs started at the beginning of his <a href="https://www.youtube.com/watch?v=kbvxlzGReVA">Alice in Wonderland analysis video</a>. In that video he played alternating inversions of maj6 and fully diminished chords, and that immediately clicked something for me.</p>
-<p>There are four inversions of Cmaj6 (CEGA), starting on each note in chord. These are also four of the notes in the major 6th diminished scale.</p>
-<p>There are four inversions of Ddim7 (DFAbB), starting on each note in the chord. These are also the four remaining notes in the major 6th diminished scale.</p>
-<p>It is possible to play each note of that scale as a series of maj6 and dim7 chords.</p>
-<table class="table">
-<thead>
-<tr class="header">
-<th>C</th>
-<th>D</th>
-<th>E</th>
-<th>F</th>
-<th>G</th>
-<th>A</th>
-<th>Ab</th>
-<th>B</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1st</td>
-<td>1st</td>
-<td>2nd</td>
-<td>2nd</td>
-<td>3rd</td>
-<td>3rd</td>
-<td>4th</td>
-<td>4th</td>
-</tr>
-<tr class="even">
-<td>CMaj6</td>
-<td>Ddim7</td>
-<td>CMaj6</td>
-<td>Ddim7</td>
-<td>CMaj6</td>
-<td>Ddim7</td>
-<td>CMaj6</td>
-<td>Ddim7</td>
-</tr>
-<tr class="odd">
-<td>CEGA</td>
-<td>DFAbB</td>
-<td>EGAC</td>
-<td>FAbBD</td>
-<td>GACE</td>
-<td>ACEG</td>
-<td>AbBDF</td>
-<td>BDFAb</td>
-</tr>
-</tbody>
-</table>
-<p>This is basically where I am at right. I spent the morning locking my fingers into these inversions so I could play through the scale in chords. Loving the sound and the possibilities. Giving me lots to think about.</p>
-<p>Next up is to practice through the other diminished chords.</p>
-<p>Did a bit of that. Got through C, F, and Bb. Time to make another table for my reference.</p>
-<p>This shows the notes in every the major 6th diminished scale. I think I fixed all the typos. The scales are ordered in terms of the circle of fifths, going anti-clockwise. The bolded notes are fully diminished 7ths.</p>
-</section>
-</section>
-<section id="tables-major-6th-diminished-scale" class="level2">
-<h2 class="anchored" data-anchor-id="tables-major-6th-diminished-scale">Tables: Major 6th diminished scale</h2>
-<table class="table">
-<thead>
-<tr class="header">
-<th>i</th>
-<th>ii</th>
-<th>iii</th>
-<th>iv</th>
-<th>v</th>
-<th>vi</th>
-<th>vii</th>
-<th>viii</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>C</td>
-<td><strong>D</strong></td>
-<td>E</td>
-<td><strong>F</strong></td>
-<td>G</td>
-<td><strong>Ab</strong></td>
-<td>A</td>
-<td><strong>B</strong></td>
-</tr>
-<tr class="even">
-<td>F</td>
-<td><strong>G</strong></td>
-<td>A</td>
-<td><strong>Bb</strong></td>
-<td>C</td>
-<td><strong>Db</strong></td>
-<td>D</td>
-<td><strong>E</strong></td>
-</tr>
-<tr class="odd">
-<td>Bb</td>
-<td><strong>C</strong></td>
-<td>D</td>
-<td><strong>Eb</strong></td>
-<td>F</td>
-<td><strong>Gb</strong></td>
-<td>G</td>
-<td><strong>A</strong></td>
-</tr>
-<tr class="even">
-<td>Eb</td>
-<td><strong>F</strong></td>
-<td>G</td>
-<td><strong>Ab</strong></td>
-<td>Bb</td>
-<td><strong>B</strong></td>
-<td>C</td>
-<td><strong>D</strong></td>
-</tr>
-<tr class="odd">
-<td>Ab</td>
-<td><strong>Bb</strong></td>
-<td>C</td>
-<td><strong>Db</strong></td>
-<td>Eb</td>
-<td><strong>E</strong></td>
-<td>F</td>
-<td><strong>G</strong></td>
-</tr>
-<tr class="even">
-<td>Db</td>
-<td><strong>Eb</strong></td>
-<td>F</td>
-<td><strong>Gb</strong></td>
-<td>Ab</td>
-<td><strong>A</strong></td>
-<td>Bb</td>
-<td><strong>C</strong></td>
-</tr>
-<tr class="odd">
-<td>Gb</td>
-<td><strong>Ab</strong></td>
-<td>Bb</td>
-<td><strong>B</strong></td>
-<td>Db</td>
-<td><strong>D</strong></td>
-<td>Eb</td>
-<td><strong>F</strong></td>
-</tr>
-<tr class="even">
-<td>B</td>
-<td><strong>Db</strong></td>
-<td>Eb</td>
-<td><strong>E</strong></td>
-<td>Gb</td>
-<td><strong>G</strong></td>
-<td>Ab</td>
-<td><strong>Bb</strong></td>
-</tr>
-<tr class="odd">
-<td>E</td>
-<td><strong>Gb</strong></td>
-<td>Ab</td>
-<td><strong>A</strong></td>
-<td>B</td>
-<td><strong>C</strong></td>
-<td>Db</td>
-<td><strong>Eb</strong></td>
-</tr>
-<tr class="even">
-<td>A</td>
-<td><strong>B</strong></td>
-<td>Db</td>
-<td><strong>D</strong></td>
-<td>E</td>
-<td><strong>F</strong></td>
-<td>Gb</td>
-<td><strong>Ab</strong></td>
-</tr>
-<tr class="odd">
-<td>D</td>
-<td><strong>E</strong></td>
-<td>Gb</td>
-<td><strong>G</strong></td>
-<td>A</td>
-<td><strong>Bb</strong></td>
-<td>B</td>
-<td><strong>Db</strong></td>
-</tr>
-<tr class="even">
-<td>G</td>
-<td><strong>A</strong></td>
-<td>B</td>
-<td><strong>C</strong></td>
-<td>D</td>
-<td><strong>Eb</strong></td>
-<td>E</td>
-<td><strong>Gb</strong></td>
-</tr>
-</tbody>
-</table>
-<p>This is the same table, but the scales are grouped in terms whether they share the same diminished chord.</p>
-<table class="table">
-<thead>
-<tr class="header">
-<th>i</th>
-<th>ii</th>
-<th>iii</th>
-<th>iv</th>
-<th>v</th>
-<th>vi</th>
-<th>vii</th>
-<th>viii</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>C</td>
-<td><strong>D</strong></td>
-<td>E</td>
-<td><strong>F</strong></td>
-<td>G</td>
-<td><strong>Ab</strong></td>
-<td>A</td>
-<td><strong>B</strong></td>
-</tr>
-<tr class="even">
-<td>Eb</td>
-<td><strong>F</strong></td>
-<td>G</td>
-<td><strong>Ab</strong></td>
-<td>Bb</td>
-<td><strong>B</strong></td>
-<td>C</td>
-<td><strong>D</strong></td>
-</tr>
-<tr class="odd">
-<td>Gb</td>
-<td><strong>Ab</strong></td>
-<td>Bb</td>
-<td><strong>B</strong></td>
-<td>Db</td>
-<td><strong>D</strong></td>
-<td>Eb</td>
-<td><strong>F</strong></td>
-</tr>
-<tr class="even">
-<td>A</td>
-<td><strong>B</strong></td>
-<td>Db</td>
-<td><strong>D</strong></td>
-<td>E</td>
-<td><strong>F</strong></td>
-<td>Gb</td>
-<td><strong>Ab</strong></td>
-</tr>
-<tr class="odd">
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-</tr>
-<tr class="even">
-<td>F</td>
-<td><strong>G</strong></td>
-<td>A</td>
-<td><strong>Bb</strong></td>
-<td>C</td>
-<td><strong>Db</strong></td>
-<td>D</td>
-<td><strong>E</strong></td>
-</tr>
-<tr class="odd">
-<td>Ab</td>
-<td><strong>Bb</strong></td>
-<td>C</td>
-<td><strong>Db</strong></td>
-<td>Eb</td>
-<td><strong>E</strong></td>
-<td>F</td>
-<td><strong>G</strong></td>
-</tr>
-<tr class="even">
-<td>B</td>
-<td><strong>Db</strong></td>
-<td>Eb</td>
-<td><strong>E</strong></td>
-<td>Gb</td>
-<td><strong>G</strong></td>
-<td>Ab</td>
-<td><strong>Bb</strong></td>
-</tr>
-<tr class="odd">
-<td>D</td>
-<td><strong>E</strong></td>
-<td>Gb</td>
-<td><strong>G</strong></td>
-<td>A</td>
-<td><strong>Bb</strong></td>
-<td>B</td>
-<td><strong>Db</strong></td>
-</tr>
-<tr class="even">
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-</tr>
-<tr class="odd">
-<td>Bb</td>
-<td><strong>C</strong></td>
-<td>D</td>
-<td><strong>Eb</strong></td>
-<td>F</td>
-<td><strong>Gb</strong></td>
-<td>G</td>
-<td><strong>A</strong></td>
-</tr>
-<tr class="even">
-<td>Db</td>
-<td><strong>Eb</strong></td>
-<td>F</td>
-<td><strong>Gb</strong></td>
-<td>Ab</td>
-<td><strong>A</strong></td>
-<td>Bb</td>
-<td><strong>C</strong></td>
-</tr>
-<tr class="odd">
-<td>E</td>
-<td><strong>Gb</strong></td>
-<td>Ab</td>
-<td><strong>A</strong></td>
-<td>B</td>
-<td><strong>C</strong></td>
-<td>Db</td>
-<td><strong>Eb</strong></td>
-</tr>
-<tr class="even">
-<td>G</td>
-<td><strong>A</strong></td>
-<td>B</td>
-<td><strong>C</strong></td>
-<td>D</td>
-<td><strong>Eb</strong></td>
-<td>E</td>
-<td><strong>Gb</strong></td>
-</tr>
-</tbody>
-</table>
-<p>Same table again with some extra stuff. I started playing through these scales and was trying to figure out what aspects would be new to me. For each grouping of four, it is nice that that the diminished chord is the same, it is just expressed as a different inversion. Within each scale, the major chord is also the same, just expressed as a different inversion.</p>
-<p>The new column simply points out the maj6/min7 relations.</p>
-<table class="table">
-<colgroup>
-<col style="width: 18%">
-<col style="width: 7%">
-<col style="width: 12%">
-<col style="width: 7%">
-<col style="width: 12%">
-<col style="width: 7%">
-<col style="width: 12%">
-<col style="width: 7%">
-<col style="width: 12%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>maj6 = -7</th>
-<th>i</th>
-<th>ii</th>
-<th>iii</th>
-<th>iv</th>
-<th>v</th>
-<th>vi</th>
-<th>vii</th>
-<th>viii</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>C6 = A-7</td>
-<td>C</td>
-<td><strong>D</strong></td>
-<td>E</td>
-<td><strong>F</strong></td>
-<td>G</td>
-<td><strong>Ab</strong></td>
-<td>A</td>
-<td><strong>B</strong></td>
-</tr>
-<tr class="even">
-<td>Eb6 = C-7</td>
-<td>Eb</td>
-<td><strong>F</strong></td>
-<td>G</td>
-<td><strong>Ab</strong></td>
-<td>Bb</td>
-<td><strong>B</strong></td>
-<td>C</td>
-<td><strong>D</strong></td>
-</tr>
-<tr class="odd">
-<td>Gb6 = Eb-7</td>
-<td>Gb</td>
-<td><strong>Ab</strong></td>
-<td>Bb</td>
-<td><strong>B</strong></td>
-<td>Db</td>
-<td><strong>D</strong></td>
-<td>Eb</td>
-<td><strong>F</strong></td>
-</tr>
-<tr class="even">
-<td>A6 = Gb-7</td>
-<td>A</td>
-<td><strong>B</strong></td>
-<td>Db</td>
-<td><strong>D</strong></td>
-<td>E</td>
-<td><strong>F</strong></td>
-<td>Gb</td>
-<td><strong>Ab</strong></td>
-</tr>
-<tr class="odd">
-<td></td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-</tr>
-<tr class="even">
-<td>F6 = D-7</td>
-<td>F</td>
-<td><strong>G</strong></td>
-<td>A</td>
-<td><strong>Bb</strong></td>
-<td>C</td>
-<td><strong>Db</strong></td>
-<td>D</td>
-<td><strong>E</strong></td>
-</tr>
-<tr class="odd">
-<td>Ab6 = F-7</td>
-<td>Ab</td>
-<td><strong>Bb</strong></td>
-<td>C</td>
-<td><strong>Db</strong></td>
-<td>Eb</td>
-<td><strong>E</strong></td>
-<td>F</td>
-<td><strong>G</strong></td>
-</tr>
-<tr class="even">
-<td>B6 = Ab-7</td>
-<td>B</td>
-<td><strong>Db</strong></td>
-<td>Eb</td>
-<td><strong>E</strong></td>
-<td>Gb</td>
-<td><strong>G</strong></td>
-<td>Ab</td>
-<td><strong>Bb</strong></td>
-</tr>
-<tr class="odd">
-<td>D6 = B-7</td>
-<td>D</td>
-<td><strong>E</strong></td>
-<td>Gb</td>
-<td><strong>G</strong></td>
-<td>A</td>
-<td><strong>Bb</strong></td>
-<td>B</td>
-<td><strong>Db</strong></td>
-</tr>
-<tr class="even">
-<td></td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-<td>–</td>
-</tr>
-<tr class="odd">
-<td>Bb6 = G-7</td>
-<td>Bb</td>
-<td><strong>C</strong></td>
-<td>D</td>
-<td><strong>Eb</strong></td>
-<td>F</td>
-<td><strong>Gb</strong></td>
-<td>G</td>
-<td><strong>A</strong></td>
-</tr>
-<tr class="even">
-<td>Db6 = Bb-7</td>
-<td>Db</td>
-<td><strong>Eb</strong></td>
-<td>F</td>
-<td><strong>Gb</strong></td>
-<td>Ab</td>
-<td><strong>A</strong></td>
-<td>Bb</td>
-<td><strong>C</strong></td>
-</tr>
-<tr class="odd">
-<td>E6 = Db-7</td>
-<td>E</td>
-<td><strong>Gb</strong></td>
-<td>Ab</td>
-<td><strong>A</strong></td>
-<td>B</td>
-<td><strong>C</strong></td>
-<td>Db</td>
-<td><strong>Eb</strong></td>
-</tr>
-<tr class="even">
-<td>G6 = E-7</td>
-<td>G</td>
-<td><strong>A</strong></td>
-<td>B</td>
-<td><strong>C</strong></td>
-<td>D</td>
-<td><strong>Eb</strong></td>
-<td>E</td>
-<td><strong>Gb</strong></td>
-</tr>
-</tbody>
-</table>
-<p>This table could be useful for tapping into things I already know. I can play 6th chords fairly well, but I already know my min7 chords very well. Sometimes thinking about a chord in terms of another helps me play it, and it encourages shifting perspectives on the same thing. The Eb scale got easier to play once I realized the Eb6 was just a 1st inversion C-7 chord waiting to happen…and then I’m like, OMG C-7 is an Eb major 6th 🤯.</p>
-
-
-</section>
-
- ]]></description>
-  <category>scales</category>
-  <category>music theory</category>
-  <category>movement</category>
-  <category>diminished chords</category>
-  <guid>https://homophony.quest/blog/16_1_16_24_transitions/</guid>
-  <pubDate>Tue, 16 Jan 2024 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/16_1_16_24_transitions/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
