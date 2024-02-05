@@ -563,7 +563,7 @@ new_sequence_matrix <- matrix(
 plot(new_sequence_matrix)
 
 ```
-## Conditionalized sampling
+### Conditionalized sampling on starting notes
 
 This example conditions on some starting notes. 
 

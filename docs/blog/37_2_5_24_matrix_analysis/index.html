@@ -234,8 +234,8 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
   <li><a href="#conditionalized-sampling" id="toc-conditionalized-sampling" class="nav-link" data-scroll-target="#conditionalized-sampling">Conditionalized sampling</a>
   <ul class="collapse">
   <li><a href="#general-probabilistic-sampling-from-beat-matrix" id="toc-general-probabilistic-sampling-from-beat-matrix" class="nav-link" data-scroll-target="#general-probabilistic-sampling-from-beat-matrix">General probabilistic sampling from beat matrix</a></li>
+  <li><a href="#conditionalized-sampling-on-starting-notes" id="toc-conditionalized-sampling-on-starting-notes" class="nav-link" data-scroll-target="#conditionalized-sampling-on-starting-notes">Conditionalized sampling on starting notes</a></li>
   </ul></li>
-  <li><a href="#conditionalized-sampling-1" id="toc-conditionalized-sampling-1" class="nav-link" data-scroll-target="#conditionalized-sampling-1">Conditionalized sampling</a></li>
   <li><a href="#the-end" id="toc-the-end" class="nav-link" data-scroll-target="#the-end">The end</a></li>
   </ul>
 </nav>
@@ -1323,9 +1323,8 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </div>
 </div>
 </section>
-</section>
-<section id="conditionalized-sampling-1" class="level2">
-<h2 class="anchored" data-anchor-id="conditionalized-sampling-1">Conditionalized sampling</h2>
+<section id="conditionalized-sampling-on-starting-notes" class="level3">
+<h3 class="anchored" data-anchor-id="conditionalized-sampling-on-starting-notes">Conditionalized sampling on starting notes</h3>
 <p>This example conditions on some starting notes.</p>
 <p>The first three notes in mario overworld are a chord composed of MIDI notes 50, 66, and 70.</p>
 <p>The following code grabs only the rows in the beat matrix that have these exact notes in the first time unit. The, new note x time probabilities are calculated from the reduced matrix, and then used to generate a new “beats” worth of notes. This type of sequence should be much more similar to the rows from which it was composed, compared to all rows in general.</p>
@@ -1374,6 +1373,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </div>
 </div>
 </div>
+</section>
 </section>
 <section id="the-end" class="level2">
 <h2 class="anchored" data-anchor-id="the-end">The end</h2>
