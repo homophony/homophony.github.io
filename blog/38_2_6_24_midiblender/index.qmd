@@ -1,0 +1,175 @@
+---
+title: "midiblender: working on an experimental R package"
+author: "Matt Crump"
+date: 2/6/24
+description: "A scratchpad post to help me with package development"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - midiblender
+  - generativemusic
+  - rstatsmusix
+  - midi
+  - rstats
+execute: 
+  echo: true
+  message: false
+  warning: false
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "blender on white background. blender blending musical notes. cartoon. 80s retro."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+blender on white background. blender blending musical notes. cartoon. 80s retro."- Dreamshaper v7
+:::
+
+```{r}
+#| echo: false
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+
+I decided to have a go at turning my midi code into a set of functions. So, I spent the day working on a new R package called {midiblender}. Because, will it blend? and R.
+
+I'm not quite ready to share the package on github yet, because I suspect it will undergo many changes before I settle on useful patterns. Nevertheless, I have it working on my machine, and I'm doing a quick test here. Will write more about this later, and in the package documentation.
+
+```{r}
+#| code-fold: show
+#| eval: false
+library(midiblender)
+
+# load a midi file
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+
+# copy a particular track for further processing
+track_0 <- copy_midi_df_track(midi_df = midi_df,track_num = 0)
+
+# separate copy to extend with additional timing information
+copy_track <- copy_and_extend_midi_df(midi_df = midi_df,
+                                      track_num = 0)
+
+# get timing information
+metric_tibble <- make_metric_tibble(copy_track, bars = 48, smallest_tick = 8,ticks_per_beat = 96)
+
+# add timing to copy
+copy_track <- add_bars_to_copy_df(copy_track, metric_tibble)
+
+# convert to a matrix, each row is a bar.
+music_matrix <- create_midi_matrix(
+  df = copy_track,
+  num_notes = 128,
+  intervals_per_bar = 48,
+  separate = TRUE
+)
+
+#### probabilistic sampling
+feature_probs <- get_feature_probs(midi_matrix = music_matrix$pitch_by_time_matrix)
+
+mean_note_density <- get_mean_note_density(midi_matrix = music_matrix$pitch_by_time_matrix)
+
+new_features <- new_features_from_probs(probs = feature_probs,
+                                        density = mean_note_density,
+                                        examples = 10)
+
+new_matrix <- feature_vector_to_matrix(vec = new_features,
+                                       num_notes = 128)
+
+#### transform for export
+
+midi_time_df <- matrix_to_midi_time(midi_matrix = new_matrix,
+                                    smallest_time_unit = 8,
+                                    note_off_length = 32)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 500000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 0,
+                                    velocity = 64)
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+#write midi file to disk
+miditapyr_object$write_file("try_write.mid")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+

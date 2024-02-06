@@ -15,7 +15,445 @@
 <link>https://homophony.quest/notes.html</link>
 </image>
 <generator>quarto-1.4.549</generator>
-<lastBuildDate>Mon, 05 Feb 2024 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 06 Feb 2024 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>midiblender: working on an experimental R package</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/38_2_6_24_midiblender/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> set_seed</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Image</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> random</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ssl</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#locate library</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mps"</span>)</span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"max"</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"blender on white background. blender blending musical notes. cartoon. 80s retro."</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>):</span>
+<span id="cb1-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]:</span>
+<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span></span>
+<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-29">    set_seed(seed)</span>
+<span id="cb1-30">    </span>
+<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>num_steps)</span>
+<span id="cb1-32">    </span>
+<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpeg"</span></span>
+<span id="cb1-34">    </span>
+<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/38_2_6_24_midiblender/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>blender on white background. blender blending musical notes. cartoon. 80s retro.”- Dreamshaper v7</p>
+</div></div><p>I decided to have a go at turning my midi code into a set of functions. So, I spent the day working on a new R package called {midiblender}. Because, will it blend? and R.</p>
+<p>I’m not quite ready to share the package on github yet, because I suspect it will undergo many changes before I settle on useful patterns. Nevertheless, I have it working on my machine, and I’m doing a quick test here. Will write more about this later, and in the package documentation.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(midiblender)</span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># load a midi file</span></span>
+<span id="cb2-4">mario <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">midi_to_object</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"all_overworld.mid"</span>)</span>
+<span id="cb2-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list2env</span>(mario, .GlobalEnv) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># send objects to global environment</span></span>
+<span id="cb2-6"></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># copy a particular track for further processing</span></span>
+<span id="cb2-8">track_0 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">copy_midi_df_track</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_df =</span> midi_df,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">track_num =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># separate copy to extend with additional timing information</span></span>
+<span id="cb2-11">copy_track <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">copy_and_extend_midi_df</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_df =</span> midi_df,</span>
+<span id="cb2-12">                                      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">track_num =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb2-13"></span>
+<span id="cb2-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># get timing information</span></span>
+<span id="cb2-15">metric_tibble <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make_metric_tibble</span>(copy_track, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bars =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">smallest_tick =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ticks_per_beat =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">96</span>)</span>
+<span id="cb2-16"></span>
+<span id="cb2-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add timing to copy</span></span>
+<span id="cb2-18">copy_track <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">add_bars_to_copy_df</span>(copy_track, metric_tibble)</span>
+<span id="cb2-19"></span>
+<span id="cb2-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># convert to a matrix, each row is a bar.</span></span>
+<span id="cb2-21">music_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_midi_matrix</span>(</span>
+<span id="cb2-22">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">df =</span> copy_track,</span>
+<span id="cb2-23">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">num_notes =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>,</span>
+<span id="cb2-24">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">intervals_per_bar =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>,</span>
+<span id="cb2-25">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">separate =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb2-26">)</span>
+<span id="cb2-27"></span>
+<span id="cb2-28"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">#### probabilistic sampling</span></span>
+<span id="cb2-29">feature_probs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">get_feature_probs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_matrix =</span> music_matrix<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>pitch_by_time_matrix)</span>
+<span id="cb2-30"></span>
+<span id="cb2-31">mean_note_density <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">get_mean_note_density</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_matrix =</span> music_matrix<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>pitch_by_time_matrix)</span>
+<span id="cb2-32"></span>
+<span id="cb2-33">new_features <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">new_features_from_probs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">probs =</span> feature_probs,</span>
+<span id="cb2-34">                                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">density =</span> mean_note_density,</span>
+<span id="cb2-35">                                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">examples =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>)</span>
+<span id="cb2-36"></span>
+<span id="cb2-37">new_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">feature_vector_to_matrix</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vec =</span> new_features,</span>
+<span id="cb2-38">                                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">num_notes =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>)</span>
+<span id="cb2-39"></span>
+<span id="cb2-40"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">#### transform for export</span></span>
+<span id="cb2-41"></span>
+<span id="cb2-42">midi_time_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix_to_midi_time</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_matrix =</span> new_matrix,</span>
+<span id="cb2-43">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">smallest_time_unit =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>,</span>
+<span id="cb2-44">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">note_off_length =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">32</span>)</span>
+<span id="cb2-45"></span>
+<span id="cb2-46">meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">get_midi_meta_df</span>(track_0)</span>
+<span id="cb2-47"></span>
+<span id="cb2-48">meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set_midi_tempo_meta</span>(meta_messages_df,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">update_tempo =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500000</span>)</span>
+<span id="cb2-49"></span>
+<span id="cb2-50">split_meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">split_meta_df</span>(meta_messages_df)</span>
+<span id="cb2-51"></span>
+<span id="cb2-52">new_midi_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix_to_midi_track</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_time_df =</span> midi_time_df,</span>
+<span id="cb2-53">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">split_meta_list =</span> split_meta_messages_df,</span>
+<span id="cb2-54">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">channel =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb2-55">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">velocity =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">64</span>)</span>
+<span id="cb2-56"></span>
+<span id="cb2-57"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">#### bounce</span></span>
+<span id="cb2-58"></span>
+<span id="cb2-59"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># update miditapyr df</span></span>
+<span id="cb2-60">miditapyr_object<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>midi_frame_unnested<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">update_unnested_mf</span>(new_midi_df)</span>
+<span id="cb2-61"></span>
+<span id="cb2-62"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#write midi file to disk</span></span>
+<span id="cb2-63">miditapyr_object<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write_file</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"try_write.mid"</span>)</span></code></pre></div>
+</details>
+</div>
+
+
+
+ ]]></description>
+  <category>midiblender</category>
+  <category>generativemusic</category>
+  <category>rstatsmusix</category>
+  <category>midi</category>
+  <category>rstats</category>
+  <guid>https://homophony.quest/blog/38_2_6_24_midiblender/</guid>
+  <pubDate>Tue, 06 Feb 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/38_2_6_24_midiblender/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>MIDI analysis, bags of notes, and probabilistic generation</title>
   <dc:creator>Matt Crump</dc:creator>
@@ -2271,9 +2709,8 @@ font-style: inherit;">plot</span>(new_sequence_matrix)</span></code></pre></div>
 </div>
 </div>
 </section>
-</section>
-<section id="conditionalized-sampling-1" class="level2">
-<h2 class="anchored" data-anchor-id="conditionalized-sampling-1">Conditionalized sampling</h2>
+<section id="conditionalized-sampling-on-starting-notes" class="level3">
+<h3 class="anchored" data-anchor-id="conditionalized-sampling-on-starting-notes">Conditionalized sampling on starting notes</h3>
 <p>This example conditions on some starting notes.</p>
 <p>The first three notes in mario overworld are a chord composed of MIDI notes 50, 66, and 70.</p>
 <p>The following code grabs only the rows in the beat matrix that have these exact notes in the first time unit. The, new note x time probabilities are calculated from the reduced matrix, and then used to generate a new “beats” worth of notes. This type of sequence should be much more similar to the rows from which it was composed, compared to all rows in general.</p>
@@ -2439,12 +2876,788 @@ font-style: inherit;">plot</span>(new_sequence_matrix)</span></code></pre></div>
 </div>
 </div>
 </section>
+</section>
 <section id="the-end" class="level2">
 <h2 class="anchored" data-anchor-id="the-end">The end</h2>
 <p>I’d like to start listening to these sequences. But, right now the code is pretty clunky to start generating lots of things to listen to. It’s probably time to refactor the code into functions so it’s all more generalizable, clear, and easier to use.</p>
+<hr>
+<p>And hello again</p>
+</section>
+<section id="writing-functions" class="level2">
+<h2 class="anchored" data-anchor-id="writing-functions">Writing functions</h2>
+<p>I’m at the point where note-book style code is getting frustrating, and I would like to have some functions at my disposal. I’m note quite ready to jump into developing an R package, so I’ll try a few things out down here for now.</p>
+<section id="importing-midi" class="level3">
+<h3 class="anchored" data-anchor-id="importing-midi">importing midi</h3>
+<p>I would just use <code>pyramidi::MidiFramer$new(path)</code> but some of my midi files don’t have set_tempo, so that fails. Need to wrap a few things and then return them to the global environment.</p>
+<p>Not sure it is a good or bad idea to put R6 objects into a list? So far it’s working.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1">midi_to_object <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(file_path) {</span>
+<span id="cb24-2">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#import midi using miditapyr</span></span>
+<span id="cb24-3">  miditapyr_object <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>miditapyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">MidiFrames</span>(file_path)</span>
+<span id="cb24-4">  </span>
+<span id="cb24-5">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#import using mido</span></span>
+<span id="cb24-6">  mido_object <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>mido<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">MidiFile</span>(file_path)</span>
+<span id="cb24-7">  </span>
+<span id="cb24-8">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># to R dataframe</span></span>
+<span id="cb24-9">  message_list_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>miditapyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">frame_midi</span>(mido_object)</span>
+<span id="cb24-10">  ticks_per_beat <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> mido_object<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>ticks_per_beat</span>
+<span id="cb24-11">  </span>
+<span id="cb24-12">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># unnest the dataframe</span></span>
+<span id="cb24-13">  midi_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>miditapyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unnest_midi</span>(message_list_df)</span>
+<span id="cb24-14">  </span>
+<span id="cb24-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(</span>
+<span id="cb24-16">    midi_import_objects <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(</span>
+<span id="cb24-17">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">miditapyr_object =</span> miditapyr_object,</span>
+<span id="cb24-18">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mido_object =</span> mido_object,</span>
+<span id="cb24-19">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">message_list_df =</span> message_list_df,</span>
+<span id="cb24-20">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ticks_per_beat =</span> ticks_per_beat,</span>
+<span id="cb24-21">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_df =</span> midi_df</span>
+<span id="cb24-22">    )</span>
+<span id="cb24-23">  )</span>
+<span id="cb24-24">}</span>
+<span id="cb24-25"></span>
+<span id="cb24-26"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># test function</span></span>
+<span id="cb24-27">midi_import_objects <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">midi_to_object</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"all_overworld.mid"</span>)</span>
+<span id="cb24-28"></span>
+<span id="cb24-29"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># import objects in list to global environment</span></span>
+<span id="cb24-30"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># bad form to put this in the above function?</span></span>
+<span id="cb24-31"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list2env</span>(midi_import_objects, .GlobalEnv)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="converting-midi-to-a-feature-vector-matrix." class="level3">
+<h3 class="anchored" data-anchor-id="converting-midi-to-a-feature-vector-matrix.">converting midi to a feature vector matrix.</h3>
+<p>I’m not confident that I have processed enough midi files to know how well any of this will generalize. I might start with small functions…</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1">copy_and_extend_midi_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(midi_df, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">track_num =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb26-2">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Select a particular track from the midi file</span></span>
+<span id="cb26-3">  copy_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> midi_df <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb26-4">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(i_track <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> track_num,</span>
+<span id="cb26-5">           type <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"note_on"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"note_off"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb26-6">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add column to sum cumulative time</span></span>
+<span id="cb26-7">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">total_time =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cumsum</span>(time)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb26-8">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># return only note_on</span></span>
+<span id="cb26-9">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(type <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"note_on"</span>)</span>
+<span id="cb26-10">  </span>
+<span id="cb26-11">}</span>
+<span id="cb26-12"></span>
+<span id="cb26-13">track_1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">copy_and_extend_midi_df</span>(midi_df, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb26-14"></span>
+<span id="cb26-15"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">########################################</span></span>
+<span id="cb26-16"></span>
+<span id="cb26-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># work out new time divisions</span></span>
+<span id="cb26-18"></span>
+<span id="cb26-19">make_metric_tibble <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(df, ticks_per_beat, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bars=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">smallest_tick=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NULL</span> ) {</span>
+<span id="cb26-20">  </span>
+<span id="cb26-21">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.null</span>(smallest_tick) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>){</span>
+<span id="cb26-22">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># if not set by user</span></span>
+<span id="cb26-23">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># set smallest temporal unit to smallest observed unit in time column</span></span>
+<span id="cb26-24">    smallest_tick <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">min</span>(df<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>time[df<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>time <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>])</span>
+<span id="cb26-25">  }</span>
+<span id="cb26-26">  </span>
+<span id="cb26-27">  time_steps <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(track_1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>total_time), smallest_tick)</span>
+<span id="cb26-28">  </span>
+<span id="cb26-29">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.null</span>(bars) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>){</span>
+<span id="cb26-30">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># only 4/4 for now</span></span>
+<span id="cb26-31">    bars <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(df<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>total_time)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span>(ticks_per_beat<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>)</span>
+<span id="cb26-32">  }</span>
+<span id="cb26-33">  </span>
+<span id="cb26-34">  total_bars <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(time_steps) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> bars) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb26-35">  bar_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>total_bars, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">each =</span> bars)</span>
+<span id="cb26-36">  bar_steps <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>bars, total_bars)</span>
+<span id="cb26-37">  </span>
+<span id="cb26-38">  metric_tibble <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time_steps =</span> time_steps,</span>
+<span id="cb26-39">                          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bars =</span> bar_vector[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(time_steps)],</span>
+<span id="cb26-40">                          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bar_steps =</span> bar_steps[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(time_steps)])</span>
+<span id="cb26-41">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(metric_tibble)</span>
+<span id="cb26-42">}</span>
+<span id="cb26-43"></span>
+<span id="cb26-44">metric_tibble <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make_metric_tibble</span>(track_1,</span>
+<span id="cb26-45">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ticks_per_beat =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">96</span>,</span>
+<span id="cb26-46">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bars =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>,</span>
+<span id="cb26-47">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">smallest_tick =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>)</span>
+<span id="cb26-48"></span>
+<span id="cb26-49"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">##########################################</span></span>
+<span id="cb26-50"></span>
+<span id="cb26-51">add_bars_to_copy_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(df, metric_tibble) {</span>
+<span id="cb26-52">  </span>
+<span id="cb26-53">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add new columns</span></span>
+<span id="cb26-54">  df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> df <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb26-55">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time_markers =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb26-56">           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bars =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb26-57">           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bar_steps =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb26-58">  </span>
+<span id="cb26-59">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(df)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]) {</span>
+<span id="cb26-60">    df<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>time_markers[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span></span>
+<span id="cb26-61">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(metric_tibble<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>time_steps <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> df<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>total_time[i])</span>
+<span id="cb26-62">  }</span>
+<span id="cb26-63">  </span>
+<span id="cb26-64">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># get bar divisions, add them to df</span></span>
+<span id="cb26-65">  </span>
+<span id="cb26-66">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> (i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(df)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]) {</span>
+<span id="cb26-67">    get_timestep <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> metric_tibble<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>time_steps[df<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>time_markers[i]]</span>
+<span id="cb26-68">    </span>
+<span id="cb26-69">    df<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>bars[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> metric_tibble <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb26-70">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(time_steps <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> get_timestep) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb26-71">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pull</span>(bars)</span>
+<span id="cb26-72">    </span>
+<span id="cb26-73">    df<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>bar_steps[i] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> metric_tibble <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb26-74">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(time_steps <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> get_timestep) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb26-75">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pull</span>(bar_steps)</span>
+<span id="cb26-76">  }</span>
+<span id="cb26-77">  </span>
+<span id="cb26-78">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(df)</span>
+<span id="cb26-79">}</span>
+<span id="cb26-80"></span>
+<span id="cb26-81">track_1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">add_bars_to_copy_df</span>(track_1,metric_tibble)</span>
+<span id="cb26-82"></span>
+<span id="cb26-83"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">##########################################</span></span>
+<span id="cb26-84"></span>
+<span id="cb26-85"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># create the matrix</span></span>
+<span id="cb26-86"></span>
+<span id="cb26-87">create_midi_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">function</span>(df, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">num_notes =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">intervals_per_bar =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>){</span>
+<span id="cb26-88">  </span>
+<span id="cb26-89">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#initialize matrix</span></span>
+<span id="cb26-90">  music_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb26-91">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ncol =</span> (intervals_per_bar<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span>num_notes<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span>(intervals_per_bar<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span>num_notes)),</span>
+<span id="cb26-92">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nrow =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(df<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>bars)</span>
+<span id="cb26-93">                       )</span>
+<span id="cb26-94"></span>
+<span id="cb26-95">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#loop to assign note_ons to </span></span>
+<span id="cb26-96">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(df<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>bars)) {</span>
+<span id="cb26-97">    </span>
+<span id="cb26-98">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># get the bar </span></span>
+<span id="cb26-99">    bar_midi <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> df <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb26-100">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(bars <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> i)</span>
+<span id="cb26-101">    </span>
+<span id="cb26-102">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># make a temporary little matrix</span></span>
+<span id="cb26-103">    one_bar <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb26-104">                      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">nrow =</span> num_notes,</span>
+<span id="cb26-105">                      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ncol =</span> intervals_per_bar)</span>
+<span id="cb26-106">    </span>
+<span id="cb26-107">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># assign 1s to note positions</span></span>
+<span id="cb26-108">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> (j <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(one_bar)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]) {</span>
+<span id="cb26-109">      one_bar[bar_midi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>note[j], bar_midi<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>bar_steps[j]] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb26-110">    }</span>
+<span id="cb26-111">    </span>
+<span id="cb26-112">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># get summary vectors</span></span>
+<span id="cb26-113">    pitch_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rowSums</span>(one_bar)</span>
+<span id="cb26-114">    time_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colSums</span>(one_bar)</span>
+<span id="cb26-115">    pitch_by_time <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(one_bar)</span>
+<span id="cb26-116">    </span>
+<span id="cb26-117">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#concatenate_vector</span></span>
+<span id="cb26-118">    music_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(pitch_vector, time_vector, pitch_by_time)</span>
+<span id="cb26-119">    </span>
+<span id="cb26-120">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add to matrix</span></span>
+<span id="cb26-121">    music_matrix[i, ] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> music_vector</span>
+<span id="cb26-122">    </span>
+<span id="cb26-123">  }</span>
+<span id="cb26-124">  </span>
+<span id="cb26-125">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(music_matrix)</span>
+<span id="cb26-126">  </span>
+<span id="cb26-127">}</span>
+<span id="cb26-128"></span>
+<span id="cb26-129">music_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_midi_matrix</span>(track_1,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>)</span></code></pre></div>
+</details>
+</div>
+<p>Starting to look more manageable. Testing the functions so far.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#import</span></span>
+<span id="cb27-2">midi_import_objects <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">midi_to_object</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"all_overworld.mid"</span>)</span>
+<span id="cb27-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list2env</span>(midi_import_objects, .GlobalEnv) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add to global env</span></span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
+</div>
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># extract midi df and add new timing information</span></span>
+<span id="cb29-2">track_1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">copy_and_extend_midi_df</span>(midi_df, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb29-3"></span>
+<span id="cb29-4">metric_tibble <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">make_metric_tibble</span>(track_1,</span>
+<span id="cb29-5">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ticks_per_beat =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">96</span>,</span>
+<span id="cb29-6">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bars =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>,</span>
+<span id="cb29-7">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">smallest_tick =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>)</span>
+<span id="cb29-8"></span>
+<span id="cb29-9">track_1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">add_bars_to_copy_df</span>(track_1,metric_tibble)</span>
+<span id="cb29-10"></span>
+<span id="cb29-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># convert all bars to a feature vector matrix, with one bar per row.</span></span>
+<span id="cb29-12">music_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">create_midi_matrix</span>(track_1,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">48</span>)</span></code></pre></div>
+</details>
+</div>
 
 
 
+</section>
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0">
@@ -26949,316 +28162,6 @@ F-statistic: 266.2 on 1 and 34 DF,  p-value: &lt; 2.2e-16</code></pre>
   <guid>https://homophony.quest/blog/18_1_18_24_Relearning/</guid>
   <pubDate>Thu, 18 Jan 2024 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/18_1_18_24_Relearning/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Practicing some Barry Harris methods</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/17_1_17_24_BarryHarris/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/17_1_17_24_BarryHarris/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Barry Harris - courtesy wikipedia</p>
-</div></div><p>A couple of days ago I stumbled across the Barry Harris system as taught by one of his students Shan Verma, who also runs <a href="https://www.jazzskills.com" class="uri">https://www.jazzskills.com</a>.</p>
-<p>I’ve been randomly watching a few videos from his <a href="https://www.youtube.com/@JazzSkills">youtube channel</a> and trying a few things out.</p>
-<p>All of the practice is around learning the major 6th diminished scale, which has some very interesting properties, and sounds great.</p>
-<p>These two videos show the two primary ideas for today’s practice.</p>
-<ul>
-<li><a href="https://www.youtube.com/watch?v=oALZ7xcEdJY&amp;list=PL2GT-F7_oAbkEGy3Sm5jjoowPJLGs6Zzd&amp;index=1">basics of the major 6th diminished scale</a>.</li>
-<li><a href="https://www.youtube.com/watch?v=b_Th3Z6csbg&amp;list=PL2GT-F7_oAbkEGy3Sm5jjoowPJLGs6Zzd&amp;index=4">building up notes, contrary motion movement exercise</a></li>
-</ul>
-<section id="what-i-did-so-far" class="level2">
-<h2 class="anchored" data-anchor-id="what-i-did-so-far">What I did so far</h2>
-<p>Woke up and played the scale using alternating maj6 and dim7 chords. Played through C, F, and Bb. Also, ran through the building up notes exercise in each key, starting from each note in the scale for each key.</p>
-</section>
-<section id="practice-notes" class="level2">
-<h2 class="anchored" data-anchor-id="practice-notes">Practice notes</h2>
-<p><strong>C scale notes</strong>. I was playing through this one last night as well. In particular, I was attempting to get the ‘building up notes’ exercise fluid. If I played each step like a new chord it felt chunky. If I played each step like an ascending run in the right hand, and simultaneous descending run in the left hand it was fast. However, when I did those runs I was only playing single notes, and leaving out the internal notes that form the maj6 or dim7 chords. Then, I got into the swing of alternating my fingers properly.</p>
-<p>The table shows the fingering for thumb to pinky (1-5), for the left and right hands. Start with both thumbs on the same note. Then, the index to pinky (2345) go on every note ascending on the right, and every note descending on the left.</p>
-<table class="table">
-<tbody>
-<tr class="odd">
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>1</td>
-<td></td>
-<td>1</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td></td>
-<td></td>
-<td></td>
-<td>2</td>
-<td></td>
-<td></td>
-<td></td>
-<td>2</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="odd">
-<td></td>
-<td></td>
-<td>3</td>
-<td></td>
-<td>1</td>
-<td></td>
-<td>1</td>
-<td></td>
-<td>3</td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td></td>
-<td>4</td>
-<td></td>
-<td>2</td>
-<td></td>
-<td></td>
-<td></td>
-<td>2</td>
-<td></td>
-<td>4</td>
-<td></td>
-</tr>
-<tr class="odd">
-<td>5</td>
-<td></td>
-<td>3</td>
-<td></td>
-<td>1</td>
-<td></td>
-<td>1</td>
-<td></td>
-<td>3</td>
-<td></td>
-<td>5</td>
-</tr>
-</tbody>
-</table>
-<p>Took a little while, but once the symmetry hits the fingering locked in pretty easily.</p>
-<p>In C, starting from the Ab has a particularly nice symmetrical viewpoint.</p>
-<p><strong>F scale notes</strong>. Practice went pretty well. This scale uses a different dim7 chord (GBbDdE). Felt like a little bit of interference from C. The Fmaj6 chord has the same shape and fingering as Cmaj6.</p>
-<p>As I was playing the building up notes exercise through every note, I started to think more about how I could use the exercise. I started asking questions like, where does this movement want to go? For example, starting on the root, and “building up notes” seems to want to resolve on the V.</p>
-<p><strong>Bb scale notes</strong>. These observations would apply to any of the other scales, but I roughly had these thoughts around this time in practice. So, I’m going to stop organizing notes by scale.</p>
-</section>
-<section id="scale-practice-checkbox" class="level2">
-<h2 class="anchored" data-anchor-id="scale-practice-checkbox">Scale practice checkbox</h2>
-<table class="table">
-<colgroup>
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>C</th>
-<th>F</th>
-<th>Bb</th>
-<th>Eb</th>
-<th>Ab</th>
-<th>Db</th>
-<th>Gb</th>
-<th>B</th>
-<th>E</th>
-<th>A</th>
-<th>D</th>
-<th>G</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>x</td>
-<td>x</td>
-<td>x</td>
-<td>x</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="more-practice-notes" class="level2">
-<h2 class="anchored" data-anchor-id="more-practice-notes">More practice notes</h2>
-<section id="whenwhere-to-start-building-up" class="level3">
-<h3 class="anchored" data-anchor-id="whenwhere-to-start-building-up">When/Where to start building up?</h3>
-<p>Noodling around in CMaj6…lots of CEGA. I started building up on C.</p>
-<ul>
-<li><p>step 1, playing a C is kind of redundant with the chord, but it sets the location</p></li>
-<li><p>step 2. playing a BD is nice. It’s not part of CEGA, but it adds the maj7 and 9th. Easy to sprinkle in whenever, even if staying on CMaj6. sprinkles of possible movement.</p></li>
-<li><p>step 3. ACE, restating the center, with minor vii feels</p></li>
-<li><p>step 4. AbBDF, dominant chord, lots of possibilities, wants to go G</p></li>
-</ul>
-<p>Still playing over a Cmaj6, I did a little bit of starting the building up notes on different notes, but not too much. Need to do that more, to get a better sense of the directions.</p>
-</section>
-<section id="what-a-step-in-the-building-up-exercise-provides" class="level3">
-<h3 class="anchored" data-anchor-id="what-a-step-in-the-building-up-exercise-provides">What a step in the building up exercise provides</h3>
-<p>The building up notes exercise starts by emphasizing some particular note in the scale. This could be where you are at, say in a melody. Then, it alternates between adding the next notes in a maj6 chord, or a dim7 chord. I should sit down and spell this out for myself at some point after I get the fingering down across keys.</p>
-<ul>
-<li>in general, the exercise provides a way to start on a note in the scale, transition between restating aspects of the root (through the maj6), or the diminshed 7th chord, with very harmonious sounding transitions. The transitions already have a bit of movement, and they set up off-ramps into other directions. Especially from a dim7th chord, which can easily end up as four different 7th chords.</li>
-</ul>
-</section>
-<section id="cognitive-science-notes-proactive-interference" class="level3">
-<h3 class="anchored" data-anchor-id="cognitive-science-notes-proactive-interference">Cognitive science notes: proactive interference</h3>
-<p>Proactive interference is a well-known phenomena in the learning and memory literature. The classic finding is from studies of free recall. Participants are given lists of items to study, like words, and then after a delay they are asked to recall as many as possible from the list. Pro-active interference occurs when your memory for items in the list is impaired by previous exposure and/or learning attempts to memorize other lists.</p>
-<p><img src="https://homophony.quest/blog/17_1_17_24_BarryHarris/images/Screenshot 2024-01-17 at 9.44.43 AM.png" class="img-fluid"></p>
-<p>The figure shows some recall data from Underwood (1957). The x-axis is number of previous lists. Some subjects were new to these kinds of studies, and they had not tried to memorize lists of items before. Their recall was pretty high. Other subjects had participated in these kinds of studies before, and had tried to memorize many different lists (up to 20 different lists). The more lists one had previously tried to learn, the worse participants did when trying to learn and recall a new list.</p>
-<p>As I try to learn the maj6th diminished scale across all of the keys I’m wondering about the role of pre-active interference, as well as other kinds of interference. If learning scales was like learning random lists of words, then it is possible that every time I learn one scale, the next scale becomes harder to learn because of this so-called pro-active interference. My general sense is that this isn’t how learning scales works in practice, and that prior experience generally helps with learning new things. Not to say that there isn’t sometimes interference.</p>
-<p>Eb practice…got through it, thought a little more about pro-active interference, and “task-switching” or key-switching.</p>
-<p>It’s not clear to me that findings showing pro-active interference in free recall should neatly generalize to learning scales. One reason is that the free-recall studies usually used arbitrary lists of items with no particular relationships to one another. Part of the pro-active interference is that one accidentally recalls words from a previous list, and those get counted as errors. Also, learning additional lists of random items is like trying to grow a vocabulary of random words with no particular meaning.</p>
-<p>In contrast to random lists of words, musical scales have many shared elements across keys. There is lots of opportunity for facilitation and interference. For example, learning to play the dim7 in the C major 6th diminished scale could facilitate learning the Eb, Gb, and A versions of that scale, because they use the same dim7 chord. At the same time, there could be associative interference at play based on prior learning attempts. For example, learning to interleave CEGA with DFAbB(dim7) could reinforce those interchord assocations, such as C6-Ddim7-E6. Then, consider moving to learn Eb major 6th diminshed. There is a C6-Ddim7-Eb6, and perhaps here the E6 will interfere with the Eb6? I wonder what a MINERVA process would do here…</p>
-</section>
-<section id="cogsci-notes-key-switching-costs" class="level3">
-<h3 class="anchored" data-anchor-id="cogsci-notes-key-switching-costs">Cogsci notes: Key-switching costs</h3>
-<p>Another classic finding in cognition is called the task-switching cost. This has been demonstrated in diverse task situations. The basic finding is that there are usually costs, in terms of time and accuracy, when switching from one task to another.</p>
-<p>I’ve been practicing the build up exercise in C, F, Bb, and Eb. The fingerings are all different, but similar enough that my fluency is getting better, even as I switch to new keys.</p>
-<p>These four keys share some notes. For example, C appears in all of C, F, Bb, and Eb scales. I did practice the build up for all four, across all notes of the scale, which means that I did start on C and do the build up for each key. However, I practiced the build up ascending and descending within each scale.</p>
-<p>I am 100% experiencing pretty strong key-switching costs if I start on C alone, and try to then produce a build in the key of F, Bb, or Eb. It’s much easier to start on C major. Need to break out of the switch cost by practicing these more.</p>
-<p>A musical benefit is that a build-up exercise starting say on C, can take you in lots of places, by building up into different keys from that one note. Opening so much opportunity for movement. Wow.</p>
-</section>
-<section id="cogsci-notes-spacing-and-repetition-during-practice" class="level3">
-<h3 class="anchored" data-anchor-id="cogsci-notes-spacing-and-repetition-during-practice">Cogsci notes: Spacing and repetition during practice</h3>
-<p>Another well-known set of phenomena in learning and memory are spacing and repetition effects. I have been thinking about these phenomena as I’ve been practicing, and I was probably thinking more about these than what I was trying to accomplish in Ab as I was learning the maj6 diminished scale in that key.</p>
-<p>Spacing effects seem to be a common export of cognitive psychology, especially in various apps for ‘optimizing’ learning. For example, flashcard apps and language learning apps will build in a spacing algorithm. The purpose of the algorithm is to space out repetitions during practice, which can facilitate learning and memory (whether or not spacing effects have positive or negative benefits, or no effect can depend).</p>
-<p>Repetition effects are another commonly studied phenomena. In general, repeatedly practicing an action, movement pattern, or series of movements, increases the fluency and “automaticity” of the action. Musician’s know this very well. If you haven’t practiced a Gb scale before, or in a while, your performance will be slow and error-prone. If you repeatedly play the scale up and down and up and down, over and over, it get’s easier, and your performance will become faster and more accurate. Repetitions can also make performance worse sometimes (but I’ll skip over those cogsci things for now).</p>
-<p>Studies of practicing motor skills, like learning scales, typically show that performance gains follow a power or exponential functions (both are very similar looking), like the one below.</p>
-<p><img src="https://homophony.quest/blog/17_1_17_24_BarryHarris/images/practice curve.jpg" class="img-fluid"></p>
-<p>The general outcome is that measures of fluency, like scale speed, increase with more practice. However, the gains that are made with practice decrease. The biggest gains in performance are seen early on in practice, afterwards, it takes a lot of practice to make very tiny gains. There are lots of reasons for this basic curve. On a piano, one issue is that people can only move their fingers up to some limit, so there are hard limits to the floor of the function. And, it may take loads of practice to approach those near floor limits.</p>
-<p>A related concept with repetitive practice is the idea of diminished returns. Repetitive practice will increase fluency for sure, but at some point in practice one becomes fluent enough, and further practice isn’t going to do much. So, the question becomes when to stop repeating and move onto something else? Which leads back to the spacing of repetitions question.</p>
-<p>Let’s say you are trying to practice major scales in all of the keys. What kind of practice schedule should one adopt? There are lots of options, and depending on how you arrange things, the repeated attempts can be massed together or spread out. I’ve got more to say about this kind of stuff, but will get back to practicing Gb. Although, it would be possible to get fancy and use concepts from cognition, I’m just going through the circle of fifths. This has musical benefits, and moving in that direction involves going from one key to another that share many notes. As a result, I think I get a little bit of facilitation from learning one scale to another, and also a little of bit of a discriminative challenge to make sure I’m not playing the previous one. Seems like a productive level of difficulty.</p>
-<p>Lunch break</p>
-</section>
-<section id="turning-up-the-interference" class="level3">
-<h3 class="anchored" data-anchor-id="turning-up-the-interference">Turning up the interference</h3>
-<p>All the above being said, over lunch I was wondering about maximum interference practice schedules. For example, consider this build-up note exercise. I could write a computer program to tell me what note to start on, and what key to build on, and have this be totally random. That would be a great little practice tool (note to self to make some midi javascript stuff later). But, it would be hard. Especially for me right now because I don’t know the build-up patterns in most keys yet.</p>
-<p>Something more approachable, but still hard, would be for me to do much less repetition as I practice the remaining keys (I think I have about 8 left). Up until this point, I have been doing a lot of varied practice within each key. Something like this for each key:</p>
-<ul>
-<li><p>play the all the notes of the scale up and down, and all around</p></li>
-<li><p>play them all at the same time to “see the notes all together”</p></li>
-<li><p>play them in sets of 4 or 5, starting on different notes</p></li>
-<li><p>play them up and down starting on different notes</p></li>
-<li><p>play the maj6 inversions as chords, then as arpeggios</p></li>
-<li><p>play the dim7 inversions as chords, then as arpeggios</p></li>
-<li><p>put the alternating chords together, play through the scale up and down in chords</p></li>
-<li><p>play through the scale up an down in arpeggios</p></li>
-<li><p>Start playing the build-up exercise on each note of the scale. Do this up and down and all around</p></li>
-</ul>
-<p>That’s a lot of different kinds of repetition, and it seems to work pretty well. My fingers get used to the pattern of notes in the key, and then I’m on my way. Still, playing the scale in terms of chords is slow at first, and I’m not getting very fast, but it does become comfortably slow fairly quickly.</p>
-<p>A different sort of practice schedule would be more painful. For example, I could go immediately to playing the chords of the maj6 diminished scaled in Db, which is the next key I need to practice. This will be new for me, and I know it will take sometimes a few seconds or more of staring and thinking, and getting a bit lost, to press the first chord, and then the second and so on. I will be working it out on the fly. After going up the scale one time, I could decide to stop Db, and switch to Gb (the next one in my anti-clockwise circle of fifths practice cycle). That would be new and somewhat painful too. In other words, the harder, less repetitive, more spaced out practice schedule could be: once up then switch to new key.</p>
-<p>Maybe I will try this next I’m not sure if I have the patience for it…as I like to feel the progress. However, I can imagine some potentially interesting side effects (benefits? or at least potential consequences) of this switchy schedule. One possibility is that this schedule may increase associative linkages between a current musical goal and an intended outcome. One reason this might happen is that when attempting new patterns, the goal may be clear (e.g., play the third chord of the maj6 dim scale in Gb), but the action and corresponding pattern may not be clear. So, one is keeping the goal in mind as an instruction, and trying to work out the pattern, and then execute. As a result, this constitutes a processing episode where the goal was in mind at the same time as a puzzling out process, as well as an action being executed. According some theories of learning and memory the things that happen during an episode of learning are preserved in memory, and later retrieved when similar circumstance are re-encountered. Not sure what the practical consequences would be for learning scales in this manner…maybe I should go try this.</p>
-<p>Alright…not as bad as I thought that would feel. Here’s a practice table with some scale completion time data:</p>
-<table class="table">
-<thead>
-<tr class="header">
-<th>Key</th>
-<th>Finishing time (minutes)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Db</td>
-<td>1:23</td>
-</tr>
-<tr class="even">
-<td>Gb</td>
-<td>1:00</td>
-</tr>
-<tr class="odd">
-<td>B</td>
-<td>1:44</td>
-</tr>
-<tr class="even">
-<td>E</td>
-<td>1:30</td>
-</tr>
-<tr class="odd">
-<td>A</td>
-<td>:49</td>
-</tr>
-<tr class="even">
-<td>D</td>
-<td>1:17</td>
-</tr>
-<tr class="odd">
-<td>G</td>
-<td>:56</td>
-</tr>
-<tr class="even">
-<td>Well-practiced (C)</td>
-<td>:12</td>
-</tr>
-</tbody>
-</table>
-<p>This was pretty slow going, and fairly cognitively taxing. Was constantly reminding myself what I was trying to do, while puzzling out what to play. Not too bad though. Perhaps this caused me to make some more deliberate connections than I otherwise would have, not sure. My times were generally getting faster as I moved anti-clockwise, but that could reflect my overall fluency in those keys in general. I hadn’t tried the major 6 dim scale in any of these keys before and all the completion times (to play the chord for each note ascending) are about a minute or longer. By comparison, I went back to the piano and played through the C scale in 12 seconds…still pretty slow. For another comparison, I went back and played a regular C major scale in 7th chords in less than 3 seconds. Presumably with enough practice I get the above scales down under 3 seconds too. In C, I’ve already got down to 12 seconds. Not bad.</p>
-<p>I had the worst time on B. I’m also curious on what kind of fluency gains I would make by just repeating this over and over. I think I should practice this a bunch of times in a row and see what the learning curve looks like. I’m using anything fancy, just the stopwatch on my iphone. I will play the scale in chords ascending, and press the lap button every time I’m finished. Let’s put in 10 minutes of repetitive practice and see where that gets me.</p>
-<p>Done. And, time plot the data in R!</p>
-<div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.3     ✔ readr     2.1.4
-✔ forcats   1.0.0     ✔ stringr   1.5.0
-✔ ggplot2   3.4.2     ✔ tibble    3.2.1
-✔ lubridate 1.9.2     ✔ tidyr     1.3.0
-✔ purrr     1.0.2     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/17_1_17_24_BarryHarris/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>It’s not a pretty power curve, but at least it is generally decreasing. I was hovering around a minute per ascending attempt for the first 7 attempts. Then, a few things started to get easier, and I started speeding up. I cut my time by more than half, yah! Still a long way to go to get faster than 3 seconds. And, I suppose this gives me some perspective on what I got out 10 minutes of this kind of practice.</p>
-<p>I’m going to try one more 10 minute burst for fun. This time I’ll do the scale in E, which was my second slowest time. However, instead of playing the scale ascending over and over for 10 minutes. I’m going to do whatever I want for 10 minutes, and see what happens. More specifically, I’ll take the list of things I mentioned earlier that I was doing, that helped me get my fingers into the key, and all that kind of stuff. Then, in the 9th minute, I’ll start timing my ascending runs. Maybe my more varied practice version of 10 minutes would get that scale into shape faster than just focusing on ascending runs…Or maybe not?</p>
-<p>Did that. At the end I did a run of chords in E in about 20 seconds. But, my second attempt ended around 30 seconds with lots of errors. I was probably getting a bit better at all of the other things I was practicing, rather than being able to specifically do the ascending chords.</p>
-<p>Also, starting to experience brain melt from too much piano practice. Maybe I should call it a day :)</p>
-
-
-</section>
-</section>
-
- ]]></description>
-  <category>Barry Harris</category>
-  <category>practice</category>
-  <guid>https://homophony.quest/blog/17_1_17_24_BarryHarris/</guid>
-  <pubDate>Wed, 17 Jan 2024 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/17_1_17_24_BarryHarris/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
