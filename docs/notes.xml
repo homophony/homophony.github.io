@@ -185,7 +185,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <p>The current logo for my experimental r package</p>
 </div></div><p>Another quick test post, but I am very excited about this one.</p>
 <p>In past posts I’ve been doing things like importing midi files to R, such as the overworld music from the NES version of super mario brothers, and then <a href="https://homophony.quest/blog/33_2_1_24_rand_mario/">randomizing the notes</a>, or <a href="https://homophony.quest/blog/35_2_3_24_matrix_midi/">generating new sequences based off of probabilities computed from the music</a>.</p>
-<p>Some of the ideas are <a href="https://homophony.quest/blog/37_2_5_24_matrix_analysis/">minimally explained here</a>, and in particular, and in particular, I had a goal of sampling new sequences based on <a href="https://homophony.quest/blog/37_2_5_24_matrix_analysis/#conditionalized-sampling-on-starting-notes">conditionalized starting conditions</a>. But, I didn’t have the code base in proper order to crunch those sequences.</p>
+<p>Some of the ideas are <a href="https://homophony.quest/blog/37_2_5_24_matrix_analysis/">minimally explained here</a>, and in particular I had a goal of sampling new sequences based on <a href="https://homophony.quest/blog/37_2_5_24_matrix_analysis/#conditionalized-sampling-on-starting-notes">conditionalized starting conditions</a>. But, I didn’t have the code base in proper order to crunch those sequences.</p>
 <p>So, yesterday I started on {midiblender}, an un-released R package, that now has the necessary code to accomplish my goal. You see, the previous ways of mangling mario were fun and interesting, and I approve of them. But, they got pretty stochastic sounding.</p>
 <p>I don’t have time right now to really explain what I’m trying to do in detail, but it is basically this:</p>
 <ol type="1">
@@ -194,7 +194,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <li>filter the matrix for rows that have some similarity to the starting vector.</li>
 <li>Calculate a probability vector for the notes and times from the filtered matrix.</li>
 <li>Generate a new feature vector from the probabilities.</li>
-<li>I have this set up in pairs, so I take the generated feature vector for the second beat, and use it as the starting vector</li>
+<li>I have this set up in pairs, so I take the generated feature vector for the second beat, and use it as the next starting vector.</li>
 <li>repeat to generate as many beats worth as you want.</li>
 </ol>
 <p>The result should still be fairly probabilistic sounding, but more mario sequency sounding than before.</p>
