@@ -1,0 +1,228 @@
+---
+title: "WIP: Endless probabilistically generated mario music with midiblender"
+author: "Matt Crump"
+date: 2/7/24
+description: "Still a work in progress, getting closer to victory"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - midiblender
+  - generativemusic
+  - rstatsmusic
+  - midi
+  - rstats
+execute: 
+  echo: true
+  message: false
+  warning: false
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "blender on white background. blender blending musical notes. cartoon. 80s retro."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+The current logo for my experimental r package
+:::
+
+```{r}
+#| echo: false
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+
+Another quick test post, but I am very excited about this one. 
+
+In past posts I've been doing things like importing midi files to R, such as the overworld music from the NES version of super mario brothers, and then [randomizing the notes](https://homophony.quest/blog/33_2_1_24_rand_mario/), or [generating new sequences based off of probabilities computed from the music](https://homophony.quest/blog/35_2_3_24_matrix_midi/).
+
+Some of the ideas are [minimally explained here](https://homophony.quest/blog/37_2_5_24_matrix_analysis/), and in particular, and in particular, I had a goal of sampling new sequences based on [conditionalized starting conditions](https://homophony.quest/blog/37_2_5_24_matrix_analysis/#conditionalized-sampling-on-starting-notes). But, I didn't have the code base in proper order to crunch those sequences. 
+
+So, yesterday I started on {midiblender}, an un-released R package, that now has the necessary code to accomplish my goal. You see, the previous ways of mangling mario were fun and interesting, and I approve of them. But, they got pretty stochastic sounding. 
+
+I don't have time right now to really explain what I'm trying to do in detail, but it is basically this:
+
+1. create a corpus (matrix) of feature vectors representing the note and time information for some temporal interval from the mario midi file. I've set it to 2 beats.
+2. Pick a starting vector, such as the first chord in mario
+3. filter the matrix for rows that have some similarity to the starting vector.
+4. Calculate a probability vector for the notes and times from the filtered matrix.
+5. Generate a new feature vector from the probabilities.
+6. I have this set up in pairs, so I take the generated feature vector for the second beat, and use it as the starting vector
+7. repeat to generate as many beats worth as you want.
+
+The result should still be fairly probabilistic sounding, but more mario sequency sounding than before.
+
+
+```{r, eval=FALSE}
+library(midiblender)
+#import midi
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+track_0 <- copy_midi_df_track(midi_df = midi_df,track_num = 0)
+
+# convert to a piano roll matrix
+all_midi <- midi_df_to_matrix(midi_df,track=0)
+
+# reshape to desired interval
+music_matrix <- reshape_piano_roll(all_midi,48*2)
+
+# probabilistic sampling
+
+# create conditional vector
+conditional_vector <- rep(0,dim(music_matrix)[2])
+conditional_vector[(c(50,66,76)+1)] <- 1 
+dot_products <- conditional_vector %*% t(music_matrix)
+positive_similarity <- which(dot_products > 0)
+
+
+feature_probs <- get_feature_probs(midi_matrix = music_matrix[positive_similarity,])
+
+mean_note_density <- get_mean_note_density(midi_matrix = music_matrix[positive_similarity,])
+
+new_features <- new_features_from_probs(probs = feature_probs,
+                                        density = mean_note_density,
+                                        examples = 1)
+# loop
+new_feature_vectors <- new_features
+
+for(i in 1:200) {
+  # put second half into conditional vector
+  conditional_vector <- c(new_features[((length(new_features)/2)+1):length(new_features)],
+                          rep(0,length(new_features)/2))
+  dot_products <- conditional_vector %*% t(music_matrix)
+  positive_similarity <- which(dot_products > 0)
+  
+  if(length(positive_similarity) == 0){
+    # sample some random stuff
+    positive_similarity <- sample(1:dim(music_matrix)[1],25)
+    print(i)
+  }
+  
+  
+  feature_probs <-
+    get_feature_probs(midi_matrix = music_matrix[positive_similarity, ])
+  
+  mean_note_density <-
+    get_mean_note_density(midi_matrix = music_matrix[positive_similarity, ])
+  
+  new_features <- new_features_from_probs(probs = feature_probs,
+                                          density = mean_note_density,
+                                          examples = 1)
+  new_feature_vectors <- rbind(new_feature_vectors,new_features)
+}
+
+new_matrix <- feature_vector_to_matrix(vec = new_feature_vectors,
+                                       num_notes = 128)
+
+# transform back to midi
+midi_time_df <- matrix_to_midi_time(midi_matrix = new_matrix,
+                                    smallest_time_unit = 1,
+                                    note_off_length = 8)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 600000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 0,
+                                    velocity = 64)
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+#write midi file to disk
+miditapyr_object$write_file("endless_mario_1.mid")
+
+#########
+# bounce to mp3 with fluid synth
+
+track_name <- "endless_mario_1"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+```
+
+`r html_tag_audio("endless_mario_1.mp3", type = "wav")`
+
+It worked!
+
+It's slightly more musical than the other methods, and suggest lots of other fun to stuff to try.
+
+I really wish I had this in a eurorack module.
+
+
