@@ -1,0 +1,102 @@
+---
+title: "{midiblender} is alive!"
+author: "Matt Crump"
+date: 2/8/24
+description: "{midiblender} is an R package for experimental genRative MIDI mangling"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - midiblender
+  - generativemusic
+  - rstatsmusic
+  - midi
+  - rstats
+execute: 
+  echo: true
+  message: false
+  warning: false
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "blender on white background. blender blending musical notes. cartoon. 80s retro."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+R stats package logo
+:::
+
+```{r}
+#| echo: false
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+A super quick post to say that [midiblender](https://www.crumplab.com/midiblender/) is alive on github.
+
+The github repo is: <https://github.com/CrumpLab/midiblender>
+
+This is the beginnings of an #rstats package for experimental mangling of #MIDI files. TBH, it's my personal experimental hacky-code base wrapped in R package clothing. I'm messing with it constantly, and sharing in case others are interested. 
+
+I wrote a [getting starting vignette](https://www.crumplab.com/midiblender/articles/Getting_started.html) that could be helpful for others to try stuff out.
+
+Otherwise, I'm planning to keep posting examples and experiments on this blog. So, more {midiblender} to come.
+
+
+
