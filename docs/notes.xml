@@ -17,6 +17,1091 @@
 <generator>quarto-1.4.549</generator>
 <lastBuildDate>Wed, 07 Feb 2024 05:00:00 GMT</lastBuildDate>
 <item>
+  <title>Midi blending Canon in D probabilistically</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/40_2_7_24_midiblender_canon/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> set_seed</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Image</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> random</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ssl</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#locate library</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mps"</span>)</span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"max"</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"blender on white background. blender blending musical notes. cartoon. 80s retro."</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>):</span>
+<span id="cb1-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]:</span>
+<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span></span>
+<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-29">    set_seed(seed)</span>
+<span id="cb1-30">    </span>
+<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>num_steps)</span>
+<span id="cb1-32">    </span>
+<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpeg"</span></span>
+<span id="cb1-34">    </span>
+<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/40_2_7_24_midiblender_canon/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Probabilistically generated sheet music.</p>
+</div></div><p>Still working on {midiblender} here. Check out <a href="https://homophony.quest/notes.html">past posts for more info</a>.</p>
+<p>Another quick post with some code and mp3 examples. I’m waffling on whether to share {midiblender} on github sooner than later. It’s in a personally usable state, which is my intended use case. I guess my inclination is to share in case others find the code helpful, with a big warning that “it might not blend”. I’m too new to processing midi files, and the code is not general enough to handle lots of aspects of midi files. Anyway, on with the post.</p>
+<p>This one is basically an extension of what I was doing with the mario overworld theme <a href="https://homophony.quest/blog/39_2_7_24_midiblender_mario/">in the last post</a>.</p>
+<p>Instead of mario, this time I’m importing Pachelbel’s Canon in D. It’s not the most well-articulated midi file, but it is recognizable as the Canon in D. One goal is make sure my code will mangle other midi files, so I’m kicking the tires here.</p>
+<section id="endless-canon-in-probabilid" class="level2">
+<h2 class="anchored" data-anchor-id="endless-canon-in-probabilid">Endless Canon in ProbabiliD</h2>
+<p>In this example I slice up the midi file into small temporal intervals, like 2 beats of a bar, and represent each of them in a pitch x midi ticks matrix. Using this matrix I compute probabilities of each note in time within the bar, and then generate new notes based on those probabilities. There is a little bit more going on to make it slightly more musically. I start with the first bar in the song and compute a measure of similarity between the first bar, and all other bars. I take the bars that have some positive similarity and compute the note and time probabilities from this smaller set of bars. I have it set up so that when I generate notes from these probabilities (by sampling from binomal distributions), I also sample notes from the probabilities for the next bar. I then use those probabilities in the next step to filter the matrix for most similar bars, and so on.</p>
+<p>It’s endless in the sense that I could run the loop for much longer and it would keep going, but I stopped it to get about 3 minutes out.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(midiblender)</span>
+<span id="cb2-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#import midi</span></span>
+<span id="cb2-3">mario <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">midi_to_object</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"canon.mid"</span>)</span>
+<span id="cb2-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list2env</span>(mario, .GlobalEnv) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># send objects to global environment</span></span>
+<span id="cb2-5">track_0 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">copy_midi_df_track</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_df =</span> midi_df,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">track_num =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb2-6"></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># convert to a piano roll matrix</span></span>
+<span id="cb2-8">all_midi <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">midi_df_to_matrix</span>(midi_df,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">track=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># reshape to desired interval</span></span>
+<span id="cb2-11">music_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">reshape_piano_roll</span>(all_midi,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">96</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span>
+<span id="cb2-12"></span>
+<span id="cb2-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># probabilistic sampling</span></span>
+<span id="cb2-14"></span>
+<span id="cb2-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># create conditional vector</span></span>
+<span id="cb2-16">conditional_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(music_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>])</span>
+<span id="cb2-17">conditional_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> music_matrix[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,]</span>
+<span id="cb2-18">dot_products <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> conditional_vector <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%*%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t</span>(music_matrix)</span>
+<span id="cb2-19">positive_similarity <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(dot_products <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb2-20"></span>
+<span id="cb2-21"></span>
+<span id="cb2-22">feature_probs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">get_feature_probs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_matrix =</span> music_matrix[positive_similarity,])</span>
+<span id="cb2-23"></span>
+<span id="cb2-24">mean_note_density <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">get_mean_note_density</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_matrix =</span> music_matrix[positive_similarity,])</span>
+<span id="cb2-25"></span>
+<span id="cb2-26">new_features <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">new_features_from_probs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">probs =</span> feature_probs,</span>
+<span id="cb2-27">                                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">density =</span> mean_note_density,</span>
+<span id="cb2-28">                                        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">examples =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb2-29"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># loop</span></span>
+<span id="cb2-30">new_feature_vectors <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> new_features</span>
+<span id="cb2-31"></span>
+<span id="cb2-32"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>) {</span>
+<span id="cb2-33">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># put second half into conditional vector</span></span>
+<span id="cb2-34">  conditional_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(new_features[((<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(new_features)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(new_features)],</span>
+<span id="cb2-35">                          <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(new_features)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>))</span>
+<span id="cb2-36">  dot_products <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> conditional_vector <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%*%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t</span>(music_matrix)</span>
+<span id="cb2-37">  positive_similarity <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(dot_products <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb2-38">  </span>
+<span id="cb2-39">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(positive_similarity)  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>){</span>
+<span id="cb2-40">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># sample some random stuff</span></span>
+<span id="cb2-41">    positive_similarity <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sample</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(music_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>],<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span>)</span>
+<span id="cb2-42">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(i)</span>
+<span id="cb2-43">  }</span>
+<span id="cb2-44">  </span>
+<span id="cb2-45">  </span>
+<span id="cb2-46">  feature_probs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span></span>
+<span id="cb2-47">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">get_feature_probs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_matrix =</span> music_matrix[positive_similarity, ])</span>
+<span id="cb2-48">  </span>
+<span id="cb2-49">  mean_note_density <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span></span>
+<span id="cb2-50">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">get_mean_note_density</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_matrix =</span> music_matrix[positive_similarity, ])</span>
+<span id="cb2-51">  </span>
+<span id="cb2-52">  new_features <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">new_features_from_probs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">probs =</span> feature_probs,</span>
+<span id="cb2-53">                                          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">density =</span> mean_note_density,</span>
+<span id="cb2-54">                                          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">examples =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb2-55">  new_feature_vectors <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbind</span>(new_feature_vectors,new_features)</span>
+<span id="cb2-56">}</span>
+<span id="cb2-57"></span>
+<span id="cb2-58">new_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">feature_vector_to_matrix</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vec =</span> new_feature_vectors,</span>
+<span id="cb2-59">                                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">num_notes =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>)</span>
+<span id="cb2-60"></span>
+<span id="cb2-61"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># transform back to midi</span></span>
+<span id="cb2-62">midi_time_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix_to_midi_time</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_matrix =</span> new_matrix,</span>
+<span id="cb2-63">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">smallest_time_unit =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb2-64">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">note_off_length =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>)</span>
+<span id="cb2-65"></span>
+<span id="cb2-66">meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">get_midi_meta_df</span>(track_0)</span>
+<span id="cb2-67"></span>
+<span id="cb2-68">meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set_midi_tempo_meta</span>(meta_messages_df,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">update_tempo =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000000</span>)</span>
+<span id="cb2-69"></span>
+<span id="cb2-70">split_meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">split_meta_df</span>(meta_messages_df)</span>
+<span id="cb2-71"></span>
+<span id="cb2-72">new_midi_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix_to_midi_track</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_time_df =</span> midi_time_df,</span>
+<span id="cb2-73">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">split_meta_list =</span> split_meta_messages_df,</span>
+<span id="cb2-74">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">channel =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb2-75">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">velocity =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>)</span>
+<span id="cb2-76"></span>
+<span id="cb2-77"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">#### bounce</span></span>
+<span id="cb2-78"></span>
+<span id="cb2-79"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># update miditapyr df</span></span>
+<span id="cb2-80">miditapyr_object<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>midi_frame_unnested<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">update_unnested_mf</span>(new_midi_df)</span>
+<span id="cb2-81"></span>
+<span id="cb2-82"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#write midi file to disk</span></span>
+<span id="cb2-83">miditapyr_object<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write_file</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"endless_canon.mid"</span>)</span>
+<span id="cb2-84"></span>
+<span id="cb2-85"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">#########</span></span>
+<span id="cb2-86"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># bounce to mp3 with fluid synth</span></span>
+<span id="cb2-87"></span>
+<span id="cb2-88">track_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"endless_canon"</span></span>
+<span id="cb2-89"></span>
+<span id="cb2-90">wav_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>)</span>
+<span id="cb2-91">midi_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mid"</span>)</span>
+<span id="cb2-92">mp3_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mp3"</span>)</span>
+<span id="cb2-93"></span>
+<span id="cb2-94"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># synthesize midi file to wav with fluid synth</span></span>
+<span id="cb2-95">system_command <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> glue<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">glue</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}'</span>)</span>
+<span id="cb2-96"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">system</span>(system_command)</span>
+<span id="cb2-97"></span>
+<span id="cb2-98"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># convert wav to mp3</span></span>
+<span id="cb2-99">av<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">av_audio_convert</span>(wav_name,mp3_name)</span>
+<span id="cb2-100"></span>
+<span id="cb2-101"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># clean up and delete wav</span></span>
+<span id="cb2-102"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.exists</span>(wav_name)){</span>
+<span id="cb2-103">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.remove</span>(wav_name)</span>
+<span id="cb2-104">}</span></code></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="endless_canon.mp3" type="audio/wav"> </audio></p>
+<p>It sounds like a probabilistic mess, but there are moments with some resemblance to Canon in D. The fluid synth piano sound helps with the cheese factor. Also, my code ignores note length, so everything sounds a bit choppy.</p>
+</section>
+<section id="blending-the-mess" class="level2">
+<h2 class="anchored" data-anchor-id="blending-the-mess">Blending the mess</h2>
+<p>The next example offers a blending parameter. I split the original into 2 beat sections. Then I loop through each 2 beat snippet. For each snippet I compute note in time probabilities for the snippet, and then generate 2 beat probabilistic sequence. At the end, I have all of the original 2 beat sections, and another set of probabilistically generated ones. To construct the final tune, I blend them together in some proportion. In this case the proportion is 50/50.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(midiblender)</span>
+<span id="cb3-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#import midi</span></span>
+<span id="cb3-3">mario <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">midi_to_object</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"canon.mid"</span>)</span>
+<span id="cb3-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list2env</span>(mario, .GlobalEnv) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># send objects to global environment</span></span>
+<span id="cb3-5">track_0 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">copy_midi_df_track</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_df =</span> midi_df,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">track_num =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb3-6"></span>
+<span id="cb3-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># convert to a piano roll matrix</span></span>
+<span id="cb3-8">all_midi <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">midi_df_to_matrix</span>(midi_df,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">track=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb3-9"></span>
+<span id="cb3-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># reshape to desired interval</span></span>
+<span id="cb3-11">music_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">reshape_piano_roll</span>(all_midi,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">96</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span>
+<span id="cb3-12">probabilistic_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> music_matrix</span>
+<span id="cb3-13"></span>
+<span id="cb3-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># probabilistic sampling and blending</span></span>
+<span id="cb3-15"></span>
+<span id="cb3-16"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>( i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(music_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]){</span>
+<span id="cb3-17"></span>
+<span id="cb3-18">  conditional_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> music_matrix[i,]</span>
+<span id="cb3-19">  dot_products <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> conditional_vector <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%*%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">t</span>(music_matrix)</span>
+<span id="cb3-20">  positive_similarity <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(dot_products <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb3-21">  </span>
+<span id="cb3-22">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(positive_similarity)  <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>){</span>
+<span id="cb3-23">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># sample some random stuff</span></span>
+<span id="cb3-24">    positive_similarity <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sample</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(music_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>],<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">25</span>)</span>
+<span id="cb3-25">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(i)</span>
+<span id="cb3-26">  }</span>
+<span id="cb3-27">  </span>
+<span id="cb3-28">  </span>
+<span id="cb3-29">  feature_probs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">get_feature_probs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_matrix =</span> music_matrix[positive_similarity,])</span>
+<span id="cb3-30">  </span>
+<span id="cb3-31">  mean_note_density <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">get_mean_note_density</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_matrix =</span> music_matrix[positive_similarity,])</span>
+<span id="cb3-32">  </span>
+<span id="cb3-33">  new_features <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">new_features_from_probs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">probs =</span> feature_probs,</span>
+<span id="cb3-34">                                          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">density =</span> mean_note_density,</span>
+<span id="cb3-35">                                          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">examples =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb3-36">  probabilistic_matrix[i,] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> new_features</span>
+<span id="cb3-37">}</span>
+<span id="cb3-38"></span>
+<span id="cb3-39"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">## blend</span></span>
+<span id="cb3-40">blend_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> music_matrix</span>
+<span id="cb3-41"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span>(i <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(music_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]){</span>
+<span id="cb3-42">  sample_ids <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sample</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(music_matrix)[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>])  </span>
+<span id="cb3-43">  first_half <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">round</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(sample_ids)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span>
+<span id="cb3-44">  blend_vector <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(sample_ids))</span>
+<span id="cb3-45">  blend_vector[sample_ids[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>first_half]] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> music_matrix[i,sample_ids[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span>first_half]]</span>
+<span id="cb3-46">  blend_vector[sample_ids[(first_half<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(sample_ids)]] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> probabilistic_matrix[i,sample_ids[(first_half<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(sample_ids)]]</span>
+<span id="cb3-47">  blend_matrix[i,] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> blend_vector</span>
+<span id="cb3-48">}</span>
+<span id="cb3-49"></span>
+<span id="cb3-50"></span>
+<span id="cb3-51"></span>
+<span id="cb3-52">new_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">feature_vector_to_matrix</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vec =</span> blend_matrix,</span>
+<span id="cb3-53">                                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">num_notes =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">128</span>)</span>
+<span id="cb3-54"></span>
+<span id="cb3-55"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># transform back to midi</span></span>
+<span id="cb3-56">midi_time_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix_to_midi_time</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_matrix =</span> new_matrix,</span>
+<span id="cb3-57">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">smallest_time_unit =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb3-58">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">note_off_length =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>)</span>
+<span id="cb3-59"></span>
+<span id="cb3-60">meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">get_midi_meta_df</span>(track_0)</span>
+<span id="cb3-61"></span>
+<span id="cb3-62">meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set_midi_tempo_meta</span>(meta_messages_df,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">update_tempo =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1000000</span>)</span>
+<span id="cb3-63"></span>
+<span id="cb3-64">split_meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">split_meta_df</span>(meta_messages_df)</span>
+<span id="cb3-65"></span>
+<span id="cb3-66">new_midi_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix_to_midi_track</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_time_df =</span> midi_time_df,</span>
+<span id="cb3-67">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">split_meta_list =</span> split_meta_messages_df,</span>
+<span id="cb3-68">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">channel =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb3-69">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">velocity =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>)</span>
+<span id="cb3-70"></span>
+<span id="cb3-71"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">#### bounce</span></span>
+<span id="cb3-72"></span>
+<span id="cb3-73"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># update miditapyr df</span></span>
+<span id="cb3-74">miditapyr_object<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>midi_frame_unnested<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">update_unnested_mf</span>(new_midi_df)</span>
+<span id="cb3-75"></span>
+<span id="cb3-76"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#write midi file to disk</span></span>
+<span id="cb3-77">miditapyr_object<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write_file</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"endless_canon_2.mid"</span>)</span>
+<span id="cb3-78"></span>
+<span id="cb3-79"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">#########</span></span>
+<span id="cb3-80"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># bounce to mp3 with fluid synth</span></span>
+<span id="cb3-81"></span>
+<span id="cb3-82">track_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"endless_canon_2"</span></span>
+<span id="cb3-83"></span>
+<span id="cb3-84">wav_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>)</span>
+<span id="cb3-85">midi_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mid"</span>)</span>
+<span id="cb3-86">mp3_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mp3"</span>)</span>
+<span id="cb3-87"></span>
+<span id="cb3-88"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># synthesize midi file to wav with fluid synth</span></span>
+<span id="cb3-89">system_command <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> glue<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">glue</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}'</span>)</span>
+<span id="cb3-90"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">system</span>(system_command)</span>
+<span id="cb3-91"></span>
+<span id="cb3-92"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># convert wav to mp3</span></span>
+<span id="cb3-93">av<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">av_audio_convert</span>(wav_name,mp3_name)</span>
+<span id="cb3-94"></span>
+<span id="cb3-95"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># clean up and delete wav</span></span>
+<span id="cb3-96"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.exists</span>(wav_name)){</span>
+<span id="cb3-97">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.remove</span>(wav_name)</span>
+<span id="cb3-98">}</span></code></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="endless_canon_2.mp3" type="audio/wav"> </audio></p>
+<p>Much more recognizable now, with 50% less probabilistic mess. Still sounds ridiculous. Nevertheless, I’m expecting some fun to start happening later, especially when running more interesting midi files through mr. modular synthesizer.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>midiblender</category>
+  <category>generativemusic</category>
+  <category>rstatsmusic</category>
+  <category>midi</category>
+  <category>rstats</category>
+  <guid>https://homophony.quest/blog/40_2_7_24_midiblender_canon/</guid>
+  <pubDate>Wed, 07 Feb 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/40_2_7_24_midiblender_canon/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
+<item>
   <title>WIP: Endless probabilistically generated mario music with midiblender</title>
   <dc:creator>Matt Crump</dc:creator>
   <link>https://homophony.quest/blog/39_2_7_24_midiblender_mario/</link>
@@ -28567,173 +29652,6 @@ F-statistic: 266.2 on 1 and 34 DF,  p-value: &lt; 2.2e-16</code></pre>
   <guid>https://homophony.quest/blog/19_1_19_24_Contextual_Interference/</guid>
   <pubDate>Fri, 19 Jan 2024 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/19_1_19_24_Contextual_Interference/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Assessing my 7th chords with a reaction time test</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/20_1_19_24_7th_chords/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/20_1_19_24_7th_chords/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Testing myself on 7th chords using a choice-reaction time procedure</p>
-</div></div><p>This post is about collecting some performance data on my ability to play stuff. I have some longer term plans to improve on these methods for research purposes, but for now, I’m just interested in roughly tracking my own abilities.</p>
-<p>In my last post I was about try out some different practice schedules, one of which would require me to randomly pick which keys to practice. That kind of stuff is annoying to do without a computer. Plus, if I’m about to collect a bunch of data in a bunch of conditions, I’d rather not code things and do data entry by hand.</p>
-<p>So, I jumped ship and decided to start building little computerized measurement tools.</p>
-<p>I put together a really simple choice reaction test using <a href="https://www.jspsych.org/7.3/">jspsych</a>, the same JavaScript library that I use for online cognition experiments.</p>
-<p>To start, I decided to test myself on basic seventh chords in all keys. There are 12 different keys, and for this test, I used ∆7, 7, and -7 chords, for a total of 36 different chords.</p>
-<p>The choice reaction time test is very simple. The program takes all of the possible chord names, randomly shuffles them, and then presents each name on the screen one at a time. I put my laptop on top of my piano, waited for the chord name to appear, and then played the chord as fast as I could on the piano. At the same time, I had my left thumb on the spacebar, and I pressed the spacebar roughly at the same time that I played the chord. This allowed me to measure the reaction time for each chord. I also had the program repeat all the chords randomly twice, so that I got two reaction time measures per chord.</p>
-<p>I love jspsych. It took like 15 minutes to make this happen (granted, I have a bunch of prior experience using that library, and I was doing something very simple). Still, I already made the program and ran the test, and collected the data as a JSON variable. Woo hoo!</p>
-<p>And, of course, this is really messy data. Ideally, I would have the reaction times for each note, say using MIDI or something. But, that’s for later.</p>
-<p>I’d really like to take a look at my own performance data. I know all of these chords pretty well, but I have never closely compared my ability to produce them on demand. I expect I’ll be pretty good in C, D, F, G, A, and worse in the other keys. But, I don’t really know what the pattern looks like.</p>
-<p>So, let’s get to the data analysis.</p>
-<p>I loaded in the data, computed the average chord-reaction time for each chord, and put them all in the following table and graph.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-190f1127080f6f229f3c" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-190f1127080f6f229f3c">{"x":{"filter":"none","vertical":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36"],["A-7","A7","Ab-7","Ab7","Ab∆7","A∆7","B-7","B7","Bb-7","Bb7","Bb∆7","B∆7","C-7","C7","C∆7","D-7","D7","Db-7","Db7","Db∆7","D∆7","E-7","E7","Eb-7","Eb7","Eb∆7","E∆7","F-7","F7","F∆7","G-7","G7","Gb-7","Gb7","Gb∆7","G∆7"],[901.5,1269.5,4730.5,2626.5,4038,1920.5,2974,2563.5,6454.5,3860.5,4595,3846,1414.5,1773.5,1231.5,1160.5,1206.5,3469,2383,3080.5,2951,1196.5,1698,4777.5,1878,2218,2951.5,1231.5,1478,1692,1508.5,1217.5,4033.5,4607,5124,2259]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>stimulus<\/th>\n      <th>mean_rt<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/20_1_19_24_7th_chords/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Neat. Close to what I expected in terms of which chords I think I’m better at. All of em could do with some extra practice. I suppose I should do more practice on the slow ones, because the fast ones don’t really need it.</p>
-<hr>
-<p>I was too hasty with my jspsych programming and totally forgot to add a few things that would make data analysis much easier. I’d like to be able to easily replot the data in a few different ways. One way is to group by maj7, min7, and dominant 7th. Another is to arrange the keys in ascending/descending order (rather than alphabetically), or in the order of the circle of fifths. I could add the necessary factor levels to the data file by hand, but I think I’ll add this to the jspsych program so that the data file includes this by default.</p>
-<p>So, off to fixing the program, and then I’ll collect some more data and try a few different plots.</p>
-<p>And, I’m back. I ran through the practice one more time. Now my data file should be easier to plot in different ways.</p>
-<p>Here is the mean chord reaction time for each key, grouped by 7th chords.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/20_1_19_24_7th_chords/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>I wanted to order the keys in terms of the circle of fifths, but there was another bug in the code, now fixed. I’ll need another round of data-collection to get that graph.</p>
-<p>In terms of piano practice, I should get a bunch of these chord reaction times lower. Especially Gb, Ab, Bb, Eb, and Db, and B. I thought Bb would be better, but nope.</p>
-<p>The program is not currently keeping track of practice attempts per chord, and I should add that.</p>
-<hr>
-<p>After some javascript nonsense, the program now runs in a loop. Each loop goes through a set of practice material and records the practice attempt number for each chord.</p>
-<p>My loop of practice material is all the basic 7th chords. So, I’m about to practice them for a while and then plot the data.</p>
-<p>One detail is whether to do away with the delay between trials. Right now there is a 2 second delay before the next chord. That’s nice and everything, but I feel like chomping through this, so I’ll get rid of that delay.</p>
-<hr>
-<p>I practiced all the chords in a random order for about 10 times each. This is a plot of my chord reaction times as a function of practice for all chords. A bit messy to look at.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/20_1_19_24_7th_chords/index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>If I average over keys, did I get any faster?</p>
-<p>There’s a downward trend I guess.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/20_1_19_24_7th_chords/index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Averaging over chords and showing the individual keys:</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/20_1_19_24_7th_chords/index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>And, one last summary graph. Let’s average over repetitions, and arrange by the circle of fifths.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/20_1_19_24_7th_chords/index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>I guess I should practice Gb and Db and Bb and flatten out this performance distribution.</p>
-<hr>
-<p>Alright, that’s basically all I wanted to accomplish today. Now I have a clunky little tool to relatively quickly assess where I am at on different musical elements. Time to go do something else.</p>
-<hr>
-<p>Practicing “Eb”,“Db”,“Gb”,“Ab”,“B” this morning, and plotting the reactions from yesterday (1), and today (2).</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/20_1_19_24_7th_chords/index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Averaging over individual chords, and looking at mean chord reaction time yesterday and today on these chords.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/20_1_19_24_7th_chords/index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Made a change to the program so that when I load it up I can select which keys to practice. I’m assuming that if I select only Gb and Ab (the slowest), I would be able to get them both under 2 seconds. I wonder if I would then maintain that level of performance when increasing the number of other chords in the test. Need to make breakfast first.</p>
-<p>I put Gb and Ab and practiced those 7th chords for a while.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/20_1_19_24_7th_chords/index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Nice, with 5 minutes or so of banging around those chords, I could get the times way down in the context of this much simpler test (fewer other chords to play, less hand movement between chords etc).</p>
-<p>I’m curious whether this improvement for Gb and Ab would persist into a test using all of the keys.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/20_1_19_24_7th_chords/index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>When I added all of the keys back the RTs for Gb and Ab went up a little bit from the last time, but they are over all way down. Almost all of them are under 1500 ms now.</p>
-<p>This practice isn’t very musical, but it seems to work out my ability to identify and then play chords on demand. Perhaps speeding up on this test would improve my ability to sight read chord changes.</p>
-
-
-
- ]]></description>
-  <category>practice</category>
-  <category>7th chords</category>
-  <category>jspsych</category>
-  <category>assessment</category>
-  <guid>https://homophony.quest/blog/20_1_19_24_7th_chords/</guid>
-  <pubDate>Fri, 19 Jan 2024 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/20_1_19_24_7th_chords/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>

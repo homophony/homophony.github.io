@@ -1,0 +1,335 @@
+---
+title: "Midi blending Canon in D probabilistically"
+author: "Matt Crump"
+date: 2/7/24
+description: "More work in progress with midiblender. It seems to be blending."
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - midiblender
+  - generativemusic
+  - rstatsmusic
+  - midi
+  - rstats
+execute: 
+  echo: true
+  message: false
+  warning: false
+format:
+  html:
+    code-fold: true
+    code-summary: "Show the code"
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "blender on white background. blender blending musical notes. cartoon. 80s retro."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+Probabilistically generated sheet music.
+:::
+
+```{r}
+#| echo: false
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+Still working on {midiblender} here. Check out [past posts for more info](https://homophony.quest/notes.html).
+
+Another quick post with some code and mp3 examples. I'm waffling on whether to share {midiblender} on github sooner than later. It's in a personally usable state, which is my intended use case. I guess my inclination is to share in case others find the code helpful, with a big warning that "it might not blend". I'm too new to processing midi files, and the code is not general enough to handle lots of aspects of midi files. Anyway, on with the post.
+
+This one is basically an extension of what I was doing with the mario overworld theme [in the last post](https://homophony.quest/blog/39_2_7_24_midiblender_mario/).
+
+Instead of mario, this time I'm importing Pachelbel's Canon in D. It's not the most well-articulated midi file, but it is recognizable as the Canon in D. One goal is make sure my code will mangle other midi files, so I'm kicking the tires here.
+
+## Endless Canon in ProbabiliD
+
+In this example I slice up the midi file into small temporal intervals, like 2 beats of a bar, and represent each of them in a pitch x midi ticks matrix. Using this matrix I compute probabilities of each note in time within the bar, and then generate new notes based on those probabilities. There is a little bit more going on to make it slightly more musically. I start with the first two beats in the song and compute a measure of similarity between them, and all other 2 beat slices. I take the slices that have some positive similarity and compute the note and time probabilities from this smaller set. I have it set up so that when I generate notes from these probabilities (by sampling from binomial distributions), I also sample notes from the probabilities for the next beat. I then use those probabilities in the next step to filter the matrix for most similar bars, and so on.
+
+It's endless in the sense that I could run the loop for much longer and it would keep going, but I stopped it to get about 3 minutes out.
+
+```{r, eval=FALSE}
+library(midiblender)
+#import midi
+mario <- midi_to_object("canon.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+track_0 <- copy_midi_df_track(midi_df = midi_df,track_num = 0)
+
+# convert to a piano roll matrix
+all_midi <- midi_df_to_matrix(midi_df,track=0)
+
+# reshape to desired interval
+music_matrix <- reshape_piano_roll(all_midi,96*2)
+
+# probabilistic sampling
+
+# create conditional vector
+conditional_vector <- rep(0,dim(music_matrix)[2])
+conditional_vector <- music_matrix[1,]
+dot_products <- conditional_vector %*% t(music_matrix)
+positive_similarity <- which(dot_products > 0)
+
+
+feature_probs <- get_feature_probs(midi_matrix = music_matrix[positive_similarity,])
+
+mean_note_density <- get_mean_note_density(midi_matrix = music_matrix[positive_similarity,])
+
+new_features <- new_features_from_probs(probs = feature_probs,
+                                        density = mean_note_density,
+                                        examples = 1)
+# loop
+new_feature_vectors <- new_features
+
+for(i in 1:100) {
+  # put second half into conditional vector
+  conditional_vector <- c(new_features[((length(new_features)/2)+1):length(new_features)],
+                          rep(0,length(new_features)/2))
+  dot_products <- conditional_vector %*% t(music_matrix)
+  positive_similarity <- which(dot_products > 0)
+  
+  if(length(positive_similarity)  < 2){
+    # sample some random stuff
+    positive_similarity <- sample(1:dim(music_matrix)[1],25)
+    print(i)
+  }
+  
+  
+  feature_probs <-
+    get_feature_probs(midi_matrix = music_matrix[positive_similarity, ])
+  
+  mean_note_density <-
+    get_mean_note_density(midi_matrix = music_matrix[positive_similarity, ])
+  
+  new_features <- new_features_from_probs(probs = feature_probs,
+                                          density = mean_note_density,
+                                          examples = 1)
+  new_feature_vectors <- rbind(new_feature_vectors,new_features)
+}
+
+new_matrix <- feature_vector_to_matrix(vec = new_feature_vectors,
+                                       num_notes = 128)
+
+# transform back to midi
+midi_time_df <- matrix_to_midi_time(midi_matrix = new_matrix,
+                                    smallest_time_unit = 1,
+                                    note_off_length = 8)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 1000000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 0,
+                                    velocity = 100)
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+#write midi file to disk
+miditapyr_object$write_file("endless_canon.mid")
+
+#########
+# bounce to mp3 with fluid synth
+
+track_name <- "endless_canon"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+```
+
+`r html_tag_audio("endless_canon.mp3", type = "wav")`
+
+It sounds like a probabilistic mess, but there are moments with some resemblance to Canon in D. The fluid synth piano sound helps with the cheese factor. Also, my code ignores note length, so everything sounds a bit choppy.
+
+## Blending the mess
+
+The next example offers a blending parameter. I split the original into 2 beat sections. Then I loop through each 2 beat slice. For each slice I compute note in time probabilities and then generate a 2 beat probabilistic sequence. At the end, I have all of the original 2 beat sections, and another set of probabilistically generated ones. To construct the final tune, I blend them together in some proportion. In this case the proportion is 50/50.
+
+```{r, eval=FALSE}
+library(midiblender)
+#import midi
+mario <- midi_to_object("canon.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+track_0 <- copy_midi_df_track(midi_df = midi_df,track_num = 0)
+
+# convert to a piano roll matrix
+all_midi <- midi_df_to_matrix(midi_df,track=0)
+
+# reshape to desired interval
+music_matrix <- reshape_piano_roll(all_midi,96*2)
+probabilistic_matrix <- music_matrix
+
+# probabilistic sampling and blending
+
+for( i in 1: dim(music_matrix)[1]){
+
+  conditional_vector <- music_matrix[i,]
+  dot_products <- conditional_vector %*% t(music_matrix)
+  positive_similarity <- which(dot_products > 0)
+  
+  if(length(positive_similarity)  < 2){
+    # sample some random stuff
+    positive_similarity <- sample(1:dim(music_matrix)[1],25)
+    print(i)
+  }
+  
+  
+  feature_probs <- get_feature_probs(midi_matrix = music_matrix[positive_similarity,])
+  
+  mean_note_density <- get_mean_note_density(midi_matrix = music_matrix[positive_similarity,])
+  
+  new_features <- new_features_from_probs(probs = feature_probs,
+                                          density = mean_note_density,
+                                          examples = 1)
+  probabilistic_matrix[i,] <- new_features
+}
+
+## blend
+blend_matrix <- music_matrix
+for(i in 1:dim(music_matrix)[1]){
+  sample_ids <- sample(1:dim(music_matrix)[2])  
+  first_half <- round(length(sample_ids)/2)
+  blend_vector <- rep(0,length(sample_ids))
+  blend_vector[sample_ids[1:first_half]] <- music_matrix[i,sample_ids[1:first_half]]
+  blend_vector[sample_ids[(first_half+1):length(sample_ids)]] <- probabilistic_matrix[i,sample_ids[(first_half+1):length(sample_ids)]]
+  blend_matrix[i,] <- blend_vector
+}
+
+
+
+new_matrix <- feature_vector_to_matrix(vec = blend_matrix,
+                                       num_notes = 128)
+
+# transform back to midi
+midi_time_df <- matrix_to_midi_time(midi_matrix = new_matrix,
+                                    smallest_time_unit = 1,
+                                    note_off_length = 8)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 1000000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 0,
+                                    velocity = 100)
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+#write midi file to disk
+miditapyr_object$write_file("endless_canon_2.mid")
+
+#########
+# bounce to mp3 with fluid synth
+
+track_name <- "endless_canon_2"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+```
+
+`r html_tag_audio("endless_canon_2.mp3", type = "wav")`
+
+Much more recognizable now, with 50% less probabilistic mess. Still sounds ridiculous. Nevertheless, I'm expecting some fun to start happening later, especially when running more interesting midi files through mr. modular synthesizer.
+
+
+
+
+
+
+
+
+
+
+
+
