@@ -17,6 +17,785 @@
 <generator>quarto-1.4.549</generator>
 <lastBuildDate>Thu, 08 Feb 2024 05:00:00 GMT</lastBuildDate>
 <item>
+  <title>Analyzing and filtering note occurence by point estimation</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/42_2_8_24_prob_filter/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> set_seed</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Image</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> random</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ssl</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#locate library</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mps"</span>)</span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"max"</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"futuristic vacuum cleaner on white background. sucking up probabilities of musical notes. cartoon. 80s retro."</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>):</span>
+<span id="cb1-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]:</span>
+<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span></span>
+<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-29">    set_seed(seed)</span>
+<span id="cb1-30">    </span>
+<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>num_steps)</span>
+<span id="cb1-32">    </span>
+<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpeg"</span></span>
+<span id="cb1-34">    </span>
+<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/42_2_8_24_prob_filter/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>futuristic vacuum cleaner on white background. sucking up probabilities of musical notes. cartoon. 80s retro.</p>
+</div></div><p>There’s many ideas swirling around leading me to this MIDI mangling experiment. My preference would be to discuss them in advance of the code, but I’m going to mostly resist that urge. Perhaps another time.</p>
+<p>Getting right into then, let’s use <a href="https://www.crumplab.com/midiblender/">midiblender</a> to import the mario music into a matrix.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(midiblender)</span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#import midi</span></span>
+<span id="cb2-4">mario <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">midi_to_object</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"all_overworld.mid"</span>)</span>
+<span id="cb2-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list2env</span>(mario, .GlobalEnv) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># send objects to global environment</span></span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># convert midi to matrix</span></span>
+<span id="cb4-2">piano_roll <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">midi_df_to_matrix</span>(midi_df,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">track=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb4-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dim</span>(piano_roll)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]   128 14113</code></pre>
+</div>
+</div>
+<p>The <code>piano_roll</code> matrix has 128 rows for each possible midi note, and 14113 columns for each midi time tick. All of the notes are coded as 1s in this matrix. All other cells are set to 0.</p>
+<section id="point-estimates-of-note-occurrence-probability" class="level2">
+<h2 class="anchored" data-anchor-id="point-estimates-of-note-occurrence-probability">Point estimates of note occurrence probability</h2>
+<p>Let’s do a bit of data analysis. How many notes occur in this midi file?</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(piano_roll)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 901</code></pre>
+</div>
+</div>
+<p>What are the frequencies of each note across the song?</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">note_frequencies <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rowSums</span>(piano_roll)</span>
+<span id="cb8-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(note_frequencies)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/42_2_8_24_prob_filter/index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Most of the notes are between MIDI note 40ish and 85ish. The most frequent note is clocking in around 90 occurences.</p>
+<p>Dividing the vector of note frequencies by the total sum gives point estimates of the probabilities for each note.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">note_probabilities <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> note_frequencies<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(note_frequencies)</span>
+<span id="cb9-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">plot</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(note_probabilities))</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/42_2_8_24_prob_filter/index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>There a quick sorted plot, most notes have 0 probability of occurrence, and then it swings up to a max of 0.1054384. Neato.</p>
+<p>In previous posts I’ve been taking point estimation much further in terms of reshaping the matrix and estimating probabilities for notes in particular time slices. I haven’t yet tried doing something simple like the above, and using only these probabilities to generate new sequences. And, I’m not going to do that here either.</p>
+</section>
+<section id="filtering-note-occurrences-by-point-estimates." class="level2">
+<h2 class="anchored" data-anchor-id="filtering-note-occurrences-by-point-estimates.">Filtering note occurrences by point estimates.</h2>
+<p>I have a bunch of things I want to try with this, but in this post I’ll keep it simple to get the idea down.</p>
+<p>Here’s a simple filtering idea. Remove notes from the original piece depending on their point estimates. We could listen to mario with all of the high probability notes removed, or all of the low probability notes removed, or whatever combo one desires.</p>
+<p>The more complicated plans involve deriving point estimates for conditional probabilities based on prior note occurrence, and/or note x time probabilities, and then filtering notes on that basis.</p>
+<p>Before I do that, here’s a short digression. Consider listening to note sequences as an exercise in dynamic expectation. This is a pretty common notion in music and music cognition. You hear notes over time as they repeat and change, and have feelings of expectation about what comes next.</p>
+<p>Let’s say you are a note accumulator matrix, like the piano roll. As you accumulate note occurrences, some happen more often than others. If the music has repetitive structure, then there could be a sense of expectation. The new notes might have the same frequency profiles as the old notes, giving a sense of congruency…this is what the matrix was expecting. The new notes might have different frequencies, violating the expectation of the matrix, but nevertheless adding to the total accumulation of notes…the matrix would be less surprised about similar deviations the next time. Apologies for over-anthropomorphizing the matrix.</p>
+<p>The point estimates above are very global point estimates of note probability taken over all local contexts. After listening to mario music on repeat, as I did for who knows how long as a kid, these probabilities represent a kind of mean expectation about what notes I should be hearing in general.</p>
+<p>I don’t know the music analysis literature well enough to know what this would be called, but it would be pretty straightforward to look at notes in a musical piece in terms of how they deviate from their point estimates. And, there are lots of interesting questions here about which point estimates to choose. Ones from the song, or set of songs like it, or a massive corpus of midi files, or a person’s entire listening experience. But, the analysis stuff is for another day.</p>
+<p>Gotta reign in this digression. One point is there seems to be some interesting applied value in being able to quickly code notes in terms of their point estimates. It’ll be super easy to do this in R. For example, we would just replace all the 1s in each row of the piano matrix with their respective point estimates.</p>
+<p>Fortunately, R does the <a href="https://en.wikipedia.org/wiki/Hadamard_product_(matrices)">hadamard product</a>, so it’s just this.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">point_estimate_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> piano_roll <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> note_probabilities</span></code></pre></div>
+</details>
+</div>
+<p>Great, so what do we do with the new matrix? Lots of possibilities come to mind. This could be a quick way to edit for wrong notes. If this was a recorded performance, and you accidentally flubbed a couple notes, these could be low frequency occurrences with very low probability of occurrence. Just delete the really low probability notes and re-constitute the midi file from the matrix.</p>
+<p>Need to be delicate with the low probability notes, they might be really surprising and special. Maybe there needs to be more low probability notes.</p>
+<p>The goal of this post was to listen to mario with high probability notes deleted, or with low probability notes deleted. We’ll do both. I suspect the technique could be interesting also with respect to probabilistically generated notes, many of which sound awful. Maybe tracking them and deleting them by their point estimates could make the probabilistic sequences sound “better”. If I think about this in terms of a eurorack module, I don’t really care how musical it sounds, I just want a knob to turn and mangle the probabilities in any direction for fun timez.</p>
+<p>No more digression, let’s do this thing.</p>
+</section>
+<section id="high-pass-probability-filtering-mario-without-high-probability-notes" class="level2">
+<h2 class="anchored" data-anchor-id="high-pass-probability-filtering-mario-without-high-probability-notes">High pass probability filtering: Mario without high probability notes</h2>
+<p>Did a quick check and notes with a higher than 5% point estimate account for about 56% of all of the note occurrences. These notes get played a lot in mario.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(note_probabilities[note_probabilities <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">05</span>])</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5615982</code></pre>
+</div>
+</div>
+<p>OK, bye bye high frequency notes. Setting those ones to 0. Setting all other values to 1, converting this back into a note occurrence matrix.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1">mario_no_high <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> point_estimate_matrix</span>
+<span id="cb13-2">mario_no_high[mario_no_high <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">05</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb13-3">mario_no_high[mario_no_high <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> </span></code></pre></div>
+</details>
+</div>
+<p>Now, a bit of {midiblender} magic, and let’s turn this matrix back into a midi file and listen to it.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1">track_0 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">copy_midi_df_track</span>(midi_df,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">track_num =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb14-2"></span>
+<span id="cb14-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># transform back to midi</span></span>
+<span id="cb14-4">midi_time_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix_to_midi_time</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_matrix =</span> mario_no_high,</span>
+<span id="cb14-5">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">smallest_time_unit =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb14-6">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">note_off_length =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>)</span>
+<span id="cb14-7"></span>
+<span id="cb14-8">meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">get_midi_meta_df</span>(track_0)</span>
+<span id="cb14-9"></span>
+<span id="cb14-10">meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set_midi_tempo_meta</span>(meta_messages_df,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">update_tempo =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500000</span>)</span>
+<span id="cb14-11"></span>
+<span id="cb14-12">split_meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">split_meta_df</span>(meta_messages_df)</span>
+<span id="cb14-13"></span>
+<span id="cb14-14">new_midi_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix_to_midi_track</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_time_df =</span> midi_time_df,</span>
+<span id="cb14-15">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">split_meta_list =</span> split_meta_messages_df,</span>
+<span id="cb14-16">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">channel =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb14-17">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">velocity =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>)</span>
+<span id="cb14-18"></span>
+<span id="cb14-19"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">#### bounce</span></span>
+<span id="cb14-20"></span>
+<span id="cb14-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># update miditapyr df</span></span>
+<span id="cb14-22">miditapyr_object<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>midi_frame_unnested<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">update_unnested_mf</span>(new_midi_df)</span>
+<span id="cb14-23"></span>
+<span id="cb14-24"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#write midi file to disk</span></span>
+<span id="cb14-25">miditapyr_object<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write_file</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mario_no_high.mid"</span>)</span>
+<span id="cb14-26"></span>
+<span id="cb14-27"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">#########</span></span>
+<span id="cb14-28"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># bounce to mp3 with fluid synth</span></span>
+<span id="cb14-29"></span>
+<span id="cb14-30">track_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mario_no_high"</span></span>
+<span id="cb14-31"></span>
+<span id="cb14-32">wav_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>)</span>
+<span id="cb14-33">midi_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mid"</span>)</span>
+<span id="cb14-34">mp3_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mp3"</span>)</span>
+<span id="cb14-35"></span>
+<span id="cb14-36"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># synthesize midi file to wav with fluid synth</span></span>
+<span id="cb14-37">system_command <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> glue<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">glue</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}'</span>)</span>
+<span id="cb14-38"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">system</span>(system_command)</span>
+<span id="cb14-39"></span>
+<span id="cb14-40"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># convert wav to mp3</span></span>
+<span id="cb14-41">av<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">av_audio_convert</span>(wav_name,mp3_name)</span>
+<span id="cb14-42"></span>
+<span id="cb14-43"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># clean up and delete wav</span></span>
+<span id="cb14-44"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.exists</span>(wav_name)){</span>
+<span id="cb14-45">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.remove</span>(wav_name)</span>
+<span id="cb14-46">}</span></code></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="mario_no_high.mp3" type="audio/wav"> </audio></p>
+<p>Well, half of the notes are gone, and it sounds pretty sparse. Very cool function though.</p>
+</section>
+<section id="low-pass-probability-filtering-mario-without-low-probability-notes" class="level2">
+<h2 class="anchored" data-anchor-id="low-pass-probability-filtering-mario-without-low-probability-notes">Low pass probability filtering: Mario without low probability notes</h2>
+<p>Let’s do the opposite, and take out the low probability notes. It will be even more sparse using .05 as the cutoff. But it must be done.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sum</span>(note_probabilities[note_probabilities <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">05</span>])</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4384018</code></pre>
+</div>
+</div>
+<p>OK, bye bye high frequency notes. Setting those ones to 0. Setting all other values to 1, converting this back into a note occurrence matrix.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1">mario_no_low <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> point_estimate_matrix</span>
+<span id="cb17-2">mario_no_low[mario_no_low <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">05</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb17-3">mario_no_low[mario_no_low <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> </span></code></pre></div>
+</details>
+</div>
+<p>Now, a bit of {midiblender} magic, and let’s turn this matrix back into a midi file and listen to it.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1">track_0 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">copy_midi_df_track</span>(midi_df,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">track_num =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb18-2"></span>
+<span id="cb18-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># transform back to midi</span></span>
+<span id="cb18-4">midi_time_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix_to_midi_time</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_matrix =</span> mario_no_low,</span>
+<span id="cb18-5">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">smallest_time_unit =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb18-6">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">note_off_length =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>)</span>
+<span id="cb18-7"></span>
+<span id="cb18-8">meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">get_midi_meta_df</span>(track_0)</span>
+<span id="cb18-9"></span>
+<span id="cb18-10">meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set_midi_tempo_meta</span>(meta_messages_df,<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">update_tempo =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">500000</span>)</span>
+<span id="cb18-11"></span>
+<span id="cb18-12">split_meta_messages_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">split_meta_df</span>(meta_messages_df)</span>
+<span id="cb18-13"></span>
+<span id="cb18-14">new_midi_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">matrix_to_midi_track</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">midi_time_df =</span> midi_time_df,</span>
+<span id="cb18-15">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">split_meta_list =</span> split_meta_messages_df,</span>
+<span id="cb18-16">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">channel =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb18-17">                                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">velocity =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">100</span>)</span>
+<span id="cb18-18"></span>
+<span id="cb18-19"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">#### bounce</span></span>
+<span id="cb18-20"></span>
+<span id="cb18-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># update miditapyr df</span></span>
+<span id="cb18-22">miditapyr_object<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>midi_frame_unnested<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">update_unnested_mf</span>(new_midi_df)</span>
+<span id="cb18-23"></span>
+<span id="cb18-24"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#write midi file to disk</span></span>
+<span id="cb18-25">miditapyr_object<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write_file</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mario_no_low.mid"</span>)</span>
+<span id="cb18-26"></span>
+<span id="cb18-27"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">#########</span></span>
+<span id="cb18-28"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># bounce to mp3 with fluid synth</span></span>
+<span id="cb18-29"></span>
+<span id="cb18-30">track_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mario_no_low"</span></span>
+<span id="cb18-31"></span>
+<span id="cb18-32">wav_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".wav"</span>)</span>
+<span id="cb18-33">midi_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mid"</span>)</span>
+<span id="cb18-34">mp3_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".mp3"</span>)</span>
+<span id="cb18-35"></span>
+<span id="cb18-36"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># synthesize midi file to wav with fluid synth</span></span>
+<span id="cb18-37">system_command <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> glue<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">glue</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}'</span>)</span>
+<span id="cb18-38"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">system</span>(system_command)</span>
+<span id="cb18-39"></span>
+<span id="cb18-40"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># convert wav to mp3</span></span>
+<span id="cb18-41">av<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">av_audio_convert</span>(wav_name,mp3_name)</span>
+<span id="cb18-42"></span>
+<span id="cb18-43"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># clean up and delete wav</span></span>
+<span id="cb18-44"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.exists</span>(wav_name)){</span>
+<span id="cb18-45">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.remove</span>(wav_name)</span>
+<span id="cb18-46">}</span></code></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="mario_no_low.mp3" type="audio/wav"> </audio></p>
+<p>Again, pretty sparse, but emphasizing different aspects of mario.</p>
+</section>
+<section id="conclusions-i-want-a-eurorack-module-for-this" class="level2">
+<h2 class="anchored" data-anchor-id="conclusions-i-want-a-eurorack-module-for-this">Conclusions: I want a eurorack module for this</h2>
+<p>I wish I could just dial around a knob, like a filter knob, that did this to a midi file while it was playing. Maybe someday I’ll figure out how to do that for a eurorack module.</p>
+<p>These examples didn’t sound like much, but whatever. I could imagine this being very useful in general. For example, it would be nice to step back and look some composition and quickly appreciate what the spread of point estimates are. Maybe it is too regular, so you filter down the high probability stuff, or the opposite. It would be fun to have an equalizer like situation, where instead of emphasizing different wave frequencies, it allowed one to bring up or down different note probabilities. I think this would have really interesting effects, especially on super dense improvisational stuff, where I would probably want to delete things, and being able to do that on the basis of probabilities seems promising.</p>
+<p>This is just a quick and dirty example, will fool around with this more for sure.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>midiblender</category>
+  <category>probabilistic filtering</category>
+  <category>rstatsmusic</category>
+  <category>midi</category>
+  <category>rstats</category>
+  <guid>https://homophony.quest/blog/42_2_8_24_prob_filter/</guid>
+  <pubDate>Thu, 08 Feb 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/42_2_8_24_prob_filter/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
+<item>
   <title>{midiblender} is alive!</title>
   <dc:creator>Matt Crump</dc:creator>
   <link>https://homophony.quest/blog/41_2_8_24_midiblender_alive/</link>
@@ -29634,67 +30413,6 @@ font-style: inherit;">4</span>)</span>
   <guid>https://homophony.quest/blog/22_1_22_24_chord_similarity/</guid>
   <pubDate>Mon, 22 Jan 2024 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/22_1_22_24_chord_similarity/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Expanding the chord reaction time test</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/21_1_21_24_chord_reaction_time/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/21_1_21_24_chord_reaction_time/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>cartoon thundercat scientist building a synthesizer. laboratory. science. 80s cartoon. space music.</p>
-</div></div><p>I’ve been tinkering with a web-based “Chord Reaction Time” test to measure how fast I can play various chords on demand. The first version of the task had all the keys and three basic 7th chords (7, -7, ∆7). The newer version adds a selection screen, and more chords to practice. I don’t have a demo to share yet, but here’s a figure of what happens:</p>
-<p><img src="https://homophony.quest/blog/21_1_21_24_chord_reaction_time/images/Screenshot 2024-01-21 at 8.05.10 AM.png" class="img-fluid"></p>
-<p>At the moment, whenever I play a chord in response to a name, I have to simultaneously press the space bar on a bluetooth keyboard. That keypress records my reaction time to the chord and triggers the next trial. This coming week I’ll look into using the laptop microphone to record reaction time by analyzing amplitude changes (and then later something similar using MIDI).</p>
-<p>Yesterday afternoon I tried my hand at all the chords in all the keys. I haven’t looked at the data yet, but I’m sure it will tell me that I’m slow at the chords that I already know I’m slow on.</p>
-<p>This graph averages over keys and shows mean chord reaction time for each type of tested chord form.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/21_1_21_24_chord_reaction_time/index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>I should dedicate practice to all of the chords above the 2 second range.</p>
-<p>One question I have is whether the performance on this kind of test would meaningfully predict my ability to fluently play through chord changes on lead sheets.</p>
-<p>My experience right now is that I can often get through chord changes on a new song without too much trouble, but I’ll get tripped on the altered chords with flats and sharps. More like fall all over the place. I can’t dead reckon those chords. Instead, I’ll sit there and take 5 seconds or more to puzzle out the chord, which ruins the flow. If I’m feeling diligent I might work out a fingering pattern that makes it easy to play in that context. However, I don’t appear to retain any of that chord knowledge in a general way.</p>
-<p>I assume that if I was able to play all my chords really well in the context of playing lead sheets then my reaction times in the above graph would be faster and more uniform. I could practice this test over and over, and I’m pretty confident that I would get faster on the slower chords. However, one possibility is that that this learning would be somewhat specific to the peculiar demands of this very non-musical chord production task. So, it’s not clear to me that improvements derived from practicing chording in this task would fully generalize to helping me play lead sheets. At the same time, If I can get all the chords down to under 2 seconds in all the keys, that’s gotta help.</p>
-<p>Breakfast time.</p>
-<hr>
-<p>I did practice some of the extended chords yesterday. This morning I did a round of practice/testing on the 7b9 chords.</p>
-<p>Yesterday, 7b9 were initially excruciatingly slow. I couldn’t play any of them and had to construct them on the fly. As the graph below shows, I took over 12 seconds to produce some of the chords.</p>
-<p>Practice felt very slow and I didn’t feel like I was locking in new patterns at a fingering level. For example, I can visualize a C7 chord immediately, and still can’t visualize a C7b9 (even after all this practice).</p>
-<p>Nevertheless, the graph shows some substantial gains in chord production time. There were a few stages in learning to play this chord. Stage 1 was having no clue and working out each chord anew. In stage 2, I settled on a method to get to the 7b9: play the 7th chord in root position, go up 1 inversion, but instead of playing the root at the top, play 1 semitone above the root. Stage 2 was pretty slow also. At some point I realized that I already knew all of these chords as o7 chords. For example C7b9 without the root has E-G-Bb-Db, which are all the notes in Eo7, Go7, Bbo7, and Dbo7. In stage 3, I switched to translating the chord name, “C7b9”, and thinking play the o7 on the third (or, in this case Eo7). That helped a little bit in terms of speed, and I think it makes musical sense to build mental associations between the 7b9 and o7 anyway.</p>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/21_1_21_24_chord_reaction_time/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>```</p>
-
-
-
- ]]></description>
-  <category>practice</category>
-  <category>chord reaction time</category>
-  <guid>https://homophony.quest/blog/21_1_21_24_chord_reaction_time/</guid>
-  <pubDate>Sun, 21 Jan 2024 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/21_1_21_24_chord_reaction_time/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
