@@ -1,0 +1,279 @@
+---
+title: "Turning up the randomness to 11 for MAXIMUM MIDI MADNESS"
+author: "Matt Crump"
+date: 2/9/24
+description: "Mangling with all the polyphony, will it blend?"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - midiblender
+  - fun
+execute: 
+  echo: true
+  message: false
+  warning: false
+format:
+  html:
+    code-fold: true
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "Random MIDI randomness. Explosive torrent of musical notes. Exploding the universe of music. Music everywhere. Neon super colorful sonic cartoon."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+Random MIDI randomness. Explosive torrent of musical notes. Exploding the universe of music. Music everywhere. Neon super colorful sonic cartoon. - dreamshaper
+:::
+
+```{r}
+#| echo: false
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+If I'm going to mangle MIDI, I should at least stuff it with as many notes from a uniform distribution as I care to.
+
+I will now attempt to randomize the pancakes out of a MIDI file until they splatter into a polyphonic volcano of mangled bliss (that's the dream scenario).
+
+According to some quick research, it seems that fluid synth (that I'm using to quickly render MIDI files with premium cheese factor) has at least 128 voices of polyphony, which is enough to play all of the midi notes at the same time...potentially all in randomized voices.
+
+Here's the plan. Will it blend? I don't know. I'm pretty sure the first part of the plan will blend quickly.
+
+1. Create a piano roll matrix with 128 rows and enough columns of midi ticks for 30 seconds.
+2. Completely randomize note occurrence across the whole matrix, such that any note could occur in any time point.
+3. Increase the note density so that there is a lot of notes being randomly generated...maybe not all the way to 128 notes per tick, that seems too extreme (but what does that sound like !?!).
+4. Bump this super fat rando matrix out to a midi file.
+5. For the easy win, render it via fluid synth and listen to it.
+6. Maybe this will be easy too, but I'd like to randomize the synth voice for each note in the matrix. I'm not sure how straight forward this part is...will find out. Update, I didn't do that part, saving for another day.
+
+Let the abomination begin.
+
+```{r, eval=FALSE}
+library(midiblender)
+
+#import midi
+#using mario to get the midi headers
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+
+# convert midi to matrix
+n_notes <- 128
+n_ticks <- 96*4*15 #15 bars at 120BPM of this should be enough
+
+feature_vector <- rep(1,n_notes*n_ticks)
+prob_vector <- feature_vector/sum(feature_vector)
+
+# ensures uniform sampling of notes into tick intervals
+# Number of notes is approximately  = density
+# my note density goes to 1100
+rando_vector <- midiblender::new_features_from_probs(prob_vector,density = 1100)
+
+# convert back piano roll matrix
+rando_matrix <- feature_vector_to_matrix(rando_vector, num_notes=128)
+
+###############
+# turn it back into midi and render to mp3
+
+track_0 <- copy_midi_df_track(midi_df,track_num = 0)
+
+# transform back to midi
+midi_time_df <- matrix_to_midi_time(midi_matrix = rando_matrix,
+                                    smallest_time_unit = 1,
+                                    note_off_length = 8)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 500000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 0,
+                                    velocity = 100)
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+#write midi file to disk
+miditapyr_object$write_file("rando_1100.mid")
+
+#########
+# bounce to mp3 with fluid synth
+
+track_name <- "rando_1100"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+
+```
+`r html_tag_audio("rando_1100.mp3", type = "wav")`
+
+I used a nintendo sound font sound here. It's nice and random, too pretty though. Not nearly enough notes.
+
+There are 128 possible notes and 15 bars. Each bar has four beats of 96 ticks. In total, there is 128 x 96 x 4 x 15 = 737280 cells where a note could be. I sampled about 1100 notes uniformly into those cells. That's just not enough. 
+
+It should at least go to 11 percent, or about 81000 notes in 30 seconds. That seems like so many...oooooeeee.
+
+```{r, eval=FALSE}
+#import midi
+#using mario to get the midi headers
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+
+# convert midi to matrix
+n_notes <- 128
+n_ticks <- 96*4*15 #15 bars at 120BPM of this should be enough
+
+feature_vector <- rep(1,n_notes*n_ticks)
+prob_vector <- feature_vector/sum(feature_vector)
+
+# ensures uniform sampling of notes into tick intervals
+# Number of notes is approximately  = density
+# my note density goes to 11%
+rando_vector <- midiblender::new_features_from_probs(prob_vector,density = 81100)
+
+# convert back piano roll matrix
+rando_matrix <- feature_vector_to_matrix(rando_vector, num_notes=128)
+
+###############
+# turn it back into midi and render to mp3
+
+track_0 <- copy_midi_df_track(midi_df,track_num = 0)
+
+# transform back to midi
+midi_time_df <- matrix_to_midi_time(midi_matrix = rando_matrix,
+                                    smallest_time_unit = 1,
+                                    note_off_length = 8)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 500000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 0,
+                                    velocity = 100)
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+#write midi file to disk
+miditapyr_object$write_file("rando_B.mid")
+
+#########
+# bounce to mp3 with fluid synth
+
+track_name <- "rando_B"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+
+```
+HAHAHHAHAHA. Oh MY. Giving my eurorack a run on thick noise.
+
+MuseScore4 would not render the sheet music for this. But, fluid synth didn't even blink.
+
+**It's very loud, so beware.**
+
+`r html_tag_audio("rando_B.mp3", type = "wav")`
+
+Chunky compared to white noise, and whiffs of crystal rain.
+
+## Notes
+
+That was fun. Had to try it. Even though this is basically ridiculous, I might return here one day with some FX pedals.
+
+
+
+
+
+
+
