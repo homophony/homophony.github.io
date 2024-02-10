@@ -16,20 +16,14 @@ format:
     linkcolor: black
 ---
 
-```{r}
-#| column: screen
-#| echo: false
-#| out.width: 100%
-knitr::include_graphics('imgs/homophony_banner_short.jpg')
+```{=html}
+<img src="imgs/homophony_banner_short.jpg" alt="HOMOPHONY" width="100%">
 ```
 
-<div style="text-align:center;">
-Streaming on:
 
-[{{< fa brands apple size=3x >}}](https://music.apple.com/us/artist/homophony/1531902633) [{{< fa brands spotify size=2x >}}](https://open.spotify.com/artist/21uZHA1jqXKOdkQmxR7ZcE?si=6Dx13juWQougFPwtQ3z_NQ)
-</div>
 
 {{< video https://www.youtube.com/watch?v=qzE-E7dHNSI >}}
+
 
 ::: {#music_list}
 :::
