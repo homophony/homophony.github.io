@@ -84,6 +84,12 @@ html_tag_audio <- function(file, type = c("wav")) {
 
 ```
 
+::: {.callout-warning}
+
+Some of the audio is loud, be careful with volume. MIDI was mangled.
+
+:::
+
 If I'm going to mangle MIDI, I should at least stuff it with as many notes from a uniform distribution as I care to.
 
 I will now attempt to randomize the pancakes out of a MIDI file until they splatter into a polyphonic volcano of mangled bliss (that's the dream scenario).
@@ -271,9 +277,327 @@ Chunky compared to white noise, and whiffs of crystal rain.
 
 That was fun. Had to try it. Even though this is basically ridiculous, I might return here one day with some FX pedals.
 
+----------------------------
+
+I couldn't stay away. Too many questions. And, it seems like I could add program change notes to change the synth voice, so I'm going to try that. And, I wondered about ramping the note density up and down over time, and will try that too. Maybe some other stuff. 
+
+## Randomizing notes and program changes
+
+Based ona few checks of MIDI files, it seems I could insert a program change message anywhere in a track, and this ought to change the synth voice. Gotta try it out.
+
+Notes:
+
+- how many patches are in the nintendo sound font? need to find out.
+
+Maybe run this? Seems to work and shows a long enough list to get me started.
+
+```
+echo "inst 1" | fluidsynth ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2
+```
+Had to break out a while loop for this one!
+
+Need to keep the program change between 0-127. I guess there would be other stuff to switch banks. Leaving that for now.
+
+```{r, eval=FALSE}
+library(midiblender)
+
+#import midi
+#using mario to get the midi headers
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+
+# convert midi to matrix
+n_notes <- 128
+n_ticks <- 96*4*15 #15 bars at 120BPM of this should be enough
+
+feature_vector <- rep(1,n_notes*n_ticks)
+prob_vector <- feature_vector/sum(feature_vector)
+
+# ensures uniform sampling of notes into tick intervals
+# Number of notes is approximately  = density
+# my note density goes to 1100
+rando_vector <- midiblender::new_features_from_probs(prob_vector,density = 1100)
+
+# convert back piano roll matrix
+rando_matrix <- feature_vector_to_matrix(rando_vector, num_notes=128)
+
+###############
+# turn it back into midi and render to mp3
+
+track_0 <- copy_midi_df_track(midi_df,track_num = 0)
+
+# transform back to midi
+midi_time_df <- matrix_to_midi_time(midi_matrix = rando_matrix,
+                                    smallest_time_unit = 1,
+                                    note_off_length = 16)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 500000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 0,
+                                    velocity = 100)
+
+###################
+# add random program changes before each note on
+
+i <- 0
+while(i < dim(new_midi_df)[1]){
+  i <- i+1
+  if(new_midi_df$type[i] == "note_on"){
+   new_midi_df <- new_midi_df %>%
+      dplyr::add_row(
+        i_track = 0,
+        meta = FALSE,
+        time = 0,
+        program = sample(0:127,1),
+        channel = 0,
+        type = "program_change",
+        .before = i)
+   i <- i+1
+  }
+  
+}
 
 
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+#write midi file to disk
+miditapyr_object$write_file("rando_1100_PC_B.mid")
+
+#########
+# bounce to mp3 with fluid synth
+
+track_name <- "rando_1100_PC"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}')
+system(system_command)
+
+#system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+#system(system_command)
 
 
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
 
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+```
+
+`r html_tag_audio("rando_1100_PC.mp3", type = "wav")`
+
+I got a lot of fluidsynth warnings for instrument not found when the PC value was 120 or greater. Oh well. This sounds like a breathy R2D2.
+
+Here's another one using the `FluidR3_GM.sf2` soundfont, which is a General MIDI kind of thing. I set the note length to a bit longer.
+
+`r html_tag_audio("rando_1100_PC_B.mp3", type = "wav")`
+
+Ha, I like it.
+
+
+## Mario with every note played by a random instrument
+
+I gotta one more thing with this. What does the Mario music sound like when every note is played by a different instrument?
+
+
+```{r, eval=FALSE}
+library(midiblender)
+
+#import midi
+#using mario to get the midi headers
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+
+new_midi_df <- midi_df
+
+###################
+# add random program changes before each note on
+
+i <- 0
+while(i < dim(new_midi_df)[1]){
+  i <- i+1
+  if(new_midi_df$type[i] == "note_on"){
+   new_midi_df <- new_midi_df %>%
+      dplyr::add_row(
+        i_track = 0,
+        meta = FALSE,
+        time = 0,
+        program = sample(0:127,1),
+        channel = 0,
+        type = "program_change",
+        .before = i)
+   i <- i+1
+  }
+  
+}
+
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+#write midi file to disk
+miditapyr_object$write_file("mario_rand_voice.mid")
+
+#########
+# bounce to mp3 with fluid synth
+
+track_name <- "mario_rand_voice"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# synthesize midi file to wav with fluid synth
+#system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}')
+#system(system_command)
+
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+```
+`r html_tag_audio("mario_rand_voice.mp3", type = "wav")`
+
+Meh...If I had a better handle on which patches I was randomizing over I bet that could sound more interesting.
+
+Maybe I should write a utility function to play through the sounds really fast and check them out.
+
+## Sweeping randomness up and down
+
+If this was a eurorack module there would be a whole bunch of knobs to turn. I would turn a knob for note density, so let's see how easy it would be to have the randomness start with few notes, go up to ludicrous speed, and then come back down again.
+
+And, program change all the notes, because why not.
+
+```{r, eval=FALSE}
+library(midiblender)
+
+#import midi
+#using mario to get the midi headers
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+
+# convert midi to matrix
+n_notes <- 128
+n_ticks <- 96*4*15 #15 bars at 120BPM of this should be enough
+points <- n_notes*n_ticks
+
+mid_point <- round(points / 2)
+ramp_up <- round(seq(1, 100, length.out = mid_point))
+ramp_down <- round(seq(100, 1, length.out = (points - mid_point)))
+feature_vector <- c(ramp_up,ramp_down)
+prob_vector <- feature_vector/sum(feature_vector)
+
+# ensures uniform sampling of notes into tick intervals
+# Number of notes is approximately  = density
+# my note density goes to 1100
+rando_vector <- midiblender::new_features_from_probs(prob_vector,density = 4000)
+
+# convert back piano roll matrix
+rando_matrix <- feature_vector_to_matrix(rando_vector, num_notes=128)
+
+###############
+# turn it back into midi and render to mp3
+
+track_0 <- copy_midi_df_track(midi_df,track_num = 0)
+
+# transform back to midi
+midi_time_df <- matrix_to_midi_time(midi_matrix = rando_matrix,
+                                    smallest_time_unit = 1,
+                                    note_off_length = 8)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 500000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 0,
+                                    velocity = 100)
+
+###################
+# add random program changes before each note on
+
+i <- 0
+while(i < dim(new_midi_df)[1]){
+  i <- i+1
+  if(new_midi_df$type[i] == "note_on"){
+   new_midi_df <- new_midi_df %>%
+      dplyr::add_row(
+        i_track = 0,
+        meta = FALSE,
+        time = 0,
+        program = sample(0:127,1),
+        channel = 0,
+        type = "program_change",
+        .before = i)
+   i <- i+1
+  }
+  
+}
+
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+#write midi file to disk
+miditapyr_object$write_file("rando_ramp.mid")
+
+#########
+# bounce to mp3 with fluid synth
+
+track_name <- "rando_ramp"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# synthesize midi file to wav with fluid synth
+#system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}')
+#system(system_command)
+
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+
+```
+`r html_tag_audio("rando_ramp.mp3", type = "wav")`
+
+A ramp up and down of sorts was added. Didn't achieve ludicrous levels so much in the middle. Clocking out on this.
 
