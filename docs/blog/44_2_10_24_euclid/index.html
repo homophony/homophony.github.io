@@ -223,6 +223,8 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
   <ul class="collapse">
   <li><a href="#pseudo-composition-code" id="toc-pseudo-composition-code" class="nav-link" data-scroll-target="#pseudo-composition-code">Pseudo Composition code</a></li>
   </ul></li>
+  <li><a href="#randomly-sampling-note-probability-distributions" id="toc-randomly-sampling-note-probability-distributions" class="nav-link" data-scroll-target="#randomly-sampling-note-probability-distributions">Randomly sampling note probability distributions</a></li>
+  <li><a href="#expandingreducing-the-note-collection" id="toc-expandingreducing-the-note-collection" class="nav-link" data-scroll-target="#expandingreducing-the-note-collection">Expanding/reducing the note collection</a></li>
   </ul>
 </nav>
     </div>
@@ -1059,10 +1061,390 @@ Note
 </ul>
 <p>It was helpful to summarize the code this morning. It’s unlikely I will begin any re-factoring, but it’s easier to see where I could make this more compact and less of a wall of code.</p>
 <hr>
-
-
-
 </section>
+</section>
+<section id="randomly-sampling-note-probability-distributions" class="level2">
+<h2 class="anchored" data-anchor-id="randomly-sampling-note-probability-distributions">Randomly sampling note probability distributions</h2>
+<p>The above code samples notes from some collection, like {C, F, G, Bb, D} with equal proportion. I’d like to at least start with making the proportions unequal, and have this move around a bit over bars. Whatever note has the highest proportion might take on the tonal center of the evolving sequence.</p>
+<p>A next step would be to expand and contract the note collection, and have it rotate around the circle of fifths.</p>
+<p>This seems to work. I’m grabbing a colleciton of notes, using a simple vector, like 1,2,3,4,5, to set note frequencies. That can be multiplied to change the ratio of most to least frequent. The frequency vector is converted to a probability vector later. Every bar, the ordering of the probalities as they apply to notes is randomized. That could be too fast moving to really notice differences. Need to explore this a little bit.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(midiblender)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># import midi</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># using mario to get the midi headers</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># need to add a vanilla midi file to this package for easier importing</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>mario <span class="ot">&lt;-</span> <span class="fu">midi_to_object</span>(<span class="st">"all_overworld.mid"</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">list2env</span>(mario, .GlobalEnv) <span class="co"># send objects to global environment</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample some beats for timesteps into the matrix</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>bars <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>notes <span class="ot">&lt;-</span> <span class="dv">128</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>ticks <span class="ot">&lt;-</span> <span class="dv">96</span><span class="sc">*</span><span class="dv">4</span><span class="sc">*</span>bars</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>all_beat_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,<span class="at">nrow=</span>notes,<span class="at">ncol=</span><span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>) {</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># empty beat matrix</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  beat_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> notes, <span class="at">ncol =</span> ticks)</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>  <span class="co">#assign kick beats</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>  kick <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>  snare <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>  hihats <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">8</span><span class="sc">:</span><span class="dv">16</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># assign to matrix</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">36</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> kick</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">38</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> snare</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">42</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> hihats</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>  all_beat_matrix <span class="ot">&lt;-</span> <span class="fu">cbind</span>(all_beat_matrix, beat_matrix)</span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a><span class="co"># get the point estimates</span></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>time_probabilities <span class="ot">&lt;-</span> <span class="fu">colSums</span>(all_beat_matrix)<span class="sc">/</span><span class="fu">sum</span>(all_beat_matrix)</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>bar_probabilities <span class="ot">&lt;-</span> <span class="fu">matrix</span>(time_probabilities,</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>                            <span class="at">ncol=</span>(<span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>),</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>                            <span class="at">byrow =</span> T)</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a>bar_probabilities <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(bar_probabilities)</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a><span class="co"># make my own midi notes df</span></span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a><span class="co"># add this to midiblender later</span></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>midi_notes <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>midi_defs <span class="sc">%&gt;%</span></span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">note_letter =</span> <span class="fu">unlist</span>(<span class="fu">strsplit</span>(<span class="fu">as.character</span>(note_name),<span class="st">"-"</span>))[<span class="dv">1</span>],</span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>         <span class="at">octave =</span> <span class="fu">unlist</span>(<span class="fu">strsplit</span>(<span class="fu">as.character</span>(note_name),<span class="st">"-"</span>))[<span class="dv">2</span>])</span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>midi_notes <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">notes =</span> <span class="fu">rep</span>(midi_notes[<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,]<span class="sc">$</span>note_letter,<span class="dv">11</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">128</span>],</span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>                     <span class="at">octaves =</span> <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>, <span class="at">each =</span> <span class="dv">12</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">128</span>],</span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a>                     <span class="at">midi_number =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">127</span></span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a><span class="co"># Empty data frame to hold midi track dfs</span></span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>all_track_midi <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a><span class="co"># paramaters that get changed for every track</span></span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>time_densities <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">256</span>,<span class="dv">128</span>,<span class="dv">64</span>) <span class="co"># controls number of notes per bar </span></span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a><span class="co"># track loop</span></span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>){</span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a>song <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,<span class="at">nrow=</span>notes,<span class="at">ncol=</span><span class="dv">1</span>)</span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a><span class="co"># begin bar by bar composition loop</span></span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">16</span>){</span>
+<span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get some notes to sample from fifths around a starting note</span></span>
+<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a>  starting_note <span class="ot">&lt;-</span> <span class="dv">60</span> <span class="co"># C4</span></span>
+<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a>  fifth_intervals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">14</span>, <span class="sc">-</span><span class="dv">7</span>, <span class="sc">-</span><span class="dv">14</span>)</span>
+<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a>  notes_to_choose <span class="ot">&lt;-</span> starting_note <span class="sc">+</span> fifth_intervals</span>
+<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a>  octave_range <span class="ot">&lt;-</span> <span class="dv">3</span><span class="sc">:</span><span class="dv">6</span></span>
+<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a>  <span class="co"># starting to bias note sampling here</span></span>
+<span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a>  note_frequencies <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(fifth_intervals)<span class="sc">*</span><span class="dv">2</span>) </span>
+<span id="cb12-79"><a href="#cb12-79" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a>  <span class="co"># pair the frequencies with the notes</span></span>
+<span id="cb12-81"><a href="#cb12-81" aria-hidden="true" tabindex="-1"></a>  note_names <span class="ot">&lt;-</span> midi_notes <span class="sc">%&gt;%</span></span>
+<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(midi_number <span class="sc">%in%</span> notes_to_choose) <span class="sc">%&gt;%</span></span>
+<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(notes) <span class="sc">%&gt;%</span></span>
+<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">note_frequencies =</span> note_frequencies)</span>
+<span id="cb12-85"><a href="#cb12-85" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-86"><a href="#cb12-86" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get all possible notes across octaves in collection</span></span>
+<span id="cb12-87"><a href="#cb12-87" aria-hidden="true" tabindex="-1"></a>  possible_notes <span class="ot">&lt;-</span> midi_notes <span class="sc">%&gt;%</span></span>
+<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(notes <span class="sc">%in%</span> note_names<span class="sc">$</span>notes <span class="sc">==</span> <span class="cn">TRUE</span>,</span>
+<span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a>           octaves <span class="sc">%in%</span> octave_range <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-90"><a href="#cb12-90" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add note frequencies</span></span>
+<span id="cb12-91"><a href="#cb12-91" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(note_names,<span class="at">by=</span><span class="st">"notes"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-92"><a href="#cb12-92" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">probs =</span> note_frequencies<span class="sc">/</span><span class="fu">sum</span>(note_frequencies))</span>
+<span id="cb12-93"><a href="#cb12-93" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-94"><a href="#cb12-94" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create probability vector</span></span>
+<span id="cb12-95"><a href="#cb12-95" aria-hidden="true" tabindex="-1"></a>  pitch_probabilities <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">128</span>)</span>
+<span id="cb12-96"><a href="#cb12-96" aria-hidden="true" tabindex="-1"></a>  pitch_probabilities[possible_notes<span class="sc">$</span>midi_number <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span></span>
+<span id="cb12-97"><a href="#cb12-97" aria-hidden="true" tabindex="-1"></a>    possible_notes<span class="sc">$</span>probs</span>
+<span id="cb12-98"><a href="#cb12-98" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-99"><a href="#cb12-99" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get new pitches</span></span>
+<span id="cb12-100"><a href="#cb12-100" aria-hidden="true" tabindex="-1"></a>  new_pitches <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">length</span>(pitch_probabilities),</span>
+<span id="cb12-101"><a href="#cb12-101" aria-hidden="true" tabindex="-1"></a>                        <span class="at">size =</span> <span class="dv">32</span>,</span>
+<span id="cb12-102"><a href="#cb12-102" aria-hidden="true" tabindex="-1"></a>                        <span class="at">prob =</span> pitch_probabilities)</span>
+<span id="cb12-103"><a href="#cb12-103" aria-hidden="true" tabindex="-1"></a>  new_pitches[new_pitches <span class="sc">&gt;</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb12-104"><a href="#cb12-104" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-105"><a href="#cb12-105" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get new times</span></span>
+<span id="cb12-106"><a href="#cb12-106" aria-hidden="true" tabindex="-1"></a>  new_times <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">length</span>(bar_probabilities),</span>
+<span id="cb12-107"><a href="#cb12-107" aria-hidden="true" tabindex="-1"></a>                      <span class="at">size =</span> time_densities[t],</span>
+<span id="cb12-108"><a href="#cb12-108" aria-hidden="true" tabindex="-1"></a>                      <span class="at">prob =</span> bar_probabilities)</span>
+<span id="cb12-109"><a href="#cb12-109" aria-hidden="true" tabindex="-1"></a>  <span class="co"># To Do: come back here and make it ok to have more than 1</span></span>
+<span id="cb12-110"><a href="#cb12-110" aria-hidden="true" tabindex="-1"></a>  new_times[new_times <span class="sc">&gt;</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb12-111"><a href="#cb12-111" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-112"><a href="#cb12-112" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get row column ids</span></span>
+<span id="cb12-113"><a href="#cb12-113" aria-hidden="true" tabindex="-1"></a>  sampled_notes <span class="ot">&lt;-</span> <span class="fu">which</span>(new_pitches <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb12-114"><a href="#cb12-114" aria-hidden="true" tabindex="-1"></a>  sampled_times <span class="ot">&lt;-</span> <span class="fu">which</span>(new_times <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb12-115"><a href="#cb12-115" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-116"><a href="#cb12-116" aria-hidden="true" tabindex="-1"></a>  <span class="co"># combine, make sure equal length</span></span>
+<span id="cb12-117"><a href="#cb12-117" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(sampled_notes) <span class="sc">&gt;=</span> <span class="fu">length</span>(sampled_times)) {</span>
+<span id="cb12-118"><a href="#cb12-118" aria-hidden="true" tabindex="-1"></a>    sampled_ids <span class="ot">&lt;-</span></span>
+<span id="cb12-119"><a href="#cb12-119" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tibble</span>(<span class="at">notes =</span> sampled_notes[<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(sampled_times)],</span>
+<span id="cb12-120"><a href="#cb12-120" aria-hidden="true" tabindex="-1"></a>             <span class="at">times =</span> sampled_times)</span>
+<span id="cb12-121"><a href="#cb12-121" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb12-122"><a href="#cb12-122" aria-hidden="true" tabindex="-1"></a>    sampled_ids <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">notes =</span> sampled_notes,</span>
+<span id="cb12-123"><a href="#cb12-123" aria-hidden="true" tabindex="-1"></a>                          <span class="at">times =</span> sampled_times[<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(sampled_notes)])</span>
+<span id="cb12-124"><a href="#cb12-124" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb12-125"><a href="#cb12-125" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-126"><a href="#cb12-126" aria-hidden="true" tabindex="-1"></a>  <span class="co"># shuffle the notes across the times so the sampling is uniform</span></span>
+<span id="cb12-127"><a href="#cb12-127" aria-hidden="true" tabindex="-1"></a>  sampled_ids<span class="sc">$</span>notes <span class="ot">&lt;-</span> <span class="fu">sample</span>(sampled_ids<span class="sc">$</span>notes)</span>
+<span id="cb12-128"><a href="#cb12-128" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-129"><a href="#cb12-129" aria-hidden="true" tabindex="-1"></a>  <span class="co"># make a note by time unit matrix</span></span>
+<span id="cb12-130"><a href="#cb12-130" aria-hidden="true" tabindex="-1"></a>  one_bar <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,</span>
+<span id="cb12-131"><a href="#cb12-131" aria-hidden="true" tabindex="-1"></a>                    <span class="at">nrow =</span> <span class="dv">128</span>,</span>
+<span id="cb12-132"><a href="#cb12-132" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ncol =</span> <span class="dv">96</span> <span class="sc">*</span> <span class="dv">4</span>)</span>
+<span id="cb12-133"><a href="#cb12-133" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-134"><a href="#cb12-134" aria-hidden="true" tabindex="-1"></a>  <span class="co"># assign 1s to note locations in time</span></span>
+<span id="cb12-135"><a href="#cb12-135" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (r <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(sampled_ids)[<span class="dv">1</span>]) {</span>
+<span id="cb12-136"><a href="#cb12-136" aria-hidden="true" tabindex="-1"></a>    one_bar[sampled_ids<span class="sc">$</span>notes[r], sampled_ids<span class="sc">$</span>times[r]] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb12-137"><a href="#cb12-137" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb12-138"><a href="#cb12-138" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb12-139"><a href="#cb12-139" aria-hidden="true" tabindex="-1"></a>  song <span class="ot">&lt;-</span> <span class="fu">cbind</span>(song,one_bar)</span>
+<span id="cb12-140"><a href="#cb12-140" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-141"><a href="#cb12-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-142"><a href="#cb12-142" aria-hidden="true" tabindex="-1"></a><span class="do">#####################</span></span>
+<span id="cb12-143"><a href="#cb12-143" aria-hidden="true" tabindex="-1"></a><span class="co"># transform back to midi</span></span>
+<span id="cb12-144"><a href="#cb12-144" aria-hidden="true" tabindex="-1"></a>track_0 <span class="ot">&lt;-</span> <span class="fu">copy_midi_df_track</span>(midi_df,<span class="at">track_num =</span> <span class="dv">0</span>)</span>
+<span id="cb12-145"><a href="#cb12-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-146"><a href="#cb12-146" aria-hidden="true" tabindex="-1"></a>midi_time_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_time</span>(<span class="at">midi_matrix =</span> song,</span>
+<span id="cb12-147"><a href="#cb12-147" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">smallest_time_unit =</span> <span class="dv">1</span>,</span>
+<span id="cb12-148"><a href="#cb12-148" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">note_off_length =</span> <span class="dv">32</span>)</span>
+<span id="cb12-149"><a href="#cb12-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-150"><a href="#cb12-150" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">get_midi_meta_df</span>(track_0)</span>
+<span id="cb12-151"><a href="#cb12-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-152"><a href="#cb12-152" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">set_midi_tempo_meta</span>(meta_messages_df,<span class="at">update_tempo =</span> <span class="dv">500000</span>)</span>
+<span id="cb12-153"><a href="#cb12-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-154"><a href="#cb12-154" aria-hidden="true" tabindex="-1"></a>split_meta_messages_df <span class="ot">&lt;-</span> <span class="fu">split_meta_df</span>(meta_messages_df)</span>
+<span id="cb12-155"><a href="#cb12-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-156"><a href="#cb12-156" aria-hidden="true" tabindex="-1"></a>new_midi_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_track</span>(<span class="at">midi_time_df =</span> midi_time_df,</span>
+<span id="cb12-157"><a href="#cb12-157" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">split_meta_list =</span> split_meta_messages_df,</span>
+<span id="cb12-158"><a href="#cb12-158" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">channel =</span> <span class="dv">0</span>,</span>
+<span id="cb12-159"><a href="#cb12-159" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">velocity =</span> <span class="dv">100</span>)</span>
+<span id="cb12-160"><a href="#cb12-160" aria-hidden="true" tabindex="-1"></a>new_midi_df <span class="ot">&lt;-</span> new_midi_df <span class="sc">%&gt;%</span></span>
+<span id="cb12-161"><a href="#cb12-161" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">i_track =</span> t)</span>
+<span id="cb12-162"><a href="#cb12-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-163"><a href="#cb12-163" aria-hidden="true" tabindex="-1"></a>all_track_midi <span class="ot">&lt;-</span> <span class="fu">rbind</span>(all_track_midi,</span>
+<span id="cb12-164"><a href="#cb12-164" aria-hidden="true" tabindex="-1"></a>                        new_midi_df)</span>
+<span id="cb12-165"><a href="#cb12-165" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb12-166"><a href="#cb12-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-167"><a href="#cb12-167" aria-hidden="true" tabindex="-1"></a><span class="do">#### bounce</span></span>
+<span id="cb12-168"><a href="#cb12-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-169"><a href="#cb12-169" aria-hidden="true" tabindex="-1"></a><span class="co"># update miditapyr df</span></span>
+<span id="cb12-170"><a href="#cb12-170" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span><span class="fu">update_unnested_mf</span>(all_track_midi)</span>
+<span id="cb12-171"><a href="#cb12-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-172"><a href="#cb12-172" aria-hidden="true" tabindex="-1"></a><span class="co">#write midi file to disk</span></span>
+<span id="cb12-173"><a href="#cb12-173" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span><span class="fu">write_file</span>(<span class="st">"fifths_tracks_prob.mid"</span>)</span>
+<span id="cb12-174"><a href="#cb12-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-175"><a href="#cb12-175" aria-hidden="true" tabindex="-1"></a><span class="do">######</span></span>
+<span id="cb12-176"><a href="#cb12-176" aria-hidden="true" tabindex="-1"></a><span class="co"># using Ableton for sounds</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="fifths_3_track_prob_1.mp3" type="audio/wav"> </audio></p>
+<p>At some point I put three tracks into Ableton and chose some synth voices.</p>
+</section>
+<section id="expandingreducing-the-note-collection" class="level2">
+<h2 class="anchored" data-anchor-id="expandingreducing-the-note-collection">Expanding/reducing the note collection</h2>
+<p>Increased the number of tracks to 4. Every bar the number of notes that can get sampled is randomly varied from a collection of notes around the circle of fifths. I didn’t yet get the composition spinning around the circle, but I’m skipping that for now.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(midiblender)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># import midi</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># using mario to get the midi headers</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co"># need to add a vanilla midi file to this package for easier importing</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>mario <span class="ot">&lt;-</span> <span class="fu">midi_to_object</span>(<span class="st">"all_overworld.mid"</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="fu">list2env</span>(mario, .GlobalEnv) <span class="co"># send objects to global environment</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample some beats for timesteps into the matrix</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>bars <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>notes <span class="ot">&lt;-</span> <span class="dv">128</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>ticks <span class="ot">&lt;-</span> <span class="dv">96</span><span class="sc">*</span><span class="dv">4</span><span class="sc">*</span>bars</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>all_beat_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,<span class="at">nrow=</span>notes,<span class="at">ncol=</span><span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>) {</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># empty beat matrix</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  beat_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> notes, <span class="at">ncol =</span> ticks)</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>  <span class="co">#assign kick beats</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>  kick <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>  snare <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  hihats <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">8</span><span class="sc">:</span><span class="dv">16</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># assign to matrix</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">36</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> kick</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">38</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> snare</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">42</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> hihats</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>  all_beat_matrix <span class="ot">&lt;-</span> <span class="fu">cbind</span>(all_beat_matrix, beat_matrix)</span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a><span class="co"># get the point estimates</span></span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>time_probabilities <span class="ot">&lt;-</span> <span class="fu">colSums</span>(all_beat_matrix)<span class="sc">/</span><span class="fu">sum</span>(all_beat_matrix)</span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>bar_probabilities <span class="ot">&lt;-</span> <span class="fu">matrix</span>(time_probabilities,</span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>                            <span class="at">ncol=</span>(<span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>),</span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>                            <span class="at">byrow =</span> T)</span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>bar_probabilities <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(bar_probabilities)</span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a><span class="co"># make my own midi notes df</span></span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a><span class="co"># add this to midiblender later</span></span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>midi_notes <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>midi_defs <span class="sc">%&gt;%</span></span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">note_letter =</span> <span class="fu">unlist</span>(<span class="fu">strsplit</span>(<span class="fu">as.character</span>(note_name),<span class="st">"-"</span>))[<span class="dv">1</span>],</span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>         <span class="at">octave =</span> <span class="fu">unlist</span>(<span class="fu">strsplit</span>(<span class="fu">as.character</span>(note_name),<span class="st">"-"</span>))[<span class="dv">2</span>])</span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>midi_notes <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">notes =</span> <span class="fu">rep</span>(midi_notes[<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,]<span class="sc">$</span>note_letter,<span class="dv">11</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">128</span>],</span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a>                     <span class="at">octaves =</span> <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>, <span class="at">each =</span> <span class="dv">12</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">128</span>],</span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>                     <span class="at">midi_number =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">127</span></span>
+<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a><span class="co"># Empty data frame to hold midi track dfs</span></span>
+<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a>all_track_midi <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a><span class="co"># paramaters that get changed for every track</span></span>
+<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a>time_densities <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">512</span>,<span class="dv">256</span>,<span class="dv">128</span>,<span class="dv">64</span>) <span class="co"># controls number of notes per bar </span></span>
+<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a><span class="co"># track loop</span></span>
+<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>){</span>
+<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-66"><a href="#cb13-66" aria-hidden="true" tabindex="-1"></a>song <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,<span class="at">nrow=</span>notes,<span class="at">ncol=</span><span class="dv">1</span>)</span>
+<span id="cb13-67"><a href="#cb13-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-68"><a href="#cb13-68" aria-hidden="true" tabindex="-1"></a><span class="co"># begin bar by bar composition loop</span></span>
+<span id="cb13-69"><a href="#cb13-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-70"><a href="#cb13-70" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">32</span>){</span>
+<span id="cb13-71"><a href="#cb13-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-72"><a href="#cb13-72" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get some notes to sample from fifths around a starting note</span></span>
+<span id="cb13-73"><a href="#cb13-73" aria-hidden="true" tabindex="-1"></a>  starting_note <span class="ot">&lt;-</span> <span class="dv">60</span> <span class="co"># C4</span></span>
+<span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a>  fifth_intervals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">14</span>, <span class="sc">-</span><span class="dv">7</span>, <span class="sc">-</span><span class="dv">14</span>, <span class="dv">21</span>, <span class="sc">-</span><span class="dv">21</span>)</span>
+<span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a>  <span class="co"># size of collection now changes every bar</span></span>
+<span id="cb13-76"><a href="#cb13-76" aria-hidden="true" tabindex="-1"></a>  notes_to_choose <span class="ot">&lt;-</span> starting_note <span class="sc">+</span> <span class="fu">sample</span>(fifth_intervals,<span class="fu">sample</span>(<span class="dv">3</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>))</span>
+<span id="cb13-77"><a href="#cb13-77" aria-hidden="true" tabindex="-1"></a>  octave_range <span class="ot">&lt;-</span> <span class="dv">3</span><span class="sc">:</span><span class="dv">6</span></span>
+<span id="cb13-78"><a href="#cb13-78" aria-hidden="true" tabindex="-1"></a>  <span class="co"># starting to bias note sampling here</span></span>
+<span id="cb13-79"><a href="#cb13-79" aria-hidden="true" tabindex="-1"></a>  note_frequencies <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(notes_to_choose)<span class="sc">*</span><span class="dv">2</span>) </span>
+<span id="cb13-80"><a href="#cb13-80" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-81"><a href="#cb13-81" aria-hidden="true" tabindex="-1"></a>  <span class="co"># pair the frequencies with the notes</span></span>
+<span id="cb13-82"><a href="#cb13-82" aria-hidden="true" tabindex="-1"></a>  note_names <span class="ot">&lt;-</span> midi_notes <span class="sc">%&gt;%</span></span>
+<span id="cb13-83"><a href="#cb13-83" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(midi_number <span class="sc">%in%</span> notes_to_choose) <span class="sc">%&gt;%</span></span>
+<span id="cb13-84"><a href="#cb13-84" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(notes) <span class="sc">%&gt;%</span></span>
+<span id="cb13-85"><a href="#cb13-85" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">note_frequencies =</span> note_frequencies)</span>
+<span id="cb13-86"><a href="#cb13-86" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-87"><a href="#cb13-87" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get all possible notes across octaves in collection</span></span>
+<span id="cb13-88"><a href="#cb13-88" aria-hidden="true" tabindex="-1"></a>  possible_notes <span class="ot">&lt;-</span> midi_notes <span class="sc">%&gt;%</span></span>
+<span id="cb13-89"><a href="#cb13-89" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(notes <span class="sc">%in%</span> note_names<span class="sc">$</span>notes <span class="sc">==</span> <span class="cn">TRUE</span>,</span>
+<span id="cb13-90"><a href="#cb13-90" aria-hidden="true" tabindex="-1"></a>           octaves <span class="sc">%in%</span> octave_range <span class="sc">==</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-91"><a href="#cb13-91" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add note frequencies</span></span>
+<span id="cb13-92"><a href="#cb13-92" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(note_names,<span class="at">by=</span><span class="st">"notes"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-93"><a href="#cb13-93" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">probs =</span> note_frequencies<span class="sc">/</span><span class="fu">sum</span>(note_frequencies))</span>
+<span id="cb13-94"><a href="#cb13-94" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-95"><a href="#cb13-95" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create probability vector</span></span>
+<span id="cb13-96"><a href="#cb13-96" aria-hidden="true" tabindex="-1"></a>  pitch_probabilities <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">128</span>)</span>
+<span id="cb13-97"><a href="#cb13-97" aria-hidden="true" tabindex="-1"></a>  pitch_probabilities[possible_notes<span class="sc">$</span>midi_number <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span></span>
+<span id="cb13-98"><a href="#cb13-98" aria-hidden="true" tabindex="-1"></a>    possible_notes<span class="sc">$</span>probs</span>
+<span id="cb13-99"><a href="#cb13-99" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-100"><a href="#cb13-100" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get new pitches</span></span>
+<span id="cb13-101"><a href="#cb13-101" aria-hidden="true" tabindex="-1"></a>  new_pitches <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">length</span>(pitch_probabilities),</span>
+<span id="cb13-102"><a href="#cb13-102" aria-hidden="true" tabindex="-1"></a>                        <span class="at">size =</span> <span class="dv">32</span>,</span>
+<span id="cb13-103"><a href="#cb13-103" aria-hidden="true" tabindex="-1"></a>                        <span class="at">prob =</span> pitch_probabilities)</span>
+<span id="cb13-104"><a href="#cb13-104" aria-hidden="true" tabindex="-1"></a>  new_pitches[new_pitches <span class="sc">&gt;</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb13-105"><a href="#cb13-105" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-106"><a href="#cb13-106" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get new times</span></span>
+<span id="cb13-107"><a href="#cb13-107" aria-hidden="true" tabindex="-1"></a>  new_times <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">length</span>(bar_probabilities),</span>
+<span id="cb13-108"><a href="#cb13-108" aria-hidden="true" tabindex="-1"></a>                      <span class="at">size =</span> time_densities[t],</span>
+<span id="cb13-109"><a href="#cb13-109" aria-hidden="true" tabindex="-1"></a>                      <span class="at">prob =</span> bar_probabilities)</span>
+<span id="cb13-110"><a href="#cb13-110" aria-hidden="true" tabindex="-1"></a>  <span class="co"># To Do: come back here and make it ok to have more than 1</span></span>
+<span id="cb13-111"><a href="#cb13-111" aria-hidden="true" tabindex="-1"></a>  new_times[new_times <span class="sc">&gt;</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb13-112"><a href="#cb13-112" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-113"><a href="#cb13-113" aria-hidden="true" tabindex="-1"></a>  <span class="co"># make a note by time unit matrix</span></span>
+<span id="cb13-114"><a href="#cb13-114" aria-hidden="true" tabindex="-1"></a>    one_bar <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,</span>
+<span id="cb13-115"><a href="#cb13-115" aria-hidden="true" tabindex="-1"></a>                      <span class="at">nrow =</span> <span class="dv">128</span>,</span>
+<span id="cb13-116"><a href="#cb13-116" aria-hidden="true" tabindex="-1"></a>                      <span class="at">ncol =</span> <span class="dv">96</span> <span class="sc">*</span> <span class="dv">4</span>)</span>
+<span id="cb13-117"><a href="#cb13-117" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-118"><a href="#cb13-118" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">sum</span>(new_times) <span class="sc">&gt;</span> <span class="dv">1</span>){</span>
+<span id="cb13-119"><a href="#cb13-119" aria-hidden="true" tabindex="-1"></a>    <span class="co"># get row column ids</span></span>
+<span id="cb13-120"><a href="#cb13-120" aria-hidden="true" tabindex="-1"></a>    sampled_notes <span class="ot">&lt;-</span> <span class="fu">which</span>(new_pitches <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb13-121"><a href="#cb13-121" aria-hidden="true" tabindex="-1"></a>    sampled_times <span class="ot">&lt;-</span> <span class="fu">which</span>(new_times <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb13-122"><a href="#cb13-122" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-123"><a href="#cb13-123" aria-hidden="true" tabindex="-1"></a>    <span class="co"># combine, make sure equal length</span></span>
+<span id="cb13-124"><a href="#cb13-124" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(sampled_notes) <span class="sc">&gt;=</span> <span class="fu">length</span>(sampled_times)) {</span>
+<span id="cb13-125"><a href="#cb13-125" aria-hidden="true" tabindex="-1"></a>      sampled_ids <span class="ot">&lt;-</span></span>
+<span id="cb13-126"><a href="#cb13-126" aria-hidden="true" tabindex="-1"></a>        <span class="fu">tibble</span>(<span class="at">notes =</span> sampled_notes[<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(sampled_times)],</span>
+<span id="cb13-127"><a href="#cb13-127" aria-hidden="true" tabindex="-1"></a>               <span class="at">times =</span> sampled_times)</span>
+<span id="cb13-128"><a href="#cb13-128" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb13-129"><a href="#cb13-129" aria-hidden="true" tabindex="-1"></a>      sampled_ids <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">notes =</span> sampled_notes,</span>
+<span id="cb13-130"><a href="#cb13-130" aria-hidden="true" tabindex="-1"></a>                            <span class="at">times =</span> sampled_times[<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(sampled_notes)])</span>
+<span id="cb13-131"><a href="#cb13-131" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb13-132"><a href="#cb13-132" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-133"><a href="#cb13-133" aria-hidden="true" tabindex="-1"></a>    <span class="co"># shuffle the notes across the times so the sampling is uniform</span></span>
+<span id="cb13-134"><a href="#cb13-134" aria-hidden="true" tabindex="-1"></a>    sampled_ids<span class="sc">$</span>notes <span class="ot">&lt;-</span> <span class="fu">sample</span>(sampled_ids<span class="sc">$</span>notes)</span>
+<span id="cb13-135"><a href="#cb13-135" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-136"><a href="#cb13-136" aria-hidden="true" tabindex="-1"></a>    <span class="co"># assign 1s to note locations in time</span></span>
+<span id="cb13-137"><a href="#cb13-137" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (r <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(sampled_ids)[<span class="dv">1</span>]) {</span>
+<span id="cb13-138"><a href="#cb13-138" aria-hidden="true" tabindex="-1"></a>      one_bar[sampled_ids<span class="sc">$</span>notes[r], sampled_ids<span class="sc">$</span>times[r]] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb13-139"><a href="#cb13-139" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb13-140"><a href="#cb13-140" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb13-141"><a href="#cb13-141" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb13-142"><a href="#cb13-142" aria-hidden="true" tabindex="-1"></a>  song <span class="ot">&lt;-</span> <span class="fu">cbind</span>(song,one_bar)</span>
+<span id="cb13-143"><a href="#cb13-143" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-144"><a href="#cb13-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-145"><a href="#cb13-145" aria-hidden="true" tabindex="-1"></a><span class="do">#####################</span></span>
+<span id="cb13-146"><a href="#cb13-146" aria-hidden="true" tabindex="-1"></a><span class="co"># transform back to midi</span></span>
+<span id="cb13-147"><a href="#cb13-147" aria-hidden="true" tabindex="-1"></a>track_0 <span class="ot">&lt;-</span> <span class="fu">copy_midi_df_track</span>(midi_df,<span class="at">track_num =</span> <span class="dv">0</span>)</span>
+<span id="cb13-148"><a href="#cb13-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-149"><a href="#cb13-149" aria-hidden="true" tabindex="-1"></a>midi_time_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_time</span>(<span class="at">midi_matrix =</span> song,</span>
+<span id="cb13-150"><a href="#cb13-150" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">smallest_time_unit =</span> <span class="dv">1</span>,</span>
+<span id="cb13-151"><a href="#cb13-151" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">note_off_length =</span> <span class="dv">32</span>)</span>
+<span id="cb13-152"><a href="#cb13-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-153"><a href="#cb13-153" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">get_midi_meta_df</span>(track_0)</span>
+<span id="cb13-154"><a href="#cb13-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-155"><a href="#cb13-155" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">set_midi_tempo_meta</span>(meta_messages_df,<span class="at">update_tempo =</span> <span class="dv">500000</span>)</span>
+<span id="cb13-156"><a href="#cb13-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-157"><a href="#cb13-157" aria-hidden="true" tabindex="-1"></a>split_meta_messages_df <span class="ot">&lt;-</span> <span class="fu">split_meta_df</span>(meta_messages_df)</span>
+<span id="cb13-158"><a href="#cb13-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-159"><a href="#cb13-159" aria-hidden="true" tabindex="-1"></a>new_midi_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_track</span>(<span class="at">midi_time_df =</span> midi_time_df,</span>
+<span id="cb13-160"><a href="#cb13-160" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">split_meta_list =</span> split_meta_messages_df,</span>
+<span id="cb13-161"><a href="#cb13-161" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">channel =</span> <span class="dv">0</span>,</span>
+<span id="cb13-162"><a href="#cb13-162" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">velocity =</span> <span class="dv">100</span>)</span>
+<span id="cb13-163"><a href="#cb13-163" aria-hidden="true" tabindex="-1"></a>new_midi_df <span class="ot">&lt;-</span> new_midi_df <span class="sc">%&gt;%</span></span>
+<span id="cb13-164"><a href="#cb13-164" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">i_track =</span> t)</span>
+<span id="cb13-165"><a href="#cb13-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-166"><a href="#cb13-166" aria-hidden="true" tabindex="-1"></a>all_track_midi <span class="ot">&lt;-</span> <span class="fu">rbind</span>(all_track_midi,</span>
+<span id="cb13-167"><a href="#cb13-167" aria-hidden="true" tabindex="-1"></a>                        new_midi_df)</span>
+<span id="cb13-168"><a href="#cb13-168" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-169"><a href="#cb13-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-170"><a href="#cb13-170" aria-hidden="true" tabindex="-1"></a><span class="do">#### bounce</span></span>
+<span id="cb13-171"><a href="#cb13-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-172"><a href="#cb13-172" aria-hidden="true" tabindex="-1"></a><span class="co"># update miditapyr df</span></span>
+<span id="cb13-173"><a href="#cb13-173" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span><span class="fu">update_unnested_mf</span>(all_track_midi)</span>
+<span id="cb13-174"><a href="#cb13-174" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-175"><a href="#cb13-175" aria-hidden="true" tabindex="-1"></a><span class="co">#write midi file to disk</span></span>
+<span id="cb13-176"><a href="#cb13-176" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span><span class="fu">write_file</span>(<span class="st">"fifths_4_tracks_prob_2.mid"</span>)</span>
+<span id="cb13-177"><a href="#cb13-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-178"><a href="#cb13-178" aria-hidden="true" tabindex="-1"></a><span class="do">######</span></span>
+<span id="cb13-179"><a href="#cb13-179" aria-hidden="true" tabindex="-1"></a><span class="co"># using Ableton for sounds</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="fifths_4_track_prob_2.mp3" type="audio/wav"> </audio></p>
+<p>This one is again using ableton for sounds, with a little bit more care taken to make it sound mildly interesting. Had fun. Still sounds like halting robot music that drones on without much change in direction.</p>
+<p>Alright, finished here for now.</p>
+
+
+
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">

@@ -836,16 +836,390 @@ The above is what I would consider my first attempt at composing generative sequ
     
 It was helpful to summarize the code this morning. It's unlikely I will begin any re-factoring, but it's easier to see where I could make this more compact and less of a wall of code.
 
-
-    
-      
-
-
-
-
 ----------------------
 
+## Randomly sampling note probability distributions
+
+The above code samples notes from some collection, like {C, F, G, Bb, D} with equal proportion. I'd like to at least start with making the proportions unequal, and have this move around a bit over bars. Whatever note has the highest proportion might take on the tonal center of the evolving sequence.
+
+A next step would be to expand and contract the note collection, and have it rotate around the circle of fifths. 
+
+This seems to work. I'm grabbing a colleciton of notes, using a simple vector, like 1,2,3,4,5, to set note frequencies. That can be multiplied to change the ratio of most to least frequent. The frequency vector is converted to a probability vector later. Every bar, the ordering of the probalities as they apply to notes is randomized. That could be too fast moving to really notice differences. Need to explore this a little bit.
+
+```{r, eval=FALSE}
+library(midiblender)
+library(dplyr)
+library(tibble)
+# import midi
+# using mario to get the midi headers
+# need to add a vanilla midi file to this package for easier importing
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
 
 
+# Sample some beats for timesteps into the matrix
+bars <- 1
+notes <- 128
+ticks <- 96*4*bars
+
+all_beat_matrix <- matrix(0,nrow=notes,ncol=96*4)
+
+for(i in 1:8) {
+  # empty beat matrix
+  beat_matrix <- matrix(0, nrow = notes, ncol = ticks)
+  
+  #assign kick beats
+  kick <- bresenham_euclidean(sample(2:7,1), 16, start = 1)
+  snare <- bresenham_euclidean(sample(2:7,1), 16, start = 1)
+  hihats <- bresenham_euclidean(sample(8:16,1), 16, start = 1)
+  
+  # assign to matrix
+  beat_matrix[(36 + 1), seq(1, ticks, ticks / 16)] <- kick
+  beat_matrix[(38 + 1), seq(1, ticks, ticks / 16)] <- snare
+  beat_matrix[(42 + 1), seq(1, ticks, ticks / 16)] <- hihats
+  
+  all_beat_matrix <- cbind(all_beat_matrix, beat_matrix)
+}
+
+# get the point estimates
+time_probabilities <- colSums(all_beat_matrix)/sum(all_beat_matrix)
+
+bar_probabilities <- matrix(time_probabilities,
+                            ncol=(96*4),
+                            byrow = T)
+
+bar_probabilities <- colMeans(bar_probabilities)
+
+# make my own midi notes df
+# add this to midiblender later
+midi_notes <- pyramidi::midi_defs %>%
+  rowwise() %>%
+  mutate(note_letter = unlist(strsplit(as.character(note_name),"-"))[1],
+         octave = unlist(strsplit(as.character(note_name),"-"))[2])
+
+midi_notes <- tibble(notes = rep(midi_notes[1:12,]$note_letter,11)[1:128],
+                     octaves = rep(-1:9, each = 12)[1:128],
+                     midi_number = 0:127
+)
+
+# Empty data frame to hold midi track dfs
+all_track_midi <- data.frame()
+
+# paramaters that get changed for every track
+
+time_densities <- c(256,128,64) # controls number of notes per bar 
+
+# track loop
+for(t in 1:3){
+
+song <- matrix(0,nrow=notes,ncol=1)
+
+# begin bar by bar composition loop
+
+for(i in 1:16){
+
+  # get some notes to sample from fifths around a starting note
+  starting_note <- 60 # C4
+  fifth_intervals <- c(0, 7, 14, -7, -14)
+  notes_to_choose <- starting_note + fifth_intervals
+  octave_range <- 3:6
+  # starting to bias note sampling here
+  note_frequencies <- sample(1:length(fifth_intervals)*2) 
+  
+  # pair the frequencies with the notes
+  note_names <- midi_notes %>%
+    filter(midi_number %in% notes_to_choose) %>%
+    select(notes) %>%
+    mutate(note_frequencies = note_frequencies)
+  
+  # get all possible notes across octaves in collection
+  possible_notes <- midi_notes %>%
+    filter(notes %in% note_names$notes == TRUE,
+           octaves %in% octave_range == TRUE) %>%
+    # add note frequencies
+    left_join(note_names,by="notes") %>%
+    mutate(probs = note_frequencies/sum(note_frequencies))
+  
+  # create probability vector
+  pitch_probabilities <- rep(0, 128)
+  pitch_probabilities[possible_notes$midi_number + 1] <-
+    possible_notes$probs
+  
+  # get new pitches
+  new_pitches <- rbinom(n = length(pitch_probabilities),
+                        size = 32,
+                        prob = pitch_probabilities)
+  new_pitches[new_pitches > 1] <- 1
+  
+  # get new times
+  new_times <- rbinom(n = length(bar_probabilities),
+                      size = time_densities[t],
+                      prob = bar_probabilities)
+  # To Do: come back here and make it ok to have more than 1
+  new_times[new_times > 1] <- 1
+  
+  # get row column ids
+  sampled_notes <- which(new_pitches == 1)
+  sampled_times <- which(new_times == 1)
+  
+  # combine, make sure equal length
+  if (length(sampled_notes) >= length(sampled_times)) {
+    sampled_ids <-
+      tibble(notes = sampled_notes[1:length(sampled_times)],
+             times = sampled_times)
+  } else {
+    sampled_ids <- tibble(notes = sampled_notes,
+                          times = sampled_times[1:length(sampled_notes)])
+  }
+  
+  # shuffle the notes across the times so the sampling is uniform
+  sampled_ids$notes <- sample(sampled_ids$notes)
+  
+  # make a note by time unit matrix
+  one_bar <- matrix(0,
+                    nrow = 128,
+                    ncol = 96 * 4)
+  
+  # assign 1s to note locations in time
+  for (r in 1:dim(sampled_ids)[1]) {
+    one_bar[sampled_ids$notes[r], sampled_ids$times[r]] <- 1
+  }
+  
+  song <- cbind(song,one_bar)
+}
+
+#####################
+# transform back to midi
+track_0 <- copy_midi_df_track(midi_df,track_num = 0)
+
+midi_time_df <- matrix_to_midi_time(midi_matrix = song,
+                                    smallest_time_unit = 1,
+                                    note_off_length = 32)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 500000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 0,
+                                    velocity = 100)
+new_midi_df <- new_midi_df %>%
+  mutate(i_track = t)
+
+all_track_midi <- rbind(all_track_midi,
+                        new_midi_df)
+}
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(all_track_midi)
+
+#write midi file to disk
+miditapyr_object$write_file("fifths_tracks_prob.mid")
+
+######
+# using Ableton for sounds
+```
+
+
+`r html_tag_audio("fifths_3_track_prob_1.mp3", type = "wav")`
+
+At some point I put three tracks into Ableton and chose some synth voices. 
+
+## Expanding/reducing the note collection
+
+Increased the number of tracks to 4. Every bar the number of notes that can get sampled is randomly varied from a collection of notes around the circle of fifths. I didn't yet get the composition spinning around the circle, but I'm skipping that for now.
+
+```{r, eval=FALSE}
+library(midiblender)
+library(dplyr)
+library(tibble)
+# import midi
+# using mario to get the midi headers
+# need to add a vanilla midi file to this package for easier importing
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+
+
+# Sample some beats for timesteps into the matrix
+bars <- 1
+notes <- 128
+ticks <- 96*4*bars
+
+all_beat_matrix <- matrix(0,nrow=notes,ncol=96*4)
+
+for(i in 1:8) {
+  # empty beat matrix
+  beat_matrix <- matrix(0, nrow = notes, ncol = ticks)
+  
+  #assign kick beats
+  kick <- bresenham_euclidean(sample(2:7,1), 16, start = 1)
+  snare <- bresenham_euclidean(sample(2:7,1), 16, start = 1)
+  hihats <- bresenham_euclidean(sample(8:16,1), 16, start = 1)
+  
+  # assign to matrix
+  beat_matrix[(36 + 1), seq(1, ticks, ticks / 16)] <- kick
+  beat_matrix[(38 + 1), seq(1, ticks, ticks / 16)] <- snare
+  beat_matrix[(42 + 1), seq(1, ticks, ticks / 16)] <- hihats
+  
+  all_beat_matrix <- cbind(all_beat_matrix, beat_matrix)
+}
+
+# get the point estimates
+time_probabilities <- colSums(all_beat_matrix)/sum(all_beat_matrix)
+
+bar_probabilities <- matrix(time_probabilities,
+                            ncol=(96*4),
+                            byrow = T)
+
+bar_probabilities <- colMeans(bar_probabilities)
+
+# make my own midi notes df
+# add this to midiblender later
+midi_notes <- pyramidi::midi_defs %>%
+  rowwise() %>%
+  mutate(note_letter = unlist(strsplit(as.character(note_name),"-"))[1],
+         octave = unlist(strsplit(as.character(note_name),"-"))[2])
+
+midi_notes <- tibble(notes = rep(midi_notes[1:12,]$note_letter,11)[1:128],
+                     octaves = rep(-1:9, each = 12)[1:128],
+                     midi_number = 0:127
+)
+
+# Empty data frame to hold midi track dfs
+all_track_midi <- data.frame()
+
+# paramaters that get changed for every track
+
+time_densities <- c(512,256,128,64) # controls number of notes per bar 
+
+# track loop
+for(t in 1:4){
+
+song <- matrix(0,nrow=notes,ncol=1)
+
+# begin bar by bar composition loop
+
+for(i in 1:32){
+
+  # get some notes to sample from fifths around a starting note
+  starting_note <- 60 # C4
+  fifth_intervals <- c(0, 7, 14, -7, -14, 21, -21)
+  # size of collection now changes every bar
+  notes_to_choose <- starting_note + sample(fifth_intervals,sample(3:7,1))
+  octave_range <- 3:6
+  # starting to bias note sampling here
+  note_frequencies <- sample(1:length(notes_to_choose)*2) 
+  
+  # pair the frequencies with the notes
+  note_names <- midi_notes %>%
+    filter(midi_number %in% notes_to_choose) %>%
+    select(notes) %>%
+    mutate(note_frequencies = note_frequencies)
+  
+  # get all possible notes across octaves in collection
+  possible_notes <- midi_notes %>%
+    filter(notes %in% note_names$notes == TRUE,
+           octaves %in% octave_range == TRUE) %>%
+    # add note frequencies
+    left_join(note_names,by="notes") %>%
+    mutate(probs = note_frequencies/sum(note_frequencies))
+  
+  # create probability vector
+  pitch_probabilities <- rep(0, 128)
+  pitch_probabilities[possible_notes$midi_number + 1] <-
+    possible_notes$probs
+  
+  # get new pitches
+  new_pitches <- rbinom(n = length(pitch_probabilities),
+                        size = 32,
+                        prob = pitch_probabilities)
+  new_pitches[new_pitches > 1] <- 1
+  
+  # get new times
+  new_times <- rbinom(n = length(bar_probabilities),
+                      size = time_densities[t],
+                      prob = bar_probabilities)
+  # To Do: come back here and make it ok to have more than 1
+  new_times[new_times > 1] <- 1
+  
+  # make a note by time unit matrix
+    one_bar <- matrix(0,
+                      nrow = 128,
+                      ncol = 96 * 4)
+  
+  if(sum(new_times) > 1){
+    # get row column ids
+    sampled_notes <- which(new_pitches == 1)
+    sampled_times <- which(new_times == 1)
+    
+    # combine, make sure equal length
+    if (length(sampled_notes) >= length(sampled_times)) {
+      sampled_ids <-
+        tibble(notes = sampled_notes[1:length(sampled_times)],
+               times = sampled_times)
+    } else {
+      sampled_ids <- tibble(notes = sampled_notes,
+                            times = sampled_times[1:length(sampled_notes)])
+    }
+    
+    # shuffle the notes across the times so the sampling is uniform
+    sampled_ids$notes <- sample(sampled_ids$notes)
+    
+    # assign 1s to note locations in time
+    for (r in 1:dim(sampled_ids)[1]) {
+      one_bar[sampled_ids$notes[r], sampled_ids$times[r]] <- 1
+    }
+  }
+  
+  song <- cbind(song,one_bar)
+}
+
+#####################
+# transform back to midi
+track_0 <- copy_midi_df_track(midi_df,track_num = 0)
+
+midi_time_df <- matrix_to_midi_time(midi_matrix = song,
+                                    smallest_time_unit = 1,
+                                    note_off_length = 32)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 500000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 0,
+                                    velocity = 100)
+new_midi_df <- new_midi_df %>%
+  mutate(i_track = t)
+
+all_track_midi <- rbind(all_track_midi,
+                        new_midi_df)
+}
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(all_track_midi)
+
+#write midi file to disk
+miditapyr_object$write_file("fifths_4_tracks_prob_2.mid")
+
+######
+# using Ableton for sounds
+```
+
+`r html_tag_audio("fifths_4_track_prob_2.mp3", type = "wav")`
+
+This one is again using ableton for sounds, with a little bit more care taken to make it sound mildly interesting. Had fun. Still sounds like halting robot music that drones on without much change in direction. 
+
+Alright, finished here for now.
 
 
