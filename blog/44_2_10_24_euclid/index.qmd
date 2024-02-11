@@ -817,6 +817,34 @@ At this point I think I've basically recreated something like what Marbles by Mu
 
 Time to take a break.
 
+### Pseudo Composition code
+
+The above is what I would consider my first attempt at composing generative sequences in R. Taking a couple minutes here to write pseudo code on what it was that happened in the code. 
+
+1. Import a MIDI file
+2. Run euclidean rhythms into a matrix for a while to get point estimates for rhythm time steps. Turn this into a vector of time probabilities.
+3. Begin a Track Composition loop
+  - Loop for each of 3 tracks
+    - Begin a Bar composition Loop
+      - Loop for 16 bars
+      - pick a collection of notes
+      - assign probability of occurrence
+      - generate time stamps, and notes from time and note probability vectors
+      - Combine them together
+      - put them in a one_bar matrix
+    - put all the bars into a midi_df, setting i_track to the track number
+    
+It was helpful to summarize the code this morning. It's unlikely I will begin any re-factoring, but it's easier to see where I could make this more compact and less of a wall of code.
+
+
+    
+      
+
+
+
+
+----------------------
+
 
 
 

@@ -219,7 +219,10 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
   <ul>
   <li><a href="#euclidean-rhythms-in-r" id="toc-euclidean-rhythms-in-r" class="nav-link active" data-scroll-target="#euclidean-rhythms-in-r">Euclidean Rhythms in R</a></li>
   <li><a href="#a-basic-drum-beat" id="toc-a-basic-drum-beat" class="nav-link" data-scroll-target="#a-basic-drum-beat">A basic drum beat</a></li>
-  <li><a href="#setting-notes-to-euclidean-rhythms" id="toc-setting-notes-to-euclidean-rhythms" class="nav-link" data-scroll-target="#setting-notes-to-euclidean-rhythms">Setting notes to euclidean rhythms</a></li>
+  <li><a href="#setting-notes-to-euclidean-rhythms" id="toc-setting-notes-to-euclidean-rhythms" class="nav-link" data-scroll-target="#setting-notes-to-euclidean-rhythms">Setting notes to euclidean rhythms</a>
+  <ul class="collapse">
+  <li><a href="#pseudo-composition-code" id="toc-pseudo-composition-code" class="nav-link" data-scroll-target="#pseudo-composition-code">Pseudo Composition code</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -1031,9 +1034,35 @@ Note
 <p>I didn’t get to all of my goals. I still need to come back and change the probability of different notes so they aren’t uniform. Right now all the pitches were uniformly sampled each time. The result is OK, but I want to hear other versions sampled from non-uniform distributions.</p>
 <p>At this point I think I’ve basically recreated something like what Marbles by Mutable Instruments is doing. I could have probably done this in eurorack. And, that would have been fun too.</p>
 <p>Time to take a break.</p>
+<section id="pseudo-composition-code" class="level3">
+<h3 class="anchored" data-anchor-id="pseudo-composition-code">Pseudo Composition code</h3>
+<p>The above is what I would consider my first attempt at composing generative sequences in R. Taking a couple minutes here to write pseudo code on what it was that happened in the code.</p>
+<ol type="1">
+<li>Import a MIDI file</li>
+<li>Run euclidean rhythms into a matrix for a while to get point estimates for rhythm time steps. Turn this into a vector of time probabilities.</li>
+<li>Begin a Track Composition loop</li>
+</ol>
+<ul>
+<li>Loop for each of 3 tracks
+<ul>
+<li>Begin a Bar composition Loop
+<ul>
+<li>Loop for 16 bars</li>
+<li>pick a collection of notes</li>
+<li>assign probability of occurrence</li>
+<li>generate time stamps, and notes from time and note probability vectors</li>
+<li>Combine them together</li>
+<li>put them in a one_bar matrix</li>
+</ul></li>
+<li>put all the bars into a midi_df, setting i_track to the track number</li>
+</ul></li>
+</ul>
+<p>It was helpful to summarize the code this morning. It’s unlikely I will begin any re-factoring, but it’s easier to see where I could make this more compact and less of a wall of code.</p>
+<hr>
 
 
 
+</section>
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">

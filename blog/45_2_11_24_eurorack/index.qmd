@@ -1,0 +1,123 @@
+---
+title: "Eurorack notes to self"
+author: "Matt Crump"
+date: 2/11/24
+description: "Keeping track of some eurorack directions, notes to self."
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - midiblender
+  - eurorack
+  - programmable eurorack
+  - composition
+execute: 
+  echo: true
+  message: false
+  warning: false
+format:
+  html:
+    code-fold: true
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "Massive modular synthesizer. Eurorack modular synthesizer. Huge synthesizer room, full or modular synthesizers with patch cords connecting everywer. 80s cartoon. Linocut."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+Massive modular synthesizer. Eurorack modular synthesizer. Huge synthesizer room, full or modular synthesizers with patch cords connecting everywer. 80s cartoon. Linocut. - dreamshaper
+:::
+
+```{r}
+#| echo: false
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+Notes to self about eurorack stuff. 
+
+## Programmable Eurorack Modules
+
+I very briefly [tried to program ornaments and crime one time](https://www.crumplab.com/blog/older_9999_7_28_20_OC/). But that's about it. I could see becoming interested in putting ideas from {midiblender}, and other ideas, into eurorack in different ways.
+
+- older post on mod wiggler about open source programmable eurorack modules <https://modwiggler.com/forum/viewtopic.php?t=220061>
+
+- a useful list of programmable audio platforms <https://blog.macieksypniewski.com/2019/07/08/programmable-audio-platforms/>
+
+- Bela pepper <https://shop.bela.io/collections/modular/products/pepper>
+
+- [Monome](https://monome.org/docs/) has some interesting stuff
+
+- [EuroPi](https://allensynthesis.co.uk/modules/europi.html) Based on raspberry pi pico I think
+
+- [Es8](https://www.expert-sleepers.co.uk/es8.html) or [ES-9](https://www.expert-sleepers.co.uk/es9.html) USB-audio interface...I could use one of these in general I think...hmm.
+
+## Eurorack composition ideas
+
+I don't really want to mess with my computer while messing with eurorack at the same time, as a general rule.
+
+### Easy can do right now
+
+1. Use {midiblender} to compose MIDI files with some things I want, play them through hermod. This gives me 8-voices. Probably the easiest thing I can do right now. Benefits are that the midi files are pre-packaged, and I shouldn't have to worry about any latency or anything like that.
+
+- I like this pattern for a bunch of reasons. I focus on some compositional ideas outside of eurorack. Generate all the midi based on the compositional ideas...which basically acts as CV and gate sources. Hook it all up to voices on, and wreck the whole thing as much as possible by turning knobs during playback. Sounds fun. Feels a little bit locked in to the compositional direction from the midi files, but I guess that's the whole point of composing something.
+
+2. This is somewhere in the middle, but I wonder about a way to rapidly scroll through a bunch of midi files, while they are playing, kind of like how one might scroll through a wavetable and hear all of the notes. If I had banks of possible midi files to play, and could easily scroll them, that would be fun. hmmmm.
+
+### longer term can't do right now
+
+2. Have a module (or computer program) that can accumulate CV or midi from a live performance, crunch the probabilities at various levels (e.g., into various markov chain ideas, or other weird stuff), and do interesting generative sequencing based off of the live performance statistics.
+
+

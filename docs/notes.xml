@@ -15,7 +15,221 @@
 <link>https://homophony.quest/notes.html</link>
 </image>
 <generator>quarto-1.4.549</generator>
-<lastBuildDate>Sat, 10 Feb 2024 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 11 Feb 2024 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>Eurorack notes to self</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/45_2_11_24_eurorack/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> set_seed</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Image</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> random</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ssl</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#locate library</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mps"</span>)</span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"max"</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Massive modular synthesizer. Eurorack modular synthesizer. Huge synthesizer room, full or modular synthesizers with patch cords connecting everywer. 80s cartoon. Linocut."</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>):</span>
+<span id="cb1-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]:</span>
+<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span></span>
+<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-29">    set_seed(seed)</span>
+<span id="cb1-30">    </span>
+<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>num_steps)</span>
+<span id="cb1-32">    </span>
+<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpeg"</span></span>
+<span id="cb1-34">    </span>
+<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="https://homophony.quest/blog/45_2_11_24_eurorack/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>A computer drumming. synthesizer drum. Drum beats. probabilistic drums. information theory. Euclid. Math. Drum machines everywhere. background is a room full of drum machines. Rhythm. drums. Transformers cartoon. retro 80s. - dreamshaper</p>
+</div></div><p>Notes to self about eurorack stuff.</p>
+<section id="programmable-eurorack-modules" class="level2">
+<h2 class="anchored" data-anchor-id="programmable-eurorack-modules">Programmable Eurorack Modules</h2>
+<p>I very briefly <a href="https://www.crumplab.com/blog/older_9999_7_28_20_OC/">tried to program ornaments and crime one time</a>. But that’s about it. I could see becoming interested in putting ideas from {midiblender}, and other ideas, into eurorack in different ways.</p>
+<ul>
+<li><p>older post on mod wiggler about open source programmable eurorack modules <a href="https://modwiggler.com/forum/viewtopic.php?t=220061" class="uri">https://modwiggler.com/forum/viewtopic.php?t=220061</a></p></li>
+<li><p>a useful list of programmable audio platforms <a href="https://blog.macieksypniewski.com/2019/07/08/programmable-audio-platforms/" class="uri">https://blog.macieksypniewski.com/2019/07/08/programmable-audio-platforms/</a></p></li>
+<li><p>Bela pepper <a href="https://shop.bela.io/collections/modular/products/pepper" class="uri">https://shop.bela.io/collections/modular/products/pepper</a></p></li>
+<li><p><a href="https://monome.org/docs/">Monome</a> has some interesting stuff</p></li>
+<li><p><a href="https://allensynthesis.co.uk/modules/europi.html">EuroPi</a> Based on raspberry pi pico I think</p></li>
+<li><p><a href="https://www.expert-sleepers.co.uk/es8.html">Es8</a> or <a href="https://www.expert-sleepers.co.uk/es9.html">ES-9</a> USB-audio interface…I could use one of these in general I think…hmm.</p></li>
+</ul>
+</section>
+<section id="eurorack-composition-ideas" class="level2">
+<h2 class="anchored" data-anchor-id="eurorack-composition-ideas">Eurorack composition ideas</h2>
+<p>I don’t really want to mess with my computer while messing with eurorack at the same time, as a general rule.</p>
+<section id="easy-can-do-right-now" class="level3">
+<h3 class="anchored" data-anchor-id="easy-can-do-right-now">Easy can do right now</h3>
+<ol type="1">
+<li>Use {midiblender} to compose MIDI files with some things I want, play them through hermod. This gives me 8-voices. Probably the easiest thing I can do right now. Benefits are that the midi files are pre-packaged, and I shouldn’t have to worry about any latency or anything like that.</li>
+</ol>
+<ul>
+<li>I like this pattern for a bunch of reasons. I focus on some compositional ideas outside of eurorack. Generate all the midi based on the compositional ideas…which basically acts as CV and gate sources. Hook it all up to voices on, and wreck the whole thing as much as possible by turning knobs during playback. Sounds fun. Feels a little bit locked in to the compositional direction from the midi files, but I guess that’s the whole point of composing something.</li>
+</ul>
+<ol start="2" type="1">
+<li>This is somewhere in the middle, but I wonder about a way to rapidly scroll through a bunch of midi files, while they are playing, kind of like how one might scroll through a wavetable and hear all of the notes. If I had banks of possible midi files to play, and could easily scroll them, that would be fun. hmmmm.</li>
+</ol>
+</section>
+<section id="longer-term-cant-do-right-now" class="level3">
+<h3 class="anchored" data-anchor-id="longer-term-cant-do-right-now">longer term can’t do right now</h3>
+<ol start="2" type="1">
+<li>Have a module (or computer program) that can accumulate CV or midi from a live performance, crunch the probabilities at various levels (e.g., into various markov chain ideas, or other weird stuff), and do interesting generative sequencing based off of the live performance statistics.</li>
+</ol>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>midiblender</category>
+  <category>eurorack</category>
+  <category>programmable eurorack</category>
+  <category>composition</category>
+  <guid>https://homophony.quest/blog/45_2_11_24_eurorack/</guid>
+  <pubDate>Sun, 11 Feb 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/45_2_11_24_eurorack/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Euclidean Rhythms and circulating sequences with information theory concepts</title>
   <dc:creator>Matt Crump</dc:creator>
@@ -3307,9 +3521,35 @@ font-style: inherit;">file.remove</span>(wav_name)</span>
 <p>I didn’t get to all of my goals. I still need to come back and change the probability of different notes so they aren’t uniform. Right now all the pitches were uniformly sampled each time. The result is OK, but I want to hear other versions sampled from non-uniform distributions.</p>
 <p>At this point I think I’ve basically recreated something like what Marbles by Mutable Instruments is doing. I could have probably done this in eurorack. And, that would have been fun too.</p>
 <p>Time to take a break.</p>
+<section id="pseudo-composition-code" class="level3">
+<h3 class="anchored" data-anchor-id="pseudo-composition-code">Pseudo Composition code</h3>
+<p>The above is what I would consider my first attempt at composing generative sequences in R. Taking a couple minutes here to write pseudo code on what it was that happened in the code.</p>
+<ol type="1">
+<li>Import a MIDI file</li>
+<li>Run euclidean rhythms into a matrix for a while to get point estimates for rhythm time steps. Turn this into a vector of time probabilities.</li>
+<li>Begin a Track Composition loop</li>
+</ol>
+<ul>
+<li>Loop for each of 3 tracks
+<ul>
+<li>Begin a Bar composition Loop
+<ul>
+<li>Loop for 16 bars</li>
+<li>pick a collection of notes</li>
+<li>assign probability of occurrence</li>
+<li>generate time stamps, and notes from time and note probability vectors</li>
+<li>Combine them together</li>
+<li>put them in a one_bar matrix</li>
+</ul></li>
+<li>put all the bars into a midi_df, setting i_track to the track number</li>
+</ul></li>
+</ul>
+<p>It was helpful to summarize the code this morning. It’s unlikely I will begin any re-factoring, but it’s easier to see where I could make this more compact and less of a wall of code.</p>
+<hr>
 
 
 
+</section>
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0">
@@ -32549,254 +32789,6 @@ font-style: inherit;">".wav"</span>))</span></code></pre></div>
   <guid>https://homophony.quest/blog/25_1_25_24_r_sounds/</guid>
   <pubDate>Wed, 24 Jan 2024 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/25_1_25_24_r_sounds/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Week of 1/21 - 1/27 daily practice post</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/24_1_24_24_weekly_practice/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> DiffusionPipeline</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> set_seed</span>
-<span id="cb1-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> Image</span>
-<span id="cb1-4"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> torch</span>
-<span id="cb1-5"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> random</span>
-<span id="cb1-6"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> ssl</span>
-<span id="cb1-7"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> os</span>
-<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> ssl._create_unverified_context</span>
-<span id="cb1-9"></span>
-<span id="cb1-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#locate library</span></span>
-<span id="cb1-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
-<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
-<span id="cb1-13"></span>
-<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
-<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
-<span id="cb1-16">)</span>
-<span id="cb1-17"></span>
-<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"mps"</span>)</span>
-<span id="cb1-19"></span>
-<span id="cb1-20"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
-<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"max"</span>)</span>
-<span id="cb1-22"></span>
-<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"musical pattern. music wallpaper. intense music trip. music everywhere."</span></span>
-<span id="cb1-24"></span>
-<span id="cb1-25"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span>):</span>
-<span id="cb1-26">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>]:</span>
-<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">21</span></span>
-<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span>
-<span id="cb1-29">    set_seed(seed)</span>
-<span id="cb1-30">    </span>
-<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>num_steps)</span>
-<span id="cb1-32">    </span>
-<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">.jpeg"</span></span>
-<span id="cb1-34">    </span>
-<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
-</details>
-</div>
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/24_1_24_24_weekly_practice/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>musical pattern. music wallpaper. intense music trip. music everywhere. - Dreamshaper v7</p>
-</div></div><p>Trying out a single post to record daily practice exercises that I will continue to update throughout a week. It’s 1/24 and I will have to reconstruct what might have happened earlier this week.</p>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section">1/21</h2>
-<ul>
-<li>did a couple of chord reaction time tests</li>
-<li>got into the 7b5 chords a little bit, playing them in all keys very slowly</li>
-</ul>
-</section>
-<section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1">1/22</h2>
-<ul>
-<li>Drilled 7b5 chords a bunch</li>
-</ul>
-</section>
-<section id="section-2" class="level2">
-<h2 class="anchored" data-anchor-id="section-2">1/23</h2>
-<ul>
-<li>missed a day really oops</li>
-<li>played “all of me” a couple times</li>
-</ul>
-</section>
-<section id="section-3" class="level2">
-<h2 class="anchored" data-anchor-id="section-3">1/24</h2>
-<p>Major triads</p>
-<p>Went through all of the below in all keys, anti-clockwise through circle of fifths</p>
-<ul>
-<li>play them once</li>
-<li>played the triad in right hand, with different bass notes from the triad</li>
-<li>played the triad up through keyboard through the inversions</li>
-<li>played the triad down through the inversions</li>
-<li>played the triad once, on the first inversion</li>
-<li>played the triad once, on the second inversion</li>
-</ul>
-<p>I didn’t make too many mistakes, but I was more rusty at this then I thought I would be. I’m still slow on Db and Ab.</p>
-<p>Starting on the different inversions is interesting. When I’m really into a jam, I don’t think about what inversions to play and they just happen (on a good day). But, in this case, I’m not used to deliberately trying to play a specific triad in a specific inversion. Playing the second inversion was hardest for some reason.</p>
-</section>
-<section id="section-4" class="level2">
-<h2 class="anchored" data-anchor-id="section-4">1/25</h2>
-<p>Found a lead sheet for Nate Smith’s Retold. Love this song. Challenging 9/8 rhythm. Messed about with this for a while.</p>
-</section>
-<section id="section-5" class="level2">
-<h2 class="anchored" data-anchor-id="section-5">1/26</h2>
-<p>More retold</p>
-</section>
-<section id="section-6" class="level2">
-<h2 class="anchored" data-anchor-id="section-6">1/27</h2>
-<p>Thinking more about symmetry, scales, chords and the circle of fifths.</p>
-<ul>
-<li>Started on C.
-<ul>
-<li>add G and F, the next notes going clock-wise or anti-clockwise
-<ul>
-<li>This creates Csus, F (add 9), Gsus7 (without the iii or V)</li>
-</ul></li>
-<li>add D and Bb
-<ul>
-<li>scale = C D F G Bb (a 5 note scale)</li>
-</ul></li>
-<li>add A and Eb
-<ul>
-<li>scale = C D Eb F G A Bb (7 note scale) Ends up as Bb major (2 fifths down from C)</li>
-</ul></li>
-<li>add E and Ab
-<ul>
-<li>scale = C D Eb E F G Ab A Bb (9 note scale)</li>
-<li>messed about with building chords here</li>
-<li>Chords with C (F Bb Eb Ab) are built off the anti-clockwise circle of fifths</li>
-<li>Chords with C (G D A E) are built off the clockwise circle</li>
-</ul></li>
-</ul></li>
-</ul>
-
-
-</section>
-
- ]]></description>
-  <category>piano practice</category>
-  <guid>https://homophony.quest/blog/24_1_24_24_weekly_practice/</guid>
-  <pubDate>Wed, 24 Jan 2024 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/24_1_24_24_weekly_practice/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
