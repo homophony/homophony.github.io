@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Matt Crump">
+<meta name="dcterms.date" content="2024-02-10">
+<meta name="description" content="Probably biting off more than I can chew here. A saturday experiment in MIDI mangling.">
+
+<title>Homophony - Euclidean Rhythms and circulating sequences with information theory concepts</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-C5FTH8QPGW"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../../css/styles.css">
+<meta property="og:title" content="Homophony - Euclidean Rhythms and circulating sequences with information theory concepts">
+<meta property="og:description" content="Probably biting off more than I can chew here. A saturday experiment in MIDI mangling.">
+<meta property="og:image" content="https://homophony.quest/blog/44_2_10_24_euclid/cover.jpg">
+<meta property="og:site_name" content="Homophony">
+<meta name="twitter:title" content="Homophony - Euclidean Rhythms and circulating sequences with information theory concepts">
+<meta name="twitter:description" content="Probably biting off more than I can chew here. A saturday experiment in MIDI mangling.">
+<meta name="twitter:image" content="https://homophony.quest/blog/44_2_10_24_euclid/cover.jpg">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Homophony</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../notes.html"> 
+<span class="menu-text">Wall of Notes</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../notes.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://fosstodon.org/@MattCrumpLab"> <i class="bi bi-mastodon" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.youtube.com/channel/UCmzAb7gmWJBQ0zX3spqxrNQ"> <i class="bi bi-youtube" role="img" aria-label="Youtube">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://open.spotify.com/artist/21uZHA1jqXKOdkQmxR7ZcE?si=M2xiVdJpQG6OXuPW7URveg"> <i class="bi bi-spotify" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://music.apple.com/us/artist/homophony/1531902633"> <i class="bi bi-apple" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#euclidean-rhythms-in-r" id="toc-euclidean-rhythms-in-r" class="nav-link active" data-scroll-target="#euclidean-rhythms-in-r">Euclidean Rhythms in R</a></li>
+  <li><a href="#a-basic-drum-beat" id="toc-a-basic-drum-beat" class="nav-link" data-scroll-target="#a-basic-drum-beat">A basic drum beat</a></li>
+  <li><a href="#setting-notes-to-euclidean-rhythms" id="toc-setting-notes-to-euclidean-rhythms" class="nav-link" data-scroll-target="#setting-notes-to-euclidean-rhythms">Setting notes to euclidean rhythms</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Euclidean Rhythms and circulating sequences with information theory concepts</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">midiblender</div>
+    <div class="quarto-category">euclidean rhythms</div>
+    <div class="quarto-category">information theory</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Probably biting off more than I can chew here. A saturday experiment in MIDI mangling.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Matt Crump </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 10, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> diffusers <span class="im">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> set_seed</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> PIL <span class="im">import</span> Image</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ssl</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>ssl._create_default_https_context <span class="op">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">#locate library</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>model_id <span class="op">=</span> <span class="st">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>pipeline <span class="op">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    pretrained_model_name_or_path <span class="op">=</span> <span class="st">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>pipeline <span class="op">=</span> pipeline.to(<span class="st">"mps"</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>pipeline.enable_attention_slicing(<span class="st">"max"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> <span class="st">"A computer drumming. synthesizer drum. Drum beats. probabilistic drums. information theory. Euclid. Math. Drum machines everywhere. background is a room full of drum machines. Rhythm. drums. Transformers cartoon. retro 80s."</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> s <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">30</span>):</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> n <span class="kw">in</span> [<span class="dv">5</span>,<span class="dv">10</span>]:</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    seed <span class="op">=</span> s<span class="op">+</span><span class="dv">21</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    num_steps <span class="op">=</span> n<span class="op">+</span><span class="dv">1</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    set_seed(seed)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    image <span class="op">=</span> pipeline(prompt,height <span class="op">=</span> <span class="dv">1024</span>,width <span class="op">=</span> <span class="dv">1024</span>,num_images_per_prompt <span class="op">=</span> <span class="dv">1</span>,num_inference_steps<span class="op">=</span>num_steps)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    image_name <span class="op">=</span> <span class="st">"images/synth_</span><span class="sc">{}</span><span class="st">_</span><span class="sc">{}</span><span class="st">.jpeg"</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    image_save <span class="op">=</span> image.images[<span class="dv">0</span>].save(image_name.<span class="bu">format</span>(seed,num_steps))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>A computer drumming. synthesizer drum. Drum beats. probabilistic drums. information theory. Euclid. Math. Drum machines everywhere. background is a room full of drum machines. Rhythm. drums. Transformers cartoon. retro 80s. - dreamshaper</p>
+</div></div><p>This is another exploratory post. I’m planning to use <a href="https://www.crumplab.com/midiblender/">midiblender</a> for a few things in the future. One of them is to generate stimuli for musical recognition tasks. The others are mostly fooling around. This here is a bit of both.</p>
+<p>I’ve been practicing the following kinds of patterns on piano, and I’ve been thinking about coding them as a generative sequence algorithm. I’ll start playing around on a single note, like C major, and then slowly add notes from the circle of fifths around the note I’m playing. I’ll bring in F and G, which gives a very Csus feel. And, then I’ll go out even more, add a Bb and D. These fifths are symmetrical about C. Sometimes I’ll go a bit lopsided, maybe add an A into the mix, and feel it out as I play. Another way to look at this is that I’m playing some group of notes from the circle of fifths, like {Bb, F, C, G, D}. I could expand the collection by adding more notes, or reduce the collection by taking some away. Sometimes I rotate around the circle, etc. It’s fun to play on piano.</p>
+<p>One goal for this post is to get an algorithm that does something like the above. Just wanders around the cycle of fifths, expands and contracts the collection of notes to play, and then spits them out in an interesting rhythm.</p>
+<p>But, what rhythm should I code in here? Euclidean Rhythms to the rescue. They mostly sound fine. Not the most super interesting rhythms ever, but very fine. If you don’t know what they are, <a href="https://medium.com/code-music-noise/euclidean-rhythms-391d879494df">this was a good post</a> describing them, and it also had some code I modified to make a Euclidean Rhythms algorithm for R. I use these rhythms all the time in modular synthesis. So, part of this post is about getting them into {midiblender}.</p>
+<p>Ideally I would have a bunch of midi notes spread about in euclidean rhythms, and I could assign pitches to those notes using some kind of circle of fifths algorithm. Enter the last part of the equation, concepts from information theory.</p>
+<p>Information theory provides an equation to measure the variance of a discrete probability distribution. It’s called <a href="https://en.wikipedia.org/wiki/Entropy_(information_theory)">Shannon entropy</a>, and I won’t go into the details here too much. Actually, I doubt I will use the equation for this. It’s the concept of variation in a probability distribution that I’m interested in.</p>
+<p>A uniform probability distribution has no variance. All of the elements in the distribution have an equal likelihood of occurrence. I could use a uniform distribution to randomly pick notes from a collection like {Bb, F, C, G, D}, and sequences produced from that distribution would have 100% entropy. Another option is to bias the probabilities so that some of the notes are more probable than others in the set. These kinds of sequences have less entropy and are more predictable.</p>
+<p>Musical sequences usually don’t look like they come from a uniform distribution, often times some notes repeat more often than others. In terms of generating sequences with {midiblender}, I’d like some control over the variance of the probability distribution that is controlling note occurrences. Ideally, I would have an entropy knob on my eurorack somewhere that did all of this.</p>
+<p>Those are the basic ideas. I’m going to code some stuff and see what happens.</p>
+<section id="euclidean-rhythms-in-r" class="level2">
+<h2 class="anchored" data-anchor-id="euclidean-rhythms-in-r">Euclidean Rhythms in R</h2>
+<p>Here’s a function that creates Euclidean rhythms in R. Again, thanks to Jeff Holtzkener for a great <a href="https://medium.com/code-music-noise/euclidean-rhythms-391d879494df">run down on this algorithm</a>. To give some more credit, Euclidean rhythms were coined by Godfried Toussaint <span class="citation" data-cites="toussaint2005">(<a href="#ref-toussaint2005" role="doc-biblioref">Toussaint 2005</a>)</span>, and his paper is available <a href="https://archive.bridgesmathart.org/2005/bridges2005-47.pdf">here</a>.</p>
+<p>The basic idea for the algorithm is to find a way to spread beats evenly through a set of time steps. 4 beats goes into 16 steps very evenly, 1 beat every 4 steps. But, how does one space 5 beats into 13 steps. The algorithm finds some nice solutions that happen to also sound good as rhythms. I learned from the Holtzkener post that <a href="https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm">Bresenham’s line algorithm</a> (for raster scans), also works to compute Euclidean Rhythms, so I use that equation here.</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>bresenham_euclidean <span class="ot">&lt;-</span> <span class="cf">function</span>(beats, steps, <span class="at">start =</span> <span class="dv">1</span>) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  previous <span class="ot">&lt;-</span> start</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  pattern <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span>(steps<span class="dv">-1</span>)) {</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    xVal <span class="ot">&lt;-</span> <span class="fu">floor</span>((beats <span class="sc">/</span> steps) <span class="sc">*</span> (i))</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    pattern <span class="ot">&lt;-</span> <span class="fu">c</span>(pattern, <span class="fu">ifelse</span>(xVal <span class="sc">==</span> previous, <span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    previous <span class="ot">&lt;-</span> xVal</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(pattern)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Here’s a 4 on the floor:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bresenham_euclidean</span>(<span class="at">beats =</span> <span class="dv">4</span>, <span class="at">steps =</span> <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0</code></pre>
+</div>
+</div>
+<p>Here’s 7 beats over 16 steps:</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bresenham_euclidean</span>(<span class="at">beats =</span> <span class="dv">7</span>, <span class="at">steps =</span> <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 1 0 0 1 0 1 0 1 0 0 1 0 1 0 1 0</code></pre>
+</div>
+</div>
+<p>Great it seems to work. I’m tempted to go in a completely different direction and do some killer beats with {midiblender}, but that is too exciting. I will be back one day for the killer beats.</p>
+<p>Screw it, what is this blog if not a series of digressions. I think I’ve got enough breadcrumbs to lay down a beat quickly (fingers crossed).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The mp3s sometimes take a bit to load, especially the longer ones.</p>
+</div>
+</div>
+</section>
+<section id="a-basic-drum-beat" class="level2">
+<h2 class="anchored" data-anchor-id="a-basic-drum-beat">A basic drum beat</h2>
+<p>The metric structure for the beat should be easy. I just need to figure out which midi notes are which for the drum sounds.</p>
+<p>notes:</p>
+<ul>
+<li>channel 9 from FluidR3_GM.sf2</li>
+<li>percussion map <a href="https://usermanuals.finalemusic.com/SongWriter2012Win/Content/PercussionMaps.htm" class="uri">https://usermanuals.finalemusic.com/SongWriter2012Win/Content/PercussionMaps.htm</a></li>
+</ul>
+<p>kick = 36 snare = 38 hihats = 42</p>
+<p>Let’s do 4 bars or something like that.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(midiblender)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># import midi</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># using mario to get the midi headers</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># need to add a vanilla midi file to this package for easier importing</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>mario <span class="ot">&lt;-</span> <span class="fu">midi_to_object</span>(<span class="st">"all_overworld.mid"</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">list2env</span>(mario, .GlobalEnv) <span class="co"># send objects to global environment</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>bars <span class="ot">&lt;-</span> <span class="dv">8</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>notes <span class="ot">&lt;-</span> <span class="dv">128</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>ticks <span class="ot">&lt;-</span> <span class="dv">96</span><span class="sc">*</span><span class="dv">4</span><span class="sc">*</span>bars</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co"># empty beat matrix</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>beat_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,<span class="at">nrow=</span>notes,<span class="at">ncol=</span>ticks)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#assign kick beats</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>kick <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="dv">4</span><span class="sc">*</span>bars,ticks, <span class="at">start =</span> <span class="dv">0</span>)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>snare <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="dv">2</span><span class="sc">*</span>bars,ticks, <span class="at">start =</span> <span class="dv">0</span>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>hihats <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="dv">16</span><span class="sc">*</span>bars,ticks, <span class="at">start =</span> <span class="dv">0</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co"># assign to matrix</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>beat_matrix[(<span class="dv">36</span><span class="sc">+</span><span class="dv">1</span>),] <span class="ot">&lt;-</span> kick</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>beat_matrix[(<span class="dv">38</span><span class="sc">+</span><span class="dv">1</span>),] <span class="ot">&lt;-</span> snare</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>beat_matrix[(<span class="dv">42</span><span class="sc">+</span><span class="dv">1</span>),] <span class="ot">&lt;-</span> hihats</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="co"># transform back to midi</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>track_0 <span class="ot">&lt;-</span> <span class="fu">copy_midi_df_track</span>(midi_df,<span class="at">track_num =</span> <span class="dv">0</span>)</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>midi_time_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_time</span>(<span class="at">midi_matrix =</span> beat_matrix,</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">smallest_time_unit =</span> <span class="dv">1</span>,</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">note_off_length =</span> <span class="dv">8</span>)</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">get_midi_meta_df</span>(track_0)</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">set_midi_tempo_meta</span>(meta_messages_df,<span class="at">update_tempo =</span> <span class="dv">500000</span>)</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>split_meta_messages_df <span class="ot">&lt;-</span> <span class="fu">split_meta_df</span>(meta_messages_df)</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>new_midi_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_track</span>(<span class="at">midi_time_df =</span> midi_time_df,</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">split_meta_list =</span> split_meta_messages_df,</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">channel =</span> <span class="dv">9</span>,</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">velocity =</span> <span class="dv">100</span>)</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a><span class="do">#### bounce</span></span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a><span class="co"># update miditapyr df</span></span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span><span class="fu">update_unnested_mf</span>(new_midi_df)</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a><span class="co">#write midi file to disk</span></span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span><span class="fu">write_file</span>(<span class="st">"beat.mid"</span>)</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a><span class="do">#########</span></span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a><span class="co"># bounce to mp3 with fluid synth</span></span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>track_name <span class="ot">&lt;-</span> <span class="st">"beat"</span></span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>wav_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".wav"</span>)</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>midi_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mid"</span>)</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a>mp3_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mp3"</span>)</span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a><span class="co"># synthesize midi file to wav with fluid synth</span></span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>system_command <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}'</span>)</span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(system_command)</span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a><span class="co"># convert wav to mp3</span></span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>av<span class="sc">::</span><span class="fu">av_audio_convert</span>(wav_name,mp3_name)</span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a><span class="co"># clean up and delete wav</span></span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">file.exists</span>(wav_name)){</span>
+<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.remove</span>(wav_name)</span>
+<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="beat.mp3" type="audio/wav"> </audio></p>
+<p>A basic rock beat.</p>
+<hr>
+<p>Spent some time fiddling with this to see if I can get the beats to sounds like my <a href="https://vpme.de/euclidean-circles/">euclidean circles</a> eurorack module. Whatever I was doing wasn’t working, so I’m trying some other stuff.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(midiblender)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># import midi</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># using mario to get the midi headers</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># need to add a vanilla midi file to this package for easier importing</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>mario <span class="ot">&lt;-</span> <span class="fu">midi_to_object</span>(<span class="st">"all_overworld.mid"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">list2env</span>(mario, .GlobalEnv) <span class="co"># send objects to global environment</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>bars <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>notes <span class="ot">&lt;-</span> <span class="dv">128</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>ticks <span class="ot">&lt;-</span> <span class="dv">96</span><span class="sc">*</span><span class="dv">4</span><span class="sc">*</span>bars</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co"># empty beat matrix</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>beat_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,<span class="at">nrow=</span>notes,<span class="at">ncol=</span>ticks)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#assign kick beats</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>kick <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="dv">5</span>, <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>snare <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="dv">2</span>, <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>hihats <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="dv">13</span>, <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co"># assign to matrix</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>beat_matrix[(<span class="dv">36</span><span class="sc">+</span><span class="dv">1</span>),<span class="fu">seq</span>(<span class="dv">1</span>,ticks,ticks<span class="sc">/</span><span class="dv">16</span>)] <span class="ot">&lt;-</span> kick</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>beat_matrix[(<span class="dv">38</span><span class="sc">+</span><span class="dv">1</span>),<span class="fu">seq</span>(<span class="dv">1</span>,ticks,ticks<span class="sc">/</span><span class="dv">16</span>)] <span class="ot">&lt;-</span> snare</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>beat_matrix[(<span class="dv">42</span><span class="sc">+</span><span class="dv">1</span>),<span class="fu">seq</span>(<span class="dv">1</span>,ticks,ticks<span class="sc">/</span><span class="dv">16</span>)] <span class="ot">&lt;-</span> hihats</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>beat_matrix <span class="ot">&lt;-</span> <span class="fu">cbind</span>(beat_matrix,</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>                     beat_matrix,</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>                     beat_matrix,</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>                     beat_matrix)</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co"># transform back to midi</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>track_0 <span class="ot">&lt;-</span> <span class="fu">copy_midi_df_track</span>(midi_df,<span class="at">track_num =</span> <span class="dv">0</span>)</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>midi_time_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_time</span>(<span class="at">midi_matrix =</span> beat_matrix,</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">smallest_time_unit =</span> <span class="dv">1</span>,</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">note_off_length =</span> <span class="dv">8</span>)</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">get_midi_meta_df</span>(track_0)</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">set_midi_tempo_meta</span>(meta_messages_df,<span class="at">update_tempo =</span> <span class="dv">500000</span>)</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>split_meta_messages_df <span class="ot">&lt;-</span> <span class="fu">split_meta_df</span>(meta_messages_df)</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a>new_midi_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_track</span>(<span class="at">midi_time_df =</span> midi_time_df,</span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">split_meta_list =</span> split_meta_messages_df,</span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">channel =</span> <span class="dv">9</span>,</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">velocity =</span> <span class="dv">100</span>)</span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a><span class="do">#### bounce</span></span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a><span class="co"># update miditapyr df</span></span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span><span class="fu">update_unnested_mf</span>(new_midi_df)</span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a><span class="co">#write midi file to disk</span></span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span><span class="fu">write_file</span>(<span class="st">"beat_2.mid"</span>)</span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a><span class="do">#########</span></span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a><span class="co"># bounce to mp3 with fluid synth</span></span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a>track_name <span class="ot">&lt;-</span> <span class="st">"beat_2"</span></span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a>wav_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".wav"</span>)</span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a>midi_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mid"</span>)</span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a>mp3_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mp3"</span>)</span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a><span class="co"># synthesize midi file to wav with fluid synth</span></span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a>system_command <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}'</span>)</span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(system_command)</span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a><span class="co"># convert wav to mp3</span></span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a>av<span class="sc">::</span><span class="fu">av_audio_convert</span>(wav_name,mp3_name)</span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a><span class="co"># clean up and delete wav</span></span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">file.exists</span>(wav_name)){</span>
+<span id="cb8-74"><a href="#cb8-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.remove</span>(wav_name)</span>
+<span id="cb8-75"><a href="#cb8-75" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="beat_2.mp3" type="audio/wav"> </audio></p>
+<p>Nice, a little more intrigue, thanks to the euclidean rhythms. I need to spend way more time thinking about better ways to code this. Hmmm…so tempting to do one more.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(midiblender)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># import midi</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># using mario to get the midi headers</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># need to add a vanilla midi file to this package for easier importing</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>mario <span class="ot">&lt;-</span> <span class="fu">midi_to_object</span>(<span class="st">"all_overworld.mid"</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">list2env</span>(mario, .GlobalEnv) <span class="co"># send objects to global environment</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>bars <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>notes <span class="ot">&lt;-</span> <span class="dv">128</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>ticks <span class="ot">&lt;-</span> <span class="dv">96</span><span class="sc">*</span><span class="dv">4</span><span class="sc">*</span>bars</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>all_beat_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,<span class="at">nrow=</span>notes,<span class="at">ncol=</span><span class="dv">96</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>) {</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># empty beat matrix</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  beat_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> notes, <span class="at">ncol =</span> ticks)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="co">#assign kick beats</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  kick <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  snare <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  hihats <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">8</span><span class="sc">:</span><span class="dv">14</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># assign to matrix</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">36</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> kick</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">38</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> snare</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">42</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> hihats</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>  all_beat_matrix <span class="ot">&lt;-</span> <span class="fu">cbind</span>(all_beat_matrix, beat_matrix)</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="co"># transform back to midi</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>track_0 <span class="ot">&lt;-</span> <span class="fu">copy_midi_df_track</span>(midi_df,<span class="at">track_num =</span> <span class="dv">0</span>)</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>midi_time_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_time</span>(<span class="at">midi_matrix =</span> all_beat_matrix,</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">smallest_time_unit =</span> <span class="dv">1</span>,</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">note_off_length =</span> <span class="dv">8</span>)</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">get_midi_meta_df</span>(track_0)</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">set_midi_tempo_meta</span>(meta_messages_df,<span class="at">update_tempo =</span> <span class="dv">500000</span>)</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>split_meta_messages_df <span class="ot">&lt;-</span> <span class="fu">split_meta_df</span>(meta_messages_df)</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>new_midi_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_track</span>(<span class="at">midi_time_df =</span> midi_time_df,</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">split_meta_list =</span> split_meta_messages_df,</span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">channel =</span> <span class="dv">9</span>,</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">velocity =</span> <span class="dv">100</span>)</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a><span class="do">#### bounce</span></span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a><span class="co"># update miditapyr df</span></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span><span class="fu">update_unnested_mf</span>(new_midi_df)</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a><span class="co">#write midi file to disk</span></span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span><span class="fu">write_file</span>(<span class="st">"beat_3.mid"</span>)</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a><span class="do">#########</span></span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a><span class="co"># bounce to mp3 with fluid synth</span></span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>track_name <span class="ot">&lt;-</span> <span class="st">"beat_3"</span></span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>wav_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".wav"</span>)</span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>midi_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mid"</span>)</span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>mp3_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mp3"</span>)</span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a><span class="co"># synthesize midi file to wav with fluid synth</span></span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>system_command <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}'</span>)</span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(system_command)</span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a><span class="co"># convert wav to mp3</span></span>
+<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a>av<span class="sc">::</span><span class="fu">av_audio_convert</span>(wav_name,mp3_name)</span>
+<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a><span class="co"># clean up and delete wav</span></span>
+<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">file.exists</span>(wav_name)){</span>
+<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.remove</span>(wav_name)</span>
+<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><audio controls=""> <source src="beat_3.mp3" type="audio/wav"> </audio></p>
+<p>Cool, for this one I randomly chose the paramaters for the euclidean sources every bar. Not super groovy, but shows some of the variation you can get from euclidean rhythms. I’ll continue to mess with drums some other time.</p>
+</section>
+<section id="setting-notes-to-euclidean-rhythms" class="level2">
+<h2 class="anchored" data-anchor-id="setting-notes-to-euclidean-rhythms">Setting notes to euclidean rhythms</h2>
+<p>Before I try any of that information theory stuff, let’s see if I can set some notes to the euclidean rhythms.</p>
+<p>I have a roundabout strategy to do this and a sense it will blend. I’m going to take some inspiration from <a href="https://homophony.quest/blog/37_2_5_24_matrix_analysis/#alternative-note-and-time-feature-generation">this code</a>, that I used to generate new sequences from separate vectors for note probability and time probability.</p>
+<ol type="1">
+<li>Use euclidean rhythms to generate a bunch of possible time stamps, that should have some mildly OK rhythm.</li>
+<li>Get the point estimates for time steps to probabilistically generate rhythm later.</li>
+<li>Make a vector of note probabilities</li>
+<li>Put them together and listen to it.</li>
+</ol>
+<p>notes:</p>
+<ul>
+<li>realizing I don’t have a favorite way of picking individual notes</li>
+</ul>
+<hr>
+<p>test for one track 8 bars.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(midiblender)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># import midi</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co"># using mario to get the midi headers</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># need to add a vanilla midi file to this package for easier importing</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>mario <span class="ot">&lt;-</span> <span class="fu">midi_to_object</span>(<span class="st">"all_overworld.mid"</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">list2env</span>(mario, .GlobalEnv) <span class="co"># send objects to global environment</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample some beats for timesteps into the matrix</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>bars <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>notes <span class="ot">&lt;-</span> <span class="dv">128</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>ticks <span class="ot">&lt;-</span> <span class="dv">96</span><span class="sc">*</span><span class="dv">4</span><span class="sc">*</span>bars</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>all_beat_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,<span class="at">nrow=</span>notes,<span class="at">ncol=</span><span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>) {</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># empty beat matrix</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  beat_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> notes, <span class="at">ncol =</span> ticks)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  <span class="co">#assign kick beats</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>  kick <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>  snare <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>  hihats <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">8</span><span class="sc">:</span><span class="dv">16</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># assign to matrix</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">36</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> kick</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">38</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> snare</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">42</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> hihats</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>  all_beat_matrix <span class="ot">&lt;-</span> <span class="fu">cbind</span>(all_beat_matrix, beat_matrix)</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="co"># get the point estimates</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>time_probabilities <span class="ot">&lt;-</span> <span class="fu">colSums</span>(all_beat_matrix)<span class="sc">/</span><span class="fu">sum</span>(all_beat_matrix)</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>bar_probabilities <span class="ot">&lt;-</span> <span class="fu">matrix</span>(time_probabilities,</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>                            <span class="at">ncol=</span>(<span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>),</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>                            <span class="at">byrow =</span> T)</span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>bar_probabilities <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(bar_probabilities)</span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a><span class="co"># make my own midi notes df</span></span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a><span class="co"># add this to midiblender later</span></span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>midi_notes <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>midi_defs <span class="sc">%&gt;%</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">note_letter =</span> <span class="fu">unlist</span>(<span class="fu">strsplit</span>(<span class="fu">as.character</span>(note_name),<span class="st">"-"</span>))[<span class="dv">1</span>],</span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>         <span class="at">octave =</span> <span class="fu">unlist</span>(<span class="fu">strsplit</span>(<span class="fu">as.character</span>(note_name),<span class="st">"-"</span>))[<span class="dv">2</span>])</span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>midi_notes <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">notes =</span> <span class="fu">rep</span>(midi_notes[<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,]<span class="sc">$</span>note_letter,<span class="dv">11</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">128</span>],</span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>                     <span class="at">octaves =</span> <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>, <span class="at">each =</span> <span class="dv">12</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">128</span>],</span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>                     <span class="at">midi_number =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">127</span></span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>song <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,<span class="at">nrow=</span>notes,<span class="at">ncol=</span><span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>)</span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a><span class="co"># begin bar by bar composition loop</span></span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>){</span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get some notes to sample from fifths around a starting note</span></span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a>  starting_note <span class="ot">&lt;-</span> <span class="dv">60</span> <span class="co"># C4</span></span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a>  fifth_intervals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">14</span>, <span class="sc">-</span><span class="dv">7</span>, <span class="sc">-</span><span class="dv">14</span>)</span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>  notes_to_choose <span class="ot">&lt;-</span> starting_note <span class="sc">+</span> fifth_intervals</span>
+<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a>  octave_range <span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">5</span></span>
+<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a>  note_names <span class="ot">&lt;-</span> midi_notes <span class="sc">%&gt;%</span></span>
+<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(midi_number <span class="sc">%in%</span> notes_to_choose) <span class="sc">%&gt;%</span></span>
+<span id="cb10-70"><a href="#cb10-70" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(notes)</span>
+<span id="cb10-71"><a href="#cb10-71" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-72"><a href="#cb10-72" aria-hidden="true" tabindex="-1"></a>  possible_notes <span class="ot">&lt;-</span> midi_notes <span class="sc">%&gt;%</span></span>
+<span id="cb10-73"><a href="#cb10-73" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(notes <span class="sc">%in%</span> note_names <span class="sc">==</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-74"><a href="#cb10-74" aria-hidden="true" tabindex="-1"></a>           octaves <span class="sc">%in%</span> octave_range <span class="sc">==</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-75"><a href="#cb10-75" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-76"><a href="#cb10-76" aria-hidden="true" tabindex="-1"></a>  possible_notes <span class="ot">&lt;-</span> possible_notes <span class="sc">%&gt;%</span></span>
+<span id="cb10-77"><a href="#cb10-77" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">probs =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="fu">dim</span>(possible_notes)[<span class="dv">1</span>])</span>
+<span id="cb10-78"><a href="#cb10-78" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-79"><a href="#cb10-79" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create probability vector</span></span>
+<span id="cb10-80"><a href="#cb10-80" aria-hidden="true" tabindex="-1"></a>  pitch_probabilities <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">128</span>)</span>
+<span id="cb10-81"><a href="#cb10-81" aria-hidden="true" tabindex="-1"></a>  pitch_probabilities[possible_notes<span class="sc">$</span>midi_number <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span></span>
+<span id="cb10-82"><a href="#cb10-82" aria-hidden="true" tabindex="-1"></a>    possible_notes<span class="sc">$</span>probs</span>
+<span id="cb10-83"><a href="#cb10-83" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-84"><a href="#cb10-84" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get new pitches</span></span>
+<span id="cb10-85"><a href="#cb10-85" aria-hidden="true" tabindex="-1"></a>  new_pitches <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">length</span>(pitch_probabilities),</span>
+<span id="cb10-86"><a href="#cb10-86" aria-hidden="true" tabindex="-1"></a>                        <span class="at">size =</span> <span class="dv">32</span>,</span>
+<span id="cb10-87"><a href="#cb10-87" aria-hidden="true" tabindex="-1"></a>                        <span class="at">prob =</span> pitch_probabilities)</span>
+<span id="cb10-88"><a href="#cb10-88" aria-hidden="true" tabindex="-1"></a>  new_pitches[new_pitches <span class="sc">&gt;</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb10-89"><a href="#cb10-89" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-90"><a href="#cb10-90" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get new times</span></span>
+<span id="cb10-91"><a href="#cb10-91" aria-hidden="true" tabindex="-1"></a>  new_times <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">length</span>(bar_probabilities),</span>
+<span id="cb10-92"><a href="#cb10-92" aria-hidden="true" tabindex="-1"></a>                      <span class="at">size =</span> <span class="dv">256</span>,</span>
+<span id="cb10-93"><a href="#cb10-93" aria-hidden="true" tabindex="-1"></a>                      <span class="at">prob =</span> bar_probabilities)</span>
+<span id="cb10-94"><a href="#cb10-94" aria-hidden="true" tabindex="-1"></a>  <span class="co"># To Do: come back here and make it ok to have more than 1</span></span>
+<span id="cb10-95"><a href="#cb10-95" aria-hidden="true" tabindex="-1"></a>  new_times[new_times <span class="sc">&gt;</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb10-96"><a href="#cb10-96" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-97"><a href="#cb10-97" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get row column ids</span></span>
+<span id="cb10-98"><a href="#cb10-98" aria-hidden="true" tabindex="-1"></a>  sampled_notes <span class="ot">&lt;-</span> <span class="fu">which</span>(new_pitches <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb10-99"><a href="#cb10-99" aria-hidden="true" tabindex="-1"></a>  sampled_times <span class="ot">&lt;-</span> <span class="fu">which</span>(new_times <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb10-100"><a href="#cb10-100" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-101"><a href="#cb10-101" aria-hidden="true" tabindex="-1"></a>  <span class="co"># combine, make sure equal length</span></span>
+<span id="cb10-102"><a href="#cb10-102" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(sampled_notes) <span class="sc">&gt;=</span> <span class="fu">length</span>(sampled_times)) {</span>
+<span id="cb10-103"><a href="#cb10-103" aria-hidden="true" tabindex="-1"></a>    sampled_ids <span class="ot">&lt;-</span></span>
+<span id="cb10-104"><a href="#cb10-104" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tibble</span>(<span class="at">notes =</span> sampled_notes[<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(sampled_times)],</span>
+<span id="cb10-105"><a href="#cb10-105" aria-hidden="true" tabindex="-1"></a>             <span class="at">times =</span> sampled_times)</span>
+<span id="cb10-106"><a href="#cb10-106" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb10-107"><a href="#cb10-107" aria-hidden="true" tabindex="-1"></a>    sampled_ids <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">notes =</span> sampled_notes,</span>
+<span id="cb10-108"><a href="#cb10-108" aria-hidden="true" tabindex="-1"></a>                          <span class="at">times =</span> sampled_times[<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(sampled_notes)])</span>
+<span id="cb10-109"><a href="#cb10-109" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-110"><a href="#cb10-110" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-111"><a href="#cb10-111" aria-hidden="true" tabindex="-1"></a>  <span class="co"># shuffle the notes across the times so the sampling is uniform</span></span>
+<span id="cb10-112"><a href="#cb10-112" aria-hidden="true" tabindex="-1"></a>  sampled_ids<span class="sc">$</span>notes <span class="ot">&lt;-</span> <span class="fu">sample</span>(sampled_ids<span class="sc">$</span>notes)</span>
+<span id="cb10-113"><a href="#cb10-113" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-114"><a href="#cb10-114" aria-hidden="true" tabindex="-1"></a>  <span class="co"># make a note by time unit matrix</span></span>
+<span id="cb10-115"><a href="#cb10-115" aria-hidden="true" tabindex="-1"></a>  one_bar <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,</span>
+<span id="cb10-116"><a href="#cb10-116" aria-hidden="true" tabindex="-1"></a>                    <span class="at">nrow =</span> <span class="dv">128</span>,</span>
+<span id="cb10-117"><a href="#cb10-117" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ncol =</span> <span class="dv">96</span> <span class="sc">*</span> <span class="dv">4</span>)</span>
+<span id="cb10-118"><a href="#cb10-118" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-119"><a href="#cb10-119" aria-hidden="true" tabindex="-1"></a>  <span class="co"># assign 1s to note locations in time</span></span>
+<span id="cb10-120"><a href="#cb10-120" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(sampled_ids)[<span class="dv">1</span>]) {</span>
+<span id="cb10-121"><a href="#cb10-121" aria-hidden="true" tabindex="-1"></a>    one_bar[sampled_ids<span class="sc">$</span>notes[i], sampled_ids<span class="sc">$</span>times[i]] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb10-122"><a href="#cb10-122" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb10-123"><a href="#cb10-123" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-124"><a href="#cb10-124" aria-hidden="true" tabindex="-1"></a>  song <span class="ot">&lt;-</span> <span class="fu">cbind</span>(song,one_bar)</span>
+<span id="cb10-125"><a href="#cb10-125" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-126"><a href="#cb10-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-127"><a href="#cb10-127" aria-hidden="true" tabindex="-1"></a><span class="do">#####################</span></span>
+<span id="cb10-128"><a href="#cb10-128" aria-hidden="true" tabindex="-1"></a><span class="co"># transform back to midi</span></span>
+<span id="cb10-129"><a href="#cb10-129" aria-hidden="true" tabindex="-1"></a>track_0 <span class="ot">&lt;-</span> <span class="fu">copy_midi_df_track</span>(midi_df,<span class="at">track_num =</span> <span class="dv">0</span>)</span>
+<span id="cb10-130"><a href="#cb10-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-131"><a href="#cb10-131" aria-hidden="true" tabindex="-1"></a>midi_time_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_time</span>(<span class="at">midi_matrix =</span> song,</span>
+<span id="cb10-132"><a href="#cb10-132" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">smallest_time_unit =</span> <span class="dv">4</span>,</span>
+<span id="cb10-133"><a href="#cb10-133" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">note_off_length =</span> <span class="dv">32</span>)</span>
+<span id="cb10-134"><a href="#cb10-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-135"><a href="#cb10-135" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">get_midi_meta_df</span>(track_0)</span>
+<span id="cb10-136"><a href="#cb10-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-137"><a href="#cb10-137" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">set_midi_tempo_meta</span>(meta_messages_df,<span class="at">update_tempo =</span> <span class="dv">500000</span>)</span>
+<span id="cb10-138"><a href="#cb10-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-139"><a href="#cb10-139" aria-hidden="true" tabindex="-1"></a>split_meta_messages_df <span class="ot">&lt;-</span> <span class="fu">split_meta_df</span>(meta_messages_df)</span>
+<span id="cb10-140"><a href="#cb10-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-141"><a href="#cb10-141" aria-hidden="true" tabindex="-1"></a>new_midi_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_track</span>(<span class="at">midi_time_df =</span> midi_time_df,</span>
+<span id="cb10-142"><a href="#cb10-142" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">split_meta_list =</span> split_meta_messages_df,</span>
+<span id="cb10-143"><a href="#cb10-143" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">channel =</span> <span class="dv">0</span>,</span>
+<span id="cb10-144"><a href="#cb10-144" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">velocity =</span> <span class="dv">100</span>)</span>
+<span id="cb10-145"><a href="#cb10-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-146"><a href="#cb10-146" aria-hidden="true" tabindex="-1"></a><span class="do">#### bounce</span></span>
+<span id="cb10-147"><a href="#cb10-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-148"><a href="#cb10-148" aria-hidden="true" tabindex="-1"></a><span class="co"># update miditapyr df</span></span>
+<span id="cb10-149"><a href="#cb10-149" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span><span class="fu">update_unnested_mf</span>(new_midi_df)</span>
+<span id="cb10-150"><a href="#cb10-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-151"><a href="#cb10-151" aria-hidden="true" tabindex="-1"></a><span class="co">#write midi file to disk</span></span>
+<span id="cb10-152"><a href="#cb10-152" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span><span class="fu">write_file</span>(<span class="st">"fifths.mid"</span>)</span>
+<span id="cb10-153"><a href="#cb10-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-154"><a href="#cb10-154" aria-hidden="true" tabindex="-1"></a><span class="do">#########</span></span>
+<span id="cb10-155"><a href="#cb10-155" aria-hidden="true" tabindex="-1"></a><span class="co"># bounce to mp3 with fluid synth</span></span>
+<span id="cb10-156"><a href="#cb10-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-157"><a href="#cb10-157" aria-hidden="true" tabindex="-1"></a>track_name <span class="ot">&lt;-</span> <span class="st">"fifths"</span></span>
+<span id="cb10-158"><a href="#cb10-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-159"><a href="#cb10-159" aria-hidden="true" tabindex="-1"></a>wav_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".wav"</span>)</span>
+<span id="cb10-160"><a href="#cb10-160" aria-hidden="true" tabindex="-1"></a>midi_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mid"</span>)</span>
+<span id="cb10-161"><a href="#cb10-161" aria-hidden="true" tabindex="-1"></a>mp3_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mp3"</span>)</span>
+<span id="cb10-162"><a href="#cb10-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-163"><a href="#cb10-163" aria-hidden="true" tabindex="-1"></a><span class="co"># synthesize midi file to wav with fluid synth</span></span>
+<span id="cb10-164"><a href="#cb10-164" aria-hidden="true" tabindex="-1"></a>system_command <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}'</span>)</span>
+<span id="cb10-165"><a href="#cb10-165" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(system_command)</span>
+<span id="cb10-166"><a href="#cb10-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-167"><a href="#cb10-167" aria-hidden="true" tabindex="-1"></a><span class="co"># convert wav to mp3</span></span>
+<span id="cb10-168"><a href="#cb10-168" aria-hidden="true" tabindex="-1"></a>av<span class="sc">::</span><span class="fu">av_audio_convert</span>(wav_name,mp3_name)</span>
+<span id="cb10-169"><a href="#cb10-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-170"><a href="#cb10-170" aria-hidden="true" tabindex="-1"></a><span class="co"># clean up and delete wav</span></span>
+<span id="cb10-171"><a href="#cb10-171" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">file.exists</span>(wav_name)){</span>
+<span id="cb10-172"><a href="#cb10-172" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.remove</span>(wav_name)</span>
+<span id="cb10-173"><a href="#cb10-173" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>That worked, but it’s sounds like piano popcorn. Not worth sharing.</p>
+<hr>
+<p>I’ve increased number of loops here for multiple tracks. Each track has different note densities. The results are almost listenable, even more so if I put the midi tracks into ableton and give them some more interesting synth voices.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(midiblender)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># import midi</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># using mario to get the midi headers</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># need to add a vanilla midi file to this package for easier importing</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>mario <span class="ot">&lt;-</span> <span class="fu">midi_to_object</span>(<span class="st">"all_overworld.mid"</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="fu">list2env</span>(mario, .GlobalEnv) <span class="co"># send objects to global environment</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample some beats for timesteps into the matrix</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>bars <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>notes <span class="ot">&lt;-</span> <span class="dv">128</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>ticks <span class="ot">&lt;-</span> <span class="dv">96</span><span class="sc">*</span><span class="dv">4</span><span class="sc">*</span>bars</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>all_beat_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,<span class="at">nrow=</span>notes,<span class="at">ncol=</span><span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>) {</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># empty beat matrix</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  beat_matrix <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> notes, <span class="at">ncol =</span> ticks)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="co">#assign kick beats</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>  kick <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>  snare <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  hihats <span class="ot">&lt;-</span> <span class="fu">bresenham_euclidean</span>(<span class="fu">sample</span>(<span class="dv">8</span><span class="sc">:</span><span class="dv">16</span>,<span class="dv">1</span>), <span class="dv">16</span>, <span class="at">start =</span> <span class="dv">1</span>)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># assign to matrix</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">36</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> kick</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">38</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> snare</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>  beat_matrix[(<span class="dv">42</span> <span class="sc">+</span> <span class="dv">1</span>), <span class="fu">seq</span>(<span class="dv">1</span>, ticks, ticks <span class="sc">/</span> <span class="dv">16</span>)] <span class="ot">&lt;-</span> hihats</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>  all_beat_matrix <span class="ot">&lt;-</span> <span class="fu">cbind</span>(all_beat_matrix, beat_matrix)</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a><span class="co"># get the point estimates</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>time_probabilities <span class="ot">&lt;-</span> <span class="fu">colSums</span>(all_beat_matrix)<span class="sc">/</span><span class="fu">sum</span>(all_beat_matrix)</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>bar_probabilities <span class="ot">&lt;-</span> <span class="fu">matrix</span>(time_probabilities,</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>                            <span class="at">ncol=</span>(<span class="dv">96</span><span class="sc">*</span><span class="dv">4</span>),</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>                            <span class="at">byrow =</span> T)</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>bar_probabilities <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(bar_probabilities)</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a><span class="co"># make my own midi notes df</span></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a><span class="co"># add this to midiblender later</span></span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>midi_notes <span class="ot">&lt;-</span> pyramidi<span class="sc">::</span>midi_defs <span class="sc">%&gt;%</span></span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">note_letter =</span> <span class="fu">unlist</span>(<span class="fu">strsplit</span>(<span class="fu">as.character</span>(note_name),<span class="st">"-"</span>))[<span class="dv">1</span>],</span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>         <span class="at">octave =</span> <span class="fu">unlist</span>(<span class="fu">strsplit</span>(<span class="fu">as.character</span>(note_name),<span class="st">"-"</span>))[<span class="dv">2</span>])</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>midi_notes <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">notes =</span> <span class="fu">rep</span>(midi_notes[<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,]<span class="sc">$</span>note_letter,<span class="dv">11</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">128</span>],</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>                     <span class="at">octaves =</span> <span class="fu">rep</span>(<span class="sc">-</span><span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>, <span class="at">each =</span> <span class="dv">12</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">128</span>],</span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>                     <span class="at">midi_number =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">127</span></span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>all_track_midi <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>time_densities <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">256</span>,<span class="dv">128</span>,<span class="dv">64</span>)</span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a><span class="co"># track loop</span></span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>){</span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a>song <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,<span class="at">nrow=</span>notes,<span class="at">ncol=</span><span class="dv">1</span>)</span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a><span class="co"># begin bar by bar composition loop</span></span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">16</span>){</span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get some notes to sample from fifths around a starting note</span></span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>  starting_note <span class="ot">&lt;-</span> <span class="dv">60</span> <span class="co"># C4</span></span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a>  fifth_intervals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">7</span>, <span class="dv">14</span>, <span class="sc">-</span><span class="dv">7</span>, <span class="sc">-</span><span class="dv">14</span>)</span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a>  notes_to_choose <span class="ot">&lt;-</span> starting_note <span class="sc">+</span> fifth_intervals</span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a>  octave_range <span class="ot">&lt;-</span> <span class="dv">3</span><span class="sc">:</span><span class="dv">6</span></span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a>  note_names <span class="ot">&lt;-</span> midi_notes <span class="sc">%&gt;%</span></span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(midi_number <span class="sc">%in%</span> notes_to_choose) <span class="sc">%&gt;%</span></span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(notes)</span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a>  possible_notes <span class="ot">&lt;-</span> midi_notes <span class="sc">%&gt;%</span></span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(notes <span class="sc">%in%</span> note_names <span class="sc">==</span> <span class="cn">TRUE</span>,</span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a>           octaves <span class="sc">%in%</span> octave_range <span class="sc">==</span> <span class="cn">TRUE</span>)</span>
+<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>  possible_notes <span class="ot">&lt;-</span> possible_notes <span class="sc">%&gt;%</span></span>
+<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">probs =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="fu">dim</span>(possible_notes)[<span class="dv">1</span>])</span>
+<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a>  <span class="co"># create probability vector</span></span>
+<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a>  pitch_probabilities <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">128</span>)</span>
+<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a>  pitch_probabilities[possible_notes<span class="sc">$</span>midi_number <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span></span>
+<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>    possible_notes<span class="sc">$</span>probs</span>
+<span id="cb11-90"><a href="#cb11-90" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-91"><a href="#cb11-91" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get new pitches</span></span>
+<span id="cb11-92"><a href="#cb11-92" aria-hidden="true" tabindex="-1"></a>  new_pitches <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">length</span>(pitch_probabilities),</span>
+<span id="cb11-93"><a href="#cb11-93" aria-hidden="true" tabindex="-1"></a>                        <span class="at">size =</span> <span class="dv">32</span>,</span>
+<span id="cb11-94"><a href="#cb11-94" aria-hidden="true" tabindex="-1"></a>                        <span class="at">prob =</span> pitch_probabilities)</span>
+<span id="cb11-95"><a href="#cb11-95" aria-hidden="true" tabindex="-1"></a>  new_pitches[new_pitches <span class="sc">&gt;</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb11-96"><a href="#cb11-96" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-97"><a href="#cb11-97" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get new times</span></span>
+<span id="cb11-98"><a href="#cb11-98" aria-hidden="true" tabindex="-1"></a>  new_times <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">length</span>(bar_probabilities),</span>
+<span id="cb11-99"><a href="#cb11-99" aria-hidden="true" tabindex="-1"></a>                      <span class="at">size =</span> time_densities[t],</span>
+<span id="cb11-100"><a href="#cb11-100" aria-hidden="true" tabindex="-1"></a>                      <span class="at">prob =</span> bar_probabilities)</span>
+<span id="cb11-101"><a href="#cb11-101" aria-hidden="true" tabindex="-1"></a>  <span class="co"># To Do: come back here and make it ok to have more than 1</span></span>
+<span id="cb11-102"><a href="#cb11-102" aria-hidden="true" tabindex="-1"></a>  new_times[new_times <span class="sc">&gt;</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb11-103"><a href="#cb11-103" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-104"><a href="#cb11-104" aria-hidden="true" tabindex="-1"></a>  <span class="co"># get row column ids</span></span>
+<span id="cb11-105"><a href="#cb11-105" aria-hidden="true" tabindex="-1"></a>  sampled_notes <span class="ot">&lt;-</span> <span class="fu">which</span>(new_pitches <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb11-106"><a href="#cb11-106" aria-hidden="true" tabindex="-1"></a>  sampled_times <span class="ot">&lt;-</span> <span class="fu">which</span>(new_times <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb11-107"><a href="#cb11-107" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-108"><a href="#cb11-108" aria-hidden="true" tabindex="-1"></a>  <span class="co"># combine, make sure equal length</span></span>
+<span id="cb11-109"><a href="#cb11-109" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(sampled_notes) <span class="sc">&gt;=</span> <span class="fu">length</span>(sampled_times)) {</span>
+<span id="cb11-110"><a href="#cb11-110" aria-hidden="true" tabindex="-1"></a>    sampled_ids <span class="ot">&lt;-</span></span>
+<span id="cb11-111"><a href="#cb11-111" aria-hidden="true" tabindex="-1"></a>      <span class="fu">tibble</span>(<span class="at">notes =</span> sampled_notes[<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(sampled_times)],</span>
+<span id="cb11-112"><a href="#cb11-112" aria-hidden="true" tabindex="-1"></a>             <span class="at">times =</span> sampled_times)</span>
+<span id="cb11-113"><a href="#cb11-113" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb11-114"><a href="#cb11-114" aria-hidden="true" tabindex="-1"></a>    sampled_ids <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">notes =</span> sampled_notes,</span>
+<span id="cb11-115"><a href="#cb11-115" aria-hidden="true" tabindex="-1"></a>                          <span class="at">times =</span> sampled_times[<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(sampled_notes)])</span>
+<span id="cb11-116"><a href="#cb11-116" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-117"><a href="#cb11-117" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-118"><a href="#cb11-118" aria-hidden="true" tabindex="-1"></a>  <span class="co"># shuffle the notes across the times so the sampling is uniform</span></span>
+<span id="cb11-119"><a href="#cb11-119" aria-hidden="true" tabindex="-1"></a>  sampled_ids<span class="sc">$</span>notes <span class="ot">&lt;-</span> <span class="fu">sample</span>(sampled_ids<span class="sc">$</span>notes)</span>
+<span id="cb11-120"><a href="#cb11-120" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-121"><a href="#cb11-121" aria-hidden="true" tabindex="-1"></a>  <span class="co"># make a note by time unit matrix</span></span>
+<span id="cb11-122"><a href="#cb11-122" aria-hidden="true" tabindex="-1"></a>  one_bar <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>,</span>
+<span id="cb11-123"><a href="#cb11-123" aria-hidden="true" tabindex="-1"></a>                    <span class="at">nrow =</span> <span class="dv">128</span>,</span>
+<span id="cb11-124"><a href="#cb11-124" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ncol =</span> <span class="dv">96</span> <span class="sc">*</span> <span class="dv">4</span>)</span>
+<span id="cb11-125"><a href="#cb11-125" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-126"><a href="#cb11-126" aria-hidden="true" tabindex="-1"></a>  <span class="co"># assign 1s to note locations in time</span></span>
+<span id="cb11-127"><a href="#cb11-127" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (r <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(sampled_ids)[<span class="dv">1</span>]) {</span>
+<span id="cb11-128"><a href="#cb11-128" aria-hidden="true" tabindex="-1"></a>    one_bar[sampled_ids<span class="sc">$</span>notes[r], sampled_ids<span class="sc">$</span>times[r]] <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb11-129"><a href="#cb11-129" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-130"><a href="#cb11-130" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-131"><a href="#cb11-131" aria-hidden="true" tabindex="-1"></a>  song <span class="ot">&lt;-</span> <span class="fu">cbind</span>(song,one_bar)</span>
+<span id="cb11-132"><a href="#cb11-132" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-133"><a href="#cb11-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-134"><a href="#cb11-134" aria-hidden="true" tabindex="-1"></a><span class="do">#####################</span></span>
+<span id="cb11-135"><a href="#cb11-135" aria-hidden="true" tabindex="-1"></a><span class="co"># transform back to midi</span></span>
+<span id="cb11-136"><a href="#cb11-136" aria-hidden="true" tabindex="-1"></a>track_0 <span class="ot">&lt;-</span> <span class="fu">copy_midi_df_track</span>(midi_df,<span class="at">track_num =</span> <span class="dv">0</span>)</span>
+<span id="cb11-137"><a href="#cb11-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-138"><a href="#cb11-138" aria-hidden="true" tabindex="-1"></a>midi_time_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_time</span>(<span class="at">midi_matrix =</span> song,</span>
+<span id="cb11-139"><a href="#cb11-139" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">smallest_time_unit =</span> <span class="dv">1</span>,</span>
+<span id="cb11-140"><a href="#cb11-140" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">note_off_length =</span> <span class="dv">32</span>)</span>
+<span id="cb11-141"><a href="#cb11-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-142"><a href="#cb11-142" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">get_midi_meta_df</span>(track_0)</span>
+<span id="cb11-143"><a href="#cb11-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-144"><a href="#cb11-144" aria-hidden="true" tabindex="-1"></a>meta_messages_df <span class="ot">&lt;-</span> <span class="fu">set_midi_tempo_meta</span>(meta_messages_df,<span class="at">update_tempo =</span> <span class="dv">500000</span>)</span>
+<span id="cb11-145"><a href="#cb11-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-146"><a href="#cb11-146" aria-hidden="true" tabindex="-1"></a>split_meta_messages_df <span class="ot">&lt;-</span> <span class="fu">split_meta_df</span>(meta_messages_df)</span>
+<span id="cb11-147"><a href="#cb11-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-148"><a href="#cb11-148" aria-hidden="true" tabindex="-1"></a>new_midi_df <span class="ot">&lt;-</span> <span class="fu">matrix_to_midi_track</span>(<span class="at">midi_time_df =</span> midi_time_df,</span>
+<span id="cb11-149"><a href="#cb11-149" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">split_meta_list =</span> split_meta_messages_df,</span>
+<span id="cb11-150"><a href="#cb11-150" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">channel =</span> <span class="dv">0</span>,</span>
+<span id="cb11-151"><a href="#cb11-151" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">velocity =</span> <span class="dv">100</span>)</span>
+<span id="cb11-152"><a href="#cb11-152" aria-hidden="true" tabindex="-1"></a>new_midi_df <span class="ot">&lt;-</span> new_midi_df <span class="sc">%&gt;%</span></span>
+<span id="cb11-153"><a href="#cb11-153" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">i_track =</span> t)</span>
+<span id="cb11-154"><a href="#cb11-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-155"><a href="#cb11-155" aria-hidden="true" tabindex="-1"></a>all_track_midi <span class="ot">&lt;-</span> <span class="fu">rbind</span>(all_track_midi,</span>
+<span id="cb11-156"><a href="#cb11-156" aria-hidden="true" tabindex="-1"></a>                        new_midi_df)</span>
+<span id="cb11-157"><a href="#cb11-157" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-158"><a href="#cb11-158" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-159"><a href="#cb11-159" aria-hidden="true" tabindex="-1"></a><span class="do">#### bounce</span></span>
+<span id="cb11-160"><a href="#cb11-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-161"><a href="#cb11-161" aria-hidden="true" tabindex="-1"></a><span class="co"># update miditapyr df</span></span>
+<span id="cb11-162"><a href="#cb11-162" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span>midi_frame_unnested<span class="sc">$</span><span class="fu">update_unnested_mf</span>(all_track_midi)</span>
+<span id="cb11-163"><a href="#cb11-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-164"><a href="#cb11-164" aria-hidden="true" tabindex="-1"></a><span class="co">#write midi file to disk</span></span>
+<span id="cb11-165"><a href="#cb11-165" aria-hidden="true" tabindex="-1"></a>miditapyr_object<span class="sc">$</span><span class="fu">write_file</span>(<span class="st">"fifths_tracks.mid"</span>)</span>
+<span id="cb11-166"><a href="#cb11-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-167"><a href="#cb11-167" aria-hidden="true" tabindex="-1"></a><span class="do">#########</span></span>
+<span id="cb11-168"><a href="#cb11-168" aria-hidden="true" tabindex="-1"></a><span class="co"># bounce to mp3 with fluid synth</span></span>
+<span id="cb11-169"><a href="#cb11-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-170"><a href="#cb11-170" aria-hidden="true" tabindex="-1"></a>track_name <span class="ot">&lt;-</span> <span class="st">"fifths"</span></span>
+<span id="cb11-171"><a href="#cb11-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-172"><a href="#cb11-172" aria-hidden="true" tabindex="-1"></a>wav_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".wav"</span>)</span>
+<span id="cb11-173"><a href="#cb11-173" aria-hidden="true" tabindex="-1"></a>midi_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mid"</span>)</span>
+<span id="cb11-174"><a href="#cb11-174" aria-hidden="true" tabindex="-1"></a>mp3_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mp3"</span>)</span>
+<span id="cb11-175"><a href="#cb11-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-176"><a href="#cb11-176" aria-hidden="true" tabindex="-1"></a><span class="co"># synthesize midi file to wav with fluid synth</span></span>
+<span id="cb11-177"><a href="#cb11-177" aria-hidden="true" tabindex="-1"></a>system_command <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}'</span>)</span>
+<span id="cb11-178"><a href="#cb11-178" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(system_command)</span>
+<span id="cb11-179"><a href="#cb11-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-180"><a href="#cb11-180" aria-hidden="true" tabindex="-1"></a><span class="co"># convert wav to mp3</span></span>
+<span id="cb11-181"><a href="#cb11-181" aria-hidden="true" tabindex="-1"></a>av<span class="sc">::</span><span class="fu">av_audio_convert</span>(wav_name,mp3_name)</span>
+<span id="cb11-182"><a href="#cb11-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-183"><a href="#cb11-183" aria-hidden="true" tabindex="-1"></a><span class="co"># clean up and delete wav</span></span>
+<span id="cb11-184"><a href="#cb11-184" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">file.exists</span>(wav_name)){</span>
+<span id="cb11-185"><a href="#cb11-185" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.remove</span>(wav_name)</span>
+<span id="cb11-186"><a href="#cb11-186" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>This was fun, even if my eyes are bleeding from the wall of code. I put the three tracks generated here into Ableton, assigned them some synth voices, added a couple drum beats, slowed down the tempo, and it sounds like this:</p>
+<p><strong>This one is louder than the others, not super loud, but louder</strong></p>
+<p><audio controls=""> <source src="fifths_3_track.mp3" type="audio/wav"> </audio></p>
+<p>I didn’t get to all of my goals. I still need to come back and change the probability of different notes so they aren’t uniform. Right now all the pitches were uniformly sampled each time. The result is OK, but I want to hear other versions sampled from non-uniform distributions.</p>
+<p>At this point I think I’ve basically recreated something like what Marbles by Mutable Instruments is doing. I could have probably done this in eurorack. And, that would have been fun too.</p>
+<p>Time to take a break.</p>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-toussaint2005" class="csl-entry" role="listitem">
+Toussaint, Godfried. 2005. <span>“The Euclidean Algorithm Generates Traditional Musical Rhythms.”</span> In, 4756. <a href="https://archive.bridgesmathart.org/2005/bridges2005-47.html">https://archive.bridgesmathart.org/2005/bridges2005-47.html</a>.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="CrumpLab/crumplab_comments" data-repo-id="R_kgDOJ0QrEQ" data-category="General" data-category-id="DIC_kwDOJ0QrEc4CXety" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark">
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+<p>Brought to you by Homophony, 2023</p>
+</a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://quarto.org">
+<p>Published with Quarto</p>
+</a>
+  </li>  
+</ul>
+    </div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

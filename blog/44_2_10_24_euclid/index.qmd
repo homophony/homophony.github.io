@@ -1,0 +1,823 @@
+---
+title: "Euclidean Rhythms and circulating sequences with information theory concepts"
+author: "Matt Crump"
+date: 2/10/24
+description: "Probably biting off more than I can chew here. A saturday experiment in MIDI mangling."
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - midiblender
+  - euclidean rhythms
+  - information theory
+execute: 
+  echo: true
+  message: false
+  warning: false
+format:
+  html:
+    code-fold: true
+bibliography: references.bib
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "A computer drumming. synthesizer drum. Drum beats. probabilistic drums. information theory. Euclid. Math. Drum machines everywhere. background is a room full of drum machines. Rhythm. drums. Transformers cartoon. retro 80s."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+A computer drumming. synthesizer drum. Drum beats. probabilistic drums. information theory. Euclid. Math. Drum machines everywhere. background is a room full of drum machines. Rhythm. drums. Transformers cartoon. retro 80s. - dreamshaper
+:::
+
+```{r}
+#| echo: false
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+This is another exploratory post. I'm planning to use [midiblender](https://www.crumplab.com/midiblender/) for a few things in the future. One of them is to generate stimuli for musical recognition tasks. The others are mostly fooling around. This here is a bit of both.
+
+I've been practicing the following kinds of patterns on piano, and I've been thinking about coding them as a generative sequence algorithm. I'll start playing around on a single note, like C major, and then slowly add notes from the circle of fifths around the note I'm playing. I'll bring in F and G, which gives a very Csus feel. And, then I'll go out even more, add a Bb and D. These fifths are symmetrical about C. Sometimes I'll go a bit lopsided, maybe add an A into the mix, and feel it out as I play.
+Another way to look at this is that I'm playing some group of notes from the circle of fifths, like {Bb, F, C, G, D}. I could expand the collection by adding more notes, or reduce the collection by taking some away. Sometimes I rotate around the circle, etc. It's fun to play on piano.
+
+One goal for this post is to get an algorithm that does something like the above. Just wanders around the cycle of fifths, expands and contracts the collection of notes to play, and then spits them out in an interesting rhythm.
+
+But, what rhythm should I code in here? Euclidean Rhythms to the rescue. They mostly sound fine. Not the most super interesting rhythms ever, but very fine. If you don't know what they are, [this was a good post](https://medium.com/code-music-noise/euclidean-rhythms-391d879494df) describing them, and it also had some code I modified to make a Euclidean Rhythms algorithm for R. I use these rhythms all the time in modular synthesis. So, part of this post is about getting them into {midiblender}.
+
+Ideally I would have a bunch of midi notes spread about in euclidean rhythms, and I could assign pitches to those notes using some kind of circle of fifths algorithm. Enter the last part of the equation, concepts from information theory.
+
+Information theory provides an equation to measure the variance of a discrete probability distribution. It's called [Shannon entropy](https://en.wikipedia.org/wiki/Entropy_(information_theory)), and I won't go into the details here too much. Actually, I doubt I will use the equation for this. It's the concept of variation in a probability distribution that I'm interested in.
+
+A uniform probability distribution has no variance. All of the elements in the distribution have an equal likelihood of occurrence. I could use a uniform distribution to randomly pick notes from a collection like {Bb, F, C, G, D}, and sequences produced from that distribution would have 100% entropy. Another option is to bias the probabilities so that some of the notes are more probable than others in the set. These kinds of sequences have less entropy and are more predictable.
+
+Musical sequences usually don't look like they come from a uniform distribution, often times some notes repeat more often than others. In terms of generating sequences with {midiblender}, I'd like some control over the variance of the probability distribution that is controlling note occurrences. Ideally, I would have an entropy knob on my eurorack somewhere that did all of this.
+
+Those are the basic ideas. I'm going to code some stuff and see what happens.
+
+## Euclidean Rhythms in R
+
+Here's a function that creates Euclidean rhythms in R. Again, thanks to Jeff Holtzkener for a great [run down on this algorithm](https://medium.com/code-music-noise/euclidean-rhythms-391d879494df). To give some more credit, Euclidean rhythms were coined by Godfried Toussaint [@toussaint2005], and his paper is available [here](https://archive.bridgesmathart.org/2005/bridges2005-47.pdf).
+
+The basic idea for the algorithm is to find a way to spread beats evenly through a set of time steps. 4 beats goes into 16 steps very evenly, 1 beat every 4 steps. But, how does one space 5 beats into 13 steps. The algorithm finds some nice solutions that happen to also sound good as rhythms. I learned from the Holtzkener post that [Bresenham's line algorithm](https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm) (for raster scans), also works to compute Euclidean Rhythms, so I use that equation here.
+
+```{r}
+#| code-fold: show
+bresenham_euclidean <- function(beats, steps, start = 1) {
+  previous <- start
+  pattern <- c()
+  
+  for (i in 0:(steps-1)) {
+    xVal <- floor((beats / steps) * (i))
+    pattern <- c(pattern, ifelse(xVal == previous, 0, 1))
+    previous <- xVal
+  }
+  
+  return(pattern)
+}
+
+```
+
+Here's a 4 on the floor:
+
+```{r}
+#| code-fold: show
+bresenham_euclidean(beats = 4, steps = 16, start = 1) 
+```
+
+Here's 7 beats over 16 steps:
+
+```{r}
+#| code-fold: show
+bresenham_euclidean(beats = 7, steps = 16, start = 1) 
+```
+
+Great it seems to work. I'm tempted to go in a completely different direction and do some killer beats with {midiblender}, but that is too exciting. I will be back one day for the killer beats.
+
+Screw it, what is this blog if not a series of digressions. I think I've got enough breadcrumbs to lay down a beat quickly (fingers crossed).
+
+::: {.callout-note}
+The mp3s sometimes take a bit to load, especially the longer ones.
+:::
+
+## A basic drum beat
+
+The metric structure for the beat should be easy. I just need to figure out which midi notes are which for the drum sounds.
+
+notes:
+
+- channel 9 from FluidR3_GM.sf2
+- percussion map <https://usermanuals.finalemusic.com/SongWriter2012Win/Content/PercussionMaps.htm>
+
+kick = 36
+snare = 38
+hihats = 42
+
+Let's do 4 bars or something like that.
+
+```{r, eval = FALSE}
+library(midiblender)
+# import midi
+# using mario to get the midi headers
+# need to add a vanilla midi file to this package for easier importing
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+
+bars <- 8
+notes <- 128
+ticks <- 96*4*bars
+
+# empty beat matrix
+beat_matrix <- matrix(0,nrow=notes,ncol=ticks)
+
+#assign kick beats
+kick <- bresenham_euclidean(4*bars,ticks, start = 0)
+snare <- bresenham_euclidean(2*bars,ticks, start = 0)
+hihats <- bresenham_euclidean(16*bars,ticks, start = 0)
+
+# assign to matrix
+beat_matrix[(36+1),] <- kick
+beat_matrix[(38+1),] <- snare
+beat_matrix[(42+1),] <- hihats
+
+
+# transform back to midi
+track_0 <- copy_midi_df_track(midi_df,track_num = 0)
+
+midi_time_df <- matrix_to_midi_time(midi_matrix = beat_matrix,
+                                    smallest_time_unit = 1,
+                                    note_off_length = 8)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 500000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 9,
+                                    velocity = 100)
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+#write midi file to disk
+miditapyr_object$write_file("beat.mid")
+
+#########
+# bounce to mp3 with fluid synth
+
+track_name <- "beat"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+```
+`r html_tag_audio("beat.mp3", type = "wav")`
+
+A basic rock beat. 
+
+----------------
+
+Spent some time fiddling with this to see if I can get the beats to sounds like my [euclidean circles](https://vpme.de/euclidean-circles/) eurorack module. Whatever I was doing wasn't working, so I'm trying some other stuff.
+
+```{r, eval = FALSE}
+library(midiblender)
+# import midi
+# using mario to get the midi headers
+# need to add a vanilla midi file to this package for easier importing
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+
+bars <- 1
+notes <- 128
+ticks <- 96*4*bars
+
+# empty beat matrix
+beat_matrix <- matrix(0,nrow=notes,ncol=ticks)
+
+#assign kick beats
+kick <- bresenham_euclidean(5, 16, start = 1)
+snare <- bresenham_euclidean(2, 16, start = 1)
+hihats <- bresenham_euclidean(13, 16, start = 1)
+
+# assign to matrix
+beat_matrix[(36+1),seq(1,ticks,ticks/16)] <- kick
+beat_matrix[(38+1),seq(1,ticks,ticks/16)] <- snare
+beat_matrix[(42+1),seq(1,ticks,ticks/16)] <- hihats
+
+beat_matrix <- cbind(beat_matrix,
+                     beat_matrix,
+                     beat_matrix,
+                     beat_matrix)
+
+# transform back to midi
+track_0 <- copy_midi_df_track(midi_df,track_num = 0)
+
+midi_time_df <- matrix_to_midi_time(midi_matrix = beat_matrix,
+                                    smallest_time_unit = 1,
+                                    note_off_length = 8)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 500000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 9,
+                                    velocity = 100)
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+#write midi file to disk
+miditapyr_object$write_file("beat_2.mid")
+
+#########
+# bounce to mp3 with fluid synth
+
+track_name <- "beat_2"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+```
+`r html_tag_audio("beat_2.mp3", type = "wav")`
+
+Nice, a little more intrigue, thanks to the euclidean rhythms. I need to spend way more time thinking about better ways to code this. Hmmm...so tempting to do one more.
+
+```{r, eval = FALSE}
+library(midiblender)
+# import midi
+# using mario to get the midi headers
+# need to add a vanilla midi file to this package for easier importing
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+
+bars <- 1
+notes <- 128
+ticks <- 96*4*bars
+
+all_beat_matrix <- matrix(0,nrow=notes,ncol=96)
+
+for(i in 1:8) {
+  # empty beat matrix
+  beat_matrix <- matrix(0, nrow = notes, ncol = ticks)
+  
+  #assign kick beats
+  kick <- bresenham_euclidean(sample(2:7,1), 16, start = 1)
+  snare <- bresenham_euclidean(sample(2:7,1), 16, start = 1)
+  hihats <- bresenham_euclidean(sample(8:14,1), 16, start = 1)
+  
+  # assign to matrix
+  beat_matrix[(36 + 1), seq(1, ticks, ticks / 16)] <- kick
+  beat_matrix[(38 + 1), seq(1, ticks, ticks / 16)] <- snare
+  beat_matrix[(42 + 1), seq(1, ticks, ticks / 16)] <- hihats
+  
+  all_beat_matrix <- cbind(all_beat_matrix, beat_matrix)
+}
+
+# transform back to midi
+track_0 <- copy_midi_df_track(midi_df,track_num = 0)
+
+midi_time_df <- matrix_to_midi_time(midi_matrix = all_beat_matrix,
+                                    smallest_time_unit = 1,
+                                    note_off_length = 8)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 500000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 9,
+                                    velocity = 100)
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+#write midi file to disk
+miditapyr_object$write_file("beat_3.mid")
+
+#########
+# bounce to mp3 with fluid synth
+
+track_name <- "beat_3"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+```
+
+`r html_tag_audio("beat_3.mp3", type = "wav")`
+
+Cool, for this one I randomly chose the paramaters for the euclidean sources every bar. Not super groovy, but shows some of the variation you can get from euclidean rhythms. I'll continue to mess with drums some other time.
+
+## Setting notes to euclidean rhythms
+
+Before I try any of that information theory stuff, let's see if I can set some notes to the euclidean rhythms.
+
+I have a roundabout strategy to do this and a sense it will blend. I'm going to take some inspiration from [this code](https://homophony.quest/blog/37_2_5_24_matrix_analysis/#alternative-note-and-time-feature-generation), that I used to generate new sequences from separate vectors for note probability and time probability.
+
+1. Use euclidean rhythms to generate a bunch of possible time stamps, that should have some mildly OK rhythm.
+2. Get the point estimates for time steps to probabilistically generate rhythm later.
+3. Make a vector of note probabilities
+4. Put them together and listen to it.
+
+notes:
+
+- realizing I don't have a favorite way of picking individual notes
+
+------------
+
+test for one track 8 bars.
+
+```{r, eval=FALSE}
+library(midiblender)
+library(dplyr)
+library(tibble)
+# import midi
+# using mario to get the midi headers
+# need to add a vanilla midi file to this package for easier importing
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+
+
+# Sample some beats for timesteps into the matrix
+bars <- 1
+notes <- 128
+ticks <- 96*4*bars
+
+all_beat_matrix <- matrix(0,nrow=notes,ncol=96*4)
+
+for(i in 1:8) {
+  # empty beat matrix
+  beat_matrix <- matrix(0, nrow = notes, ncol = ticks)
+  
+  #assign kick beats
+  kick <- bresenham_euclidean(sample(2:7,1), 16, start = 1)
+  snare <- bresenham_euclidean(sample(2:7,1), 16, start = 1)
+  hihats <- bresenham_euclidean(sample(8:16,1), 16, start = 1)
+  
+  # assign to matrix
+  beat_matrix[(36 + 1), seq(1, ticks, ticks / 16)] <- kick
+  beat_matrix[(38 + 1), seq(1, ticks, ticks / 16)] <- snare
+  beat_matrix[(42 + 1), seq(1, ticks, ticks / 16)] <- hihats
+  
+  all_beat_matrix <- cbind(all_beat_matrix, beat_matrix)
+}
+
+# get the point estimates
+time_probabilities <- colSums(all_beat_matrix)/sum(all_beat_matrix)
+
+bar_probabilities <- matrix(time_probabilities,
+                            ncol=(96*4),
+                            byrow = T)
+
+bar_probabilities <- colMeans(bar_probabilities)
+
+# make my own midi notes df
+# add this to midiblender later
+midi_notes <- pyramidi::midi_defs %>%
+  rowwise() %>%
+  mutate(note_letter = unlist(strsplit(as.character(note_name),"-"))[1],
+         octave = unlist(strsplit(as.character(note_name),"-"))[2])
+
+midi_notes <- tibble(notes = rep(midi_notes[1:12,]$note_letter,11)[1:128],
+                     octaves = rep(-1:9, each = 12)[1:128],
+                     midi_number = 0:127
+)
+
+song <- matrix(0,nrow=notes,ncol=96*4)
+
+# begin bar by bar composition loop
+
+for(i in 1:8){
+
+  # get some notes to sample from fifths around a starting note
+  starting_note <- 60 # C4
+  fifth_intervals <- c(0, 7, 14, -7, -14)
+  notes_to_choose <- starting_note + fifth_intervals
+  octave_range <- 2:5
+  
+  note_names <- midi_notes %>%
+    filter(midi_number %in% notes_to_choose) %>%
+    pull(notes)
+  
+  possible_notes <- midi_notes %>%
+    filter(notes %in% note_names == TRUE,
+           octaves %in% octave_range == TRUE)
+  
+  possible_notes <- possible_notes %>%
+    mutate(probs = 1 / dim(possible_notes)[1])
+  
+  # create probability vector
+  pitch_probabilities <- rep(0, 128)
+  pitch_probabilities[possible_notes$midi_number + 1] <-
+    possible_notes$probs
+  
+  # get new pitches
+  new_pitches <- rbinom(n = length(pitch_probabilities),
+                        size = 32,
+                        prob = pitch_probabilities)
+  new_pitches[new_pitches > 1] <- 1
+  
+  # get new times
+  new_times <- rbinom(n = length(bar_probabilities),
+                      size = 256,
+                      prob = bar_probabilities)
+  # To Do: come back here and make it ok to have more than 1
+  new_times[new_times > 1] <- 1
+  
+  # get row column ids
+  sampled_notes <- which(new_pitches == 1)
+  sampled_times <- which(new_times == 1)
+  
+  # combine, make sure equal length
+  if (length(sampled_notes) >= length(sampled_times)) {
+    sampled_ids <-
+      tibble(notes = sampled_notes[1:length(sampled_times)],
+             times = sampled_times)
+  } else {
+    sampled_ids <- tibble(notes = sampled_notes,
+                          times = sampled_times[1:length(sampled_notes)])
+  }
+  
+  # shuffle the notes across the times so the sampling is uniform
+  sampled_ids$notes <- sample(sampled_ids$notes)
+  
+  # make a note by time unit matrix
+  one_bar <- matrix(0,
+                    nrow = 128,
+                    ncol = 96 * 4)
+  
+  # assign 1s to note locations in time
+  for (i in 1:dim(sampled_ids)[1]) {
+    one_bar[sampled_ids$notes[i], sampled_ids$times[i]] <- 1
+  }
+  
+  song <- cbind(song,one_bar)
+}
+
+#####################
+# transform back to midi
+track_0 <- copy_midi_df_track(midi_df,track_num = 0)
+
+midi_time_df <- matrix_to_midi_time(midi_matrix = song,
+                                    smallest_time_unit = 4,
+                                    note_off_length = 32)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 500000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 0,
+                                    velocity = 100)
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+#write midi file to disk
+miditapyr_object$write_file("fifths.mid")
+
+#########
+# bounce to mp3 with fluid synth
+
+track_name <- "fifths"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+```
+
+That worked, but it's sounds like piano popcorn. Not worth sharing.
+
+------
+
+I've increased number of loops here for multiple tracks. Each track has different note densities. The results are almost listenable, even more so if I put the midi tracks into ableton and give them some more interesting synth voices.
+
+```{r, eval=FALSE}
+library(midiblender)
+library(dplyr)
+library(tibble)
+# import midi
+# using mario to get the midi headers
+# need to add a vanilla midi file to this package for easier importing
+mario <- midi_to_object("all_overworld.mid")
+list2env(mario, .GlobalEnv) # send objects to global environment
+
+
+# Sample some beats for timesteps into the matrix
+bars <- 1
+notes <- 128
+ticks <- 96*4*bars
+
+all_beat_matrix <- matrix(0,nrow=notes,ncol=96*4)
+
+for(i in 1:8) {
+  # empty beat matrix
+  beat_matrix <- matrix(0, nrow = notes, ncol = ticks)
+  
+  #assign kick beats
+  kick <- bresenham_euclidean(sample(2:7,1), 16, start = 1)
+  snare <- bresenham_euclidean(sample(2:7,1), 16, start = 1)
+  hihats <- bresenham_euclidean(sample(8:16,1), 16, start = 1)
+  
+  # assign to matrix
+  beat_matrix[(36 + 1), seq(1, ticks, ticks / 16)] <- kick
+  beat_matrix[(38 + 1), seq(1, ticks, ticks / 16)] <- snare
+  beat_matrix[(42 + 1), seq(1, ticks, ticks / 16)] <- hihats
+  
+  all_beat_matrix <- cbind(all_beat_matrix, beat_matrix)
+}
+
+# get the point estimates
+time_probabilities <- colSums(all_beat_matrix)/sum(all_beat_matrix)
+
+bar_probabilities <- matrix(time_probabilities,
+                            ncol=(96*4),
+                            byrow = T)
+
+bar_probabilities <- colMeans(bar_probabilities)
+
+# make my own midi notes df
+# add this to midiblender later
+midi_notes <- pyramidi::midi_defs %>%
+  rowwise() %>%
+  mutate(note_letter = unlist(strsplit(as.character(note_name),"-"))[1],
+         octave = unlist(strsplit(as.character(note_name),"-"))[2])
+
+midi_notes <- tibble(notes = rep(midi_notes[1:12,]$note_letter,11)[1:128],
+                     octaves = rep(-1:9, each = 12)[1:128],
+                     midi_number = 0:127
+)
+
+all_track_midi <- data.frame()
+
+time_densities <- c(256,128,64)
+
+# track loop
+for(t in 1:3){
+
+song <- matrix(0,nrow=notes,ncol=1)
+
+# begin bar by bar composition loop
+
+for(i in 1:16){
+
+  # get some notes to sample from fifths around a starting note
+  starting_note <- 60 # C4
+  fifth_intervals <- c(0, 7, 14, -7, -14)
+  notes_to_choose <- starting_note + fifth_intervals
+  octave_range <- 3:6
+  
+  note_names <- midi_notes %>%
+    filter(midi_number %in% notes_to_choose) %>%
+    pull(notes)
+  
+  possible_notes <- midi_notes %>%
+    filter(notes %in% note_names == TRUE,
+           octaves %in% octave_range == TRUE)
+  
+  possible_notes <- possible_notes %>%
+    mutate(probs = 1 / dim(possible_notes)[1])
+  
+  # create probability vector
+  pitch_probabilities <- rep(0, 128)
+  pitch_probabilities[possible_notes$midi_number + 1] <-
+    possible_notes$probs
+  
+  # get new pitches
+  new_pitches <- rbinom(n = length(pitch_probabilities),
+                        size = 32,
+                        prob = pitch_probabilities)
+  new_pitches[new_pitches > 1] <- 1
+  
+  # get new times
+  new_times <- rbinom(n = length(bar_probabilities),
+                      size = time_densities[t],
+                      prob = bar_probabilities)
+  # To Do: come back here and make it ok to have more than 1
+  new_times[new_times > 1] <- 1
+  
+  # get row column ids
+  sampled_notes <- which(new_pitches == 1)
+  sampled_times <- which(new_times == 1)
+  
+  # combine, make sure equal length
+  if (length(sampled_notes) >= length(sampled_times)) {
+    sampled_ids <-
+      tibble(notes = sampled_notes[1:length(sampled_times)],
+             times = sampled_times)
+  } else {
+    sampled_ids <- tibble(notes = sampled_notes,
+                          times = sampled_times[1:length(sampled_notes)])
+  }
+  
+  # shuffle the notes across the times so the sampling is uniform
+  sampled_ids$notes <- sample(sampled_ids$notes)
+  
+  # make a note by time unit matrix
+  one_bar <- matrix(0,
+                    nrow = 128,
+                    ncol = 96 * 4)
+  
+  # assign 1s to note locations in time
+  for (r in 1:dim(sampled_ids)[1]) {
+    one_bar[sampled_ids$notes[r], sampled_ids$times[r]] <- 1
+  }
+  
+  song <- cbind(song,one_bar)
+}
+
+#####################
+# transform back to midi
+track_0 <- copy_midi_df_track(midi_df,track_num = 0)
+
+midi_time_df <- matrix_to_midi_time(midi_matrix = song,
+                                    smallest_time_unit = 1,
+                                    note_off_length = 32)
+
+meta_messages_df <- get_midi_meta_df(track_0)
+
+meta_messages_df <- set_midi_tempo_meta(meta_messages_df,update_tempo = 500000)
+
+split_meta_messages_df <- split_meta_df(meta_messages_df)
+
+new_midi_df <- matrix_to_midi_track(midi_time_df = midi_time_df,
+                                    split_meta_list = split_meta_messages_df,
+                                    channel = 0,
+                                    velocity = 100)
+new_midi_df <- new_midi_df %>%
+  mutate(i_track = t)
+
+all_track_midi <- rbind(all_track_midi,
+                        new_midi_df)
+}
+
+#### bounce
+
+# update miditapyr df
+miditapyr_object$midi_frame_unnested$update_unnested_mf(all_track_midi)
+
+#write midi file to disk
+miditapyr_object$write_file("fifths_tracks.mid")
+
+#########
+# bounce to mp3 with fluid synth
+
+track_name <- "fifths"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- paste0(track_name,".mid")
+mp3_name <- paste0(track_name,".mp3")
+
+# synthesize midi file to wav with fluid synth
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+# convert wav to mp3
+av::av_audio_convert(wav_name,mp3_name)
+
+# clean up and delete wav
+if(file.exists(wav_name)){
+  file.remove(wav_name)
+}
+
+```
+
+This was fun, even if my eyes are bleeding from the wall of code. I put the three tracks generated here into Ableton, assigned them some synth voices, added a couple drum beats, slowed down the tempo, and it sounds like this:
+
+**This one is louder than the others, not super loud, but louder**
+
+`r html_tag_audio("fifths_3_track.mp3", type = "wav")`
+
+I didn't get to all of my goals. I still need to come back and change the probability of different notes so they aren't uniform. Right now all the pitches were uniformly sampled each time. The result is OK, but I want to hear other versions sampled from non-uniform distributions. 
+
+At this point I think I've basically recreated something like what Marbles by Mutable Instruments is doing. I could have probably done this in eurorack. And, that would have been fun too.
+
+Time to take a break.
+
+
+
+
+
