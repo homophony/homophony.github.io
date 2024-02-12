@@ -1,0 +1,459 @@
+---
+title: "MIDI composition with {dplyr}, {midiblender}, and {pyramidi}"
+author: "Matt Crump"
+date: 2/12/24
+description: "Trying some dplyr composition patterns for creating midi files"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - midiblender
+  - pyramidi
+  - rstats
+  - dplyr
+  - midi composition
+execute: 
+  echo: true
+  message: false
+  warning: false
+  eval: false
+format:
+  html:
+    code-fold: true
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "composing music with rstats. dplyr musical notes. tidyverse. hexagons everywhere. 3d. music inside hexagons floating in the universe. musical notes inside the hexagons. cartoon. linocut"
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+Massive modular synthesizer. Eurorack modular synthesizer. Huge synthesizer room, full or modular synthesizers with patch cords connecting everywer. 80s cartoon. Linocut. - dreamshaper
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+This morning I added some [dplyr]() style functions to [midiblender]() for row-by-row, explicit construction of a data frame containing midi information. I'll provide some examples here, and use this post to try a few compositional goals with the dplyr approach. 
+
+[pyramidi](https://urswilke.github.io/pyramidi/articles/compose.html) also has examples of composition with dplyr syntax that are worth checking out. My approach relies on several pyramidi internal functions, and is pretty similar overall. 
+
+## Midi dataframe construction with {dplyr}
+
+Some of these examples are also in the vignette, [Midi data frame constructors with dplyr](https://www.crumplab.com/midiblender/articles/midi_construct.html).
+
+The following block of code shows an example of systematically creating a midi data frame, on a row-by-row basis. The functions are mostly wrappers to `dplyr::add_row`, but they have midi variables in them.
+
+Functions that add a row start with "add", which makes them easy to find with autocomplete while programming. These functions also pass `...`, which is useful for placing a row `.before` or `.after` another row.
+
+This code block writes important meta messages, shows that it is possible to write program_change and control_change messages, and writes a couple notes before ending the track.
+
+```{r}
+#| eval: true
+#| code-fold: show
+library(midiblender)
+library(pyramidi)
+
+new_midi_df <- create_empty_midi_df() %>% # initialize columns
+  add_meta_track_name(name = "My track") %>%
+  add_meta_tempo(tempo = 500000) %>%
+  add_meta_time_sig(numerator = 4,
+                    denominator = 4,
+                    clocks_per_click = 36,
+                    notated_32nd_notes_per_beat = 8) %>%
+  add_program_change(program = 0,
+                     channel = 0) %>%
+  add_control_change(control = 0,value = 0) %>%
+  add_note_on(time = 0,note = 60) %>%
+  add_note_off(time = 8,note = 60) %>%
+  add_meta_end_of_track()
+
+# print the data frame.
+knitr::kable(new_midi_df)
+
+```
+
+## Pyramidi object creation and export
+
+This shows how to take a midi dataframe like the above, and export it to disk as a .mid file. 
+
+First, `pyramidi::MidiFramer$new()` creates a new pyramidi object. 
+
+Upon creation, it is possible to update `new_pyramidi_object$ticks_per_beat` with a new value. I believe the default value is `960L`, and the code below updates it to a smaller value.
+
+The `new_midi_df` from above is then updated within the pyramidi object using `new_pyramidi_object$mf$midi_frame_unnested$update_unnested_mf(new_midi_df)`.
+
+Finally, `new_pyramidi_object$mf$write_file("file_name.mid")` writes the file to disk.
+
+```{r}
+#| code-fold: show
+
+#Initialize new pyramidi object
+new_pyramidi_object <- pyramidi::MidiFramer$new()
+
+# update ticks per beat
+new_pyramidi_object$ticks_per_beat <- 96L
+
+# update object with new midi df
+new_pyramidi_object$mf$midi_frame_unnested$update_unnested_mf(new_midi_df)
+
+# write to midi file
+new_pyramidi_object$mf$write_file("file_name.mid")
+
+```
+
+## Composing with a wide data frame, then pivoting to long
+
+Midi files writes note_on and note_off messages in succession with time stamps coding relative time since the last message. For composition, it may be convenient to work with a wider data frame.
+
+Here's an example of using dplyr to create a series of notes over time. The notes are randomly chosen from the vector `possible_notes`. The rhythm defining when a note occurs is generated by `bresenham_euclidean()`, which can produce some nice sounding rhythms. The code chunk will generate as many bars as defined in `bars`, and the shortest note is a 16th note.
+
+```{r}
+#| eval: true
+#| code-fold: show
+library(dplyr)
+
+# note parameters
+bars <- 4 # number of bars
+bar_time_steps <- 16 # number of time steps in a bar
+note_duration <- 24 # note duration in ticks
+possible_notes <- c(60, 63, 65, 66, 67, 70, 72, 75) # midi note values to pick
+
+# create a tibble to compose notes in time 
+compose_notes <- tibble::tibble(note_id = integer(),
+                             note = integer(),
+                             beat_on = integer(),
+                             note_on = integer(),
+                             note_off = integer()) %>%
+  # add multiple bars worth of notes
+  add_row(beat_on = c(replicate(bars,bresenham_euclidean(sample(c(2:15),1),
+                                            bar_time_steps,
+                                            start=1))),
+          note = sample(possible_notes, 
+                        size = bar_time_steps*bars, 
+                        replace= TRUE)
+          ) %>%
+  # handle note times
+  mutate(note_id = 1:n(),
+         note_on = (1:n()-1)*note_duration,
+         note_off = note_on+note_duration) %>%
+  # keep events where a beat occurred
+  filter(beat_on == 1) 
+
+#print to show
+knitr::kable(head(compose_notes))
+
+```
+
+At this point the `compose_notes` dataframe contains note_on and note_off information in wide format. A quick call to `tidyr::pivot_longer`, along with subtracting the time stamps to get them into relative time, and we have a dataframe that is nearly ready for export.
+
+```{r}
+#| eval: true
+#| code-fold: show
+compose_notes <- compose_notes %>%
+  # pivot to long
+  tidyr::pivot_longer(c("note_on","note_off"),names_to="type",values_to="time") %>%
+  # relative time
+  mutate(time = time - lag(time,default=0))
+
+#print to show
+knitr::kable(head(compose_notes))
+
+```
+
+Now we have a body of midi messages. The last step is to put them into a full-fledged midi dataframe, and export them. 
+
+```{r}
+#| eval: false
+#| code-fold: show
+
+# create new midi_df
+
+## add to a new midi df
+new_midi_df <- create_empty_midi_df() %>% # initialize
+  add_meta_track_name(name = "My track") %>%
+  add_meta_tempo(tempo = 500000) %>%
+  add_meta_time_sig(
+    numerator = 4,
+    denominator = 4,
+    clocks_per_click = 36,
+    notated_32nd_notes_per_beat = 8
+  ) %>%
+  add_program_change(program = 0,
+                     channel = 0) %>%
+  add_control_change(control = 0, value = 0) %>%
+  # add new notes <---------------Adding stuff from compose_notes
+  add_row(i_track = rep(0,dim(compose_notes)[1]), 
+          meta = rep(FALSE,dim(compose_notes)[1]),
+          note = compose_notes$note,
+          type = compose_notes$type,
+          time = compose_notes$time,
+          velocity = 64) %>%
+  add_meta_end_of_track()
+
+#write midi
+
+#Initialize new pyramidi object
+new_pyramidi_object <- pyramidi::MidiFramer$new()
+# update ticks per beat
+new_pyramidi_object$ticks_per_beat <- 96L
+# update object with new midi df
+new_pyramidi_object$mf$midi_frame_unnested$update_unnested_mf(new_midi_df)
+# write to midi file
+new_pyramidi_object$mf$write_file("file_name.mid")
+```
+
+
+## Making it less of a wall of code
+
+I'm not working on this right now. Going with walls of code. 
+
+## Frequency biased sequences
+
+I've got a project coming up where I will likely need to generate a whole bunch of "musical" sequences with specific kinds of statistical structure. I'm not sure whether I will use the {dplyr} style code for this. This is a note to future self about what it might look like.
+
+- got something that will work later
+- need to write functions for creating unequal frequency vectors with specific constraints
+- Move development on this issue to another castle.
+
+```{r, eval= FALSE}
+
+# note parameters
+bars <- 4
+possible_time_steps <- 16
+note_duration <- 24
+possible_notes <- c(60, 63, 65, 66, 67, 70, 72, 75)
+
+total_notes <- 8
+total_beats <- bars*possible_time_steps
+
+# need to work out some algorithms for unequal frequency distribution generation, these are enough for an example
+equal_frequencies <- rep(total_beats/8,8)
+half_frequencies <- equal_frequencies + (equal_frequencies * rep(c(.5,-.5),each = total_notes/2))
+most_unequal_frequencies <- c(rep(1,(total_notes-1)),(total_notes*(total_notes-1)+1))
+
+note_frequency_matrix <- rbind(equal_frequencies,
+                              half_frequencies,
+                              most_unequal_frequencies)
+
+compose_notes <- tibble::tibble(note_id = integer(),
+                             note = integer(),
+                             beat_on = integer(),
+                             note_on = integer(),
+                             note_off = integer()) %>%
+  # 1 beat every time_step
+  rowwise() %>%
+  add_row(beat_on = 1,
+          note = sample(rep(sample(possible_notes),
+                     times = note_frequency_matrix[3,])),
+          ) %>%
+  ungroup() %>%
+  # handle note times
+  mutate(note_id = 1:n(),
+         note_on = (1:n()-1)*note_duration,
+         note_off = note_on+note_duration) %>%
+  filter(beat_on == 1) %>%
+  #pivot to long
+  tidyr::pivot_longer(c("note_on","note_off"),names_to="type",values_to="time") %>%
+  mutate(time = time - lag(time,default=0))
+
+## add to a new midi df
+new_midi_df <- create_empty_midi_df() %>% # initialize
+  add_meta_track_name(name = "My track") %>%
+  add_meta_tempo(tempo = 500000) %>%
+  add_meta_time_sig(
+    numerator = 4,
+    denominator = 4,
+    clocks_per_click = 36,
+    notated_32nd_notes_per_beat = 8
+  ) %>%
+  add_program_change(program = 0,
+                     channel = 0) %>%
+  add_control_change(control = 0, value = 0) %>%
+  #use dplyr::add_row to add a bunch of notes
+  add_row(i_track = rep(0,dim(compose_notes)[1]), 
+          meta = rep(FALSE,dim(compose_notes)[1]),
+          note = compose_notes$note,
+          type = compose_notes$type,
+          time = compose_notes$time,
+          velocity = 64) %>%
+  add_meta_end_of_track()
+
+#write midi
+#Initialize new pyramidi object
+new_pyramidi_object <- pyramidi::MidiFramer$new()
+# update ticks per beat
+new_pyramidi_object$ticks_per_beat <- 96L
+# update object with new midi df
+new_pyramidi_object$mf$midi_frame_unnested$update_unnested_mf(new_midi_df)
+# write to midi file
+new_pyramidi_object$mf$write_file("most_unequal.mid")
+```
+
+
+## 12-bar blues sequence
+
+I like a good blues scale. Undoubtedly, whatever happens next won't be bluesy, but that's ok.
+
+Algorithm components
+
+1. Sample notes from a blues scale
+2. Eavery bar, randomly sample a euclidean rhythm to fill the bar
+3. randomly assign notes to the beats in the euclidean rhythm
+4. Create a few tracks of this.
+5. try shifting chords, do 12 bar blues
+
+Got it working, nice
+
+```{r, eval= FALSE}
+
+all_tracks <- data.frame()
+# loop for each track
+for(t in 1:3) {
+  
+  # note parameters
+  bars <- 12 * 4 * 4
+  possible_time_steps <- 16
+  note_duration <- 24
+  possible_notes <- c(60, 63, 65, 66, 67, 70, 72, 75)
+  
+  key_vector <- rep(rep(c(0,0,0,0,5,5,0,0,7,5,0,7),each=possible_time_steps),4*4)
+  
+  compose_notes <- tibble::tibble(
+    note_id = integer(),
+    note = integer(),
+    beat_on = integer(),
+    note_on = integer(),
+    note_off = integer()
+  ) %>%
+    # use euclidean rhythm
+    rowwise() %>%
+    add_row(
+      beat_on = c(replicate(
+        bars,
+        bresenham_euclidean(sample(c(1, 2, 2, 2, 3, 4,5,5,6, 8, 15), 1),
+                            possible_time_steps,
+                            start = 1)
+      )),
+      note = sample(possible_notes,
+                    size = possible_time_steps * bars,
+                    replace = TRUE) + key_vector
+    ) %>%
+    ungroup() %>%
+    # handle note times
+    mutate(
+      note_id = 1:n(),
+      note_on = (1:n() - 1) * note_duration,
+      note_off = note_on + note_duration
+    ) %>%
+    filter(beat_on == 1) %>%
+    #pivot to long
+    tidyr::pivot_longer(c("note_on", "note_off"),
+                        names_to = "type",
+                        values_to = "time") %>%
+    mutate(time = time - lag(time, default = 0))
+  ######################
+  # End composition 
+  
+  #######################
+  ## add composition to a new midi df
+  new_midi_df <- create_empty_midi_df() %>% # initialize
+    add_meta_track_name(name = "My track") %>%
+    add_meta_tempo(tempo = 500000) %>%
+    add_meta_time_sig(
+      numerator = 4,
+      denominator = 4,
+      clocks_per_click = 36,
+      notated_32nd_notes_per_beat = 8
+    ) %>%
+    add_program_change(program = 0,
+                       channel = 0) %>%
+    add_control_change(control = 0, value = 0) %>%
+    # Composition added here
+    add_row(
+      i_track = rep(0, dim(compose_notes)[1]),
+      meta = rep(FALSE, dim(compose_notes)[1]),
+      note = compose_notes$note,
+      type = compose_notes$type,
+      time = compose_notes$time,
+      velocity = 64
+    ) %>%
+    add_meta_end_of_track() %>%
+    mutate(i_track = t) # set current track number
+  
+  all_tracks <- rbind(all_tracks,new_midi_df)
+  
+}
+
+#write midi
+#Initialize new pyramidi object
+new_pyramidi_object <- pyramidi::MidiFramer$new()
+# update ticks per beat
+new_pyramidi_object$ticks_per_beat <- 96L
+# update object with new midi df
+new_pyramidi_object$mf$midi_frame_unnested$update_unnested_mf(all_tracks)
+# write to midi file
+new_pyramidi_object$mf$write_file("bluesy_A.mid")
+```
+
+`r html_tag_audio("bluesy_A_ableton_01.mp3", type = "wav")`
+
+I put three midi tracks into ableton, added synth voices and drums, and that's what it sounds like.
+
+Hmmm, the dplyr style worked out. I didn't think it would be so easy to get a 12-bar blues thing going. It still sounds like a computer made it, but a computer did make it, so that's fair.
+
