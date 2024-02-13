@@ -289,17 +289,27 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <p>This is just a picture. Scroll down to try the MIDI player for real.</p>
 </div></div><p>I happened upon this midi player for webpages. Will it work here too? <a href="https://cifkao.github.io/html-midi-player/" class="uri">https://cifkao.github.io/html-midi-player/</a></p>
 <p>Following the instructions from that website, I am adding this script in the yml for this .qmd file, along with a resources line to make sure the midi file is copied to the docs folder.</p>
-<pre><code>resources: 
-  - bluesy_C.mid
-include-before-body:
-  text: |
-    &lt;script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.4.0"&gt;&lt;/script&gt;</code></pre>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>resources: </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  - bluesy_C.mid</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>include-before-body:</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  text: |</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    &lt;script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.4.0"&gt;&lt;/script&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 <p>Added an html block that has this code:</p>
-<pre><code>&lt;midi-player
-  src="bluesy_C.mid"
-  sound-font visualizer="#myVisualizer"&gt;
-&lt;/midi-player&gt;
-&lt;midi-visualizer type="piano-roll" id="myVisualizer"&gt;&lt;/midi-visualizer&gt;</code></pre>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>&lt;midi-player</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  src="bluesy_C.mid"</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  sound-font visualizer="#myVisualizer"&gt;</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>&lt;/midi-player&gt;</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>&lt;midi-visualizer type="piano-roll" id="myVisualizer"&gt;&lt;/midi-visualizer&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 <p>And, it works!</p>
 <midi-player src="bluesy_C.mid" sound-font="" visualizer="#myVisualizer">
 </midi-player>

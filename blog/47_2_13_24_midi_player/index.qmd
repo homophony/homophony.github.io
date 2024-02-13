@@ -96,7 +96,8 @@ I happened upon this midi player for webpages. Will it work here too?
 
 Following the instructions from that website, I am adding this script in the yml for this .qmd file, along with a resources line to make sure the midi file is copied to the docs folder.
 
-```
+```{default}
+#| code-fold: show
 resources: 
   - bluesy_C.mid
 include-before-body:
@@ -106,7 +107,8 @@ include-before-body:
 
 Added an html block that has this code:
 
-```
+```{default}
+#| code-fold: show
 <midi-player
   src="bluesy_C.mid"
   sound-font visualizer="#myVisualizer">
