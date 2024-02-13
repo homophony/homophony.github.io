@@ -183,24 +183,40 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 </div>
 
 <div class="no-row-height column-margin column-container"><div class="">
-<p>Massive modular synthesizer. Eurorack modular synthesizer. Huge synthesizer room, full or modular synthesizers with patch cords connecting everywer. 80s cartoon. Linocut. - dreamshaper</p>
+<p>This is just a picture. Scroll down to try the MIDI player for real.</p>
 </div></div><p>I happened upon this midi player for webpages. Will it work here too? <a href="https://cifkao.github.io/html-midi-player/" class="uri">https://cifkao.github.io/html-midi-player/</a></p>
 <p>Following the instructions from that website, I am adding this script in the yml for this .qmd file, along with a resources line to make sure the midi file is copied to the docs folder.</p>
-<pre><code>resources: 
-  - bluesy_C.mid
-include-before-body:
-  text: |
-    &lt;script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.4.0"&gt;&lt;/script&gt;</code></pre>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">resources: </span>
+<span id="cb2-2">  - bluesy_C.mid</span>
+<span id="cb2-3">include-before-body:</span>
+<span id="cb2-4">  text: |</span>
+<span id="cb2-5">    &lt;script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.4.0"&gt;&lt;/script&gt;</span></code></pre></div>
+</details>
+</div>
 <p>Added an html block that has this code:</p>
-<pre><code>&lt;midi-player
-  src="bluesy_C.mid"
-  sound-font visualizer="#myVisualizer"&gt;
-&lt;/midi-player&gt;
-&lt;midi-visualizer type="piano-roll" id="myVisualizer"&gt;&lt;/midi-visualizer&gt;</code></pre>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1">&lt;midi-player</span>
+<span id="cb3-2">  src="bluesy_C.mid"</span>
+<span id="cb3-3">  sound-font visualizer="#myVisualizer"&gt;</span>
+<span id="cb3-4">&lt;/midi-player&gt;</span>
+<span id="cb3-5">&lt;midi-visualizer type="piano-roll" id="myVisualizer"&gt;&lt;/midi-visualizer&gt;</span></code></pre></div>
+</details>
+</div>
 <p>And, it works!</p>
 <midi-player src="bluesy_C.mid" sound-font="" visualizer="#myVisualizer">
 </midi-player>
 <midi-visualizer type="piano-roll" id="myVisualizer"></midi-visualizer>
+<hr>
+<p>Cool, I have not looked deeply into this at all, so I have no idea what’s behind the sound generation. I’m just curious about what happens if I play a midi file that should have a few different voices. I choose the moon theme from the NES ducktales game. Such a great song.</p>
+<midi-player src="the-moon.mid" sound-font="" visualizer="#myVisualizer">
+</midi-player>
+<midi-visualizer type="piano-roll" id="myVisualizer"></midi-visualizer>
+<p>OH YA!!!!!</p>
 
 
 

@@ -20,6 +20,7 @@ format:
     code-fold: true
 resources: 
   - bluesy_C.mid
+  - the-moon.mid
 include-before-body:
   text: |
     <script src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.4.0"></script>
@@ -126,3 +127,16 @@ And, it works!
 <midi-visualizer type="piano-roll" id="myVisualizer"></midi-visualizer>
 ```
 
+-----
+
+Cool, I have not looked deeply into this at all, so I have no idea what's behind the sound generation. I'm just curious about what happens if I play a midi file that should have a few different voices. I choose the moon theme from the NES ducktales game. Such a great song.
+
+```{=html}
+<midi-player
+  src="the-moon.mid"
+  sound-font visualizer="#myVisualizer">
+</midi-player>
+<midi-visualizer type="piano-roll" id="myVisualizer"></midi-visualizer>
+```
+
+OH YA!!!!!
