@@ -1,0 +1,149 @@
+---
+title: "Testing out {fluidsynth} for R!"
+author: "Matt Crump"
+date: 2/15/24
+description: "Hurrah, fluidsynth made easy for R!"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - midiblender
+  - midi
+  - fluidsynth
+execute: 
+  echo: true
+  message: false
+  warning: false
+  eval: false
+format:
+  html:
+    code-fold: true
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "a synthesizer made out of water. 3d. white background. super cool."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+a synthesizer made out of water. 3d. white background. super cool. - Dreamshaper
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+Thanks to Jeroen Ooms, there is a new {fluidsynth} package for R! I have to check it out.
+
+Here's the github repo: <https://github.com/ropensci/fluidsynth/>
+
+The package is only four days old and could change, but it is working for me!
+
+
+## playback midi locally
+
+```{r}
+#| code-fold: show
+#| eval: false
+library(fluidsynth)
+
+# this works for local playback!
+
+midi_play(
+  midi = "the-moon.mid",
+  soundfont = "~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2",
+  audio.driver = NULL,
+  settings = list(),
+  progress = interactive()
+)
+
+```
+
+## write midi to wav
+
+I'm on a mac m2. The midi_convert function produces a wav file that will not play. However, the {av} package does successfully convert the wav file to a listenable mp3. Glad it works out in the end. 
+
+I'm not sure why the wav file isn't rendering as playable. I wonder if it isn't finding my installation of libsndfile, and the wav file is being rendered as raw?
+
+```{r}
+#| code-fold: show
+#| eval: false
+midi_convert(
+  midi = "the-moon.mid",
+  soundfont = "~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2",
+  output = "output.wav",
+  settings = list(
+    audio.driver = "coreaudio",
+    audio.file.format = "double",
+    audio.file.type = "wav"),
+  progress = interactive()
+)
+
+av::av_audio_convert("output.wav","output.mp3")
+```
+
+## fluid synth settings
+
+All of these fluid synth parameters can now be easily modified from R!
+
+```{r}
+knitr::kable(fluidsynth_setting_list())
+
+```
+
+
+
