@@ -141,7 +141,9 @@ av::av_audio_convert("output.wav","output.mp3")
 All of these fluid synth parameters can now be easily modified from R!
 
 ```{r}
-knitr::kable(fluidsynth_setting_list())
+#| code-fold: show
+#| eval: true
+knitr::kable(fluidsynth::fluidsynth_setting_list())
 
 ```
 

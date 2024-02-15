@@ -343,10 +343,246 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <h2 class="anchored" data-anchor-id="fluid-synth-settings">fluid synth settings</h2>
 <p>All of these fluid synth parameters can now be easily modified from R!</p>
 <div class="cell">
-<details class="code-fold">
+<details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">fluidsynth_setting_list</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(fluidsynth<span class="sc">::</span><span class="fu">fluidsynth_setting_list</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">name</th>
+<th style="text-align: left;">type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">audio.coreaudio.channel-map</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">audio.coreaudio.device</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">audio.driver</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">audio.file.endian</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">audio.file.format</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">audio.file.name</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">audio.file.type</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">audio.period-size</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">audio.periods</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">audio.portaudio.device</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">audio.realtime-prio</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">audio.sample-format</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">midi.autoconnect</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">midi.coremidi.id</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">midi.driver</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">midi.portname</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">midi.realtime-prio</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">player.reset-synth</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">player.timing-source</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">shell.port</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">shell.prompt</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.audio-channels</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.audio-groups</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.chorus.active</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.chorus.depth</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.chorus.level</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.chorus.nr</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.chorus.speed</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.cpu-cores</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.default-soundfont</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.device-id</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.dynamic-sample-loading</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.effects-channels</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.effects-groups</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.gain</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.ladspa.active</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.lock-memory</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.midi-bank-select</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.midi-channels</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.min-note-length</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.overflow.age</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.overflow.important</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.overflow.important-channels</td>
+<td style="text-align: left;">string</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.overflow.percussion</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.overflow.released</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.overflow.sustained</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.overflow.volume</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.polyphony</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.reverb.active</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.reverb.damp</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.reverb.level</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.reverb.room-size</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.reverb.width</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.sample-rate</td>
+<td style="text-align: left;">double</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">synth.threadsafe-api</td>
+<td style="text-align: left;">integer</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">synth.verbose</td>
+<td style="text-align: left;">integer</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
