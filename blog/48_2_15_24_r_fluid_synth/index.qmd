@@ -133,8 +133,30 @@ midi_convert(
   progress = interactive()
 )
 
+midi_convert(
+  midi = "the-moon.mid",
+  soundfont = "~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2",
+  output = "output.wav",
+  settings = list('synth.sample-rate'= 22050),
+  progress = interactive()
+)
+
+midi_convert(settings = list('synth.sample-rate'= 22050), output =  'lowquality.wav')
+
 av::av_audio_convert("output.wav","output.mp3")
 ```
+
+## midi to mp3 All night long
+
+And now it is really this easy!
+
+```{r}
+#| eval: false
+#| code-fold: show
+midi <- system.file("generaluser-gs/midi/All_Night_Long.mid", package = "fluidsynth")
+fluidsynth::midi_convert(midi, output = 'all_night_long.mp3')
+```
+
 
 ## fluid synth settings
 
@@ -146,6 +168,5 @@ All of these fluid synth parameters can now be easily modified from R!
 knitr::kable(fluidsynth::fluidsynth_setting_list())
 
 ```
-
 
 

@@ -199,6 +199,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
   <ul>
   <li><a href="#playback-midi-locally" id="toc-playback-midi-locally" class="nav-link active" data-scroll-target="#playback-midi-locally">playback midi locally</a></li>
   <li><a href="#write-midi-to-wav" id="toc-write-midi-to-wav" class="nav-link" data-scroll-target="#write-midi-to-wav">write midi to wav</a></li>
+  <li><a href="#midi-to-mp3-all-night-long" id="toc-midi-to-mp3-all-night-long" class="nav-link" data-scroll-target="#midi-to-mp3-all-night-long">midi to mp3 All night long</a></li>
   <li><a href="#fluid-synth-settings" id="toc-fluid-synth-settings" class="nav-link" data-scroll-target="#fluid-synth-settings">fluid synth settings</a></li>
   </ul>
 </nav>
@@ -335,7 +336,28 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">progress =</span> <span class="fu">interactive</span>()</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>av<span class="sc">::</span><span class="fu">av_audio_convert</span>(<span class="st">"output.wav"</span>,<span class="st">"output.mp3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">midi_convert</span>(</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">midi =</span> <span class="st">"the-moon.mid"</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">soundfont =</span> <span class="st">"~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2"</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">"output.wav"</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">settings =</span> <span class="fu">list</span>(<span class="st">'synth.sample-rate'</span><span class="ot">=</span> <span class="dv">22050</span>),</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">progress =</span> <span class="fu">interactive</span>()</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">midi_convert</span>(<span class="at">settings =</span> <span class="fu">list</span>(<span class="st">'synth.sample-rate'</span><span class="ot">=</span> <span class="dv">22050</span>), <span class="at">output =</span>  <span class="st">'lowquality.wav'</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>av<span class="sc">::</span><span class="fu">av_audio_convert</span>(<span class="st">"output.wav"</span>,<span class="st">"output.mp3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="midi-to-mp3-all-night-long" class="level2">
+<h2 class="anchored" data-anchor-id="midi-to-mp3-all-night-long">midi to mp3 All night long</h2>
+<p>And now it is really this easy!</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>midi <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"generaluser-gs/midi/All_Night_Long.mid"</span>, <span class="at">package =</span> <span class="st">"fluidsynth"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fluidsynth<span class="sc">::</span><span class="fu">midi_convert</span>(midi, <span class="at">output =</span> <span class="st">'all_night_long.mp3'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -345,7 +367,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(fluidsynth<span class="sc">::</span><span class="fu">fluidsynth_setting_list</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(fluidsynth<span class="sc">::</span><span class="fu">fluidsynth_setting_list</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
