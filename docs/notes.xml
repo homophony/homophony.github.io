@@ -183,7 +183,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 
 <div class="no-row-height column-margin column-container"><div class="">
 <p>a synthesizer made out of water. 3d. white background. super cool. - Dreamshaper</p>
-</div></div><p>Thanks to Jeroen Ooms, there is a new {fluidsynth} package for R!</p>
+</div></div><p>Thanks to <a href="https://github.com/jeroen">Jeroen Ooms</a> and <a href="https://ropensci.org">rOpenSci</a>, there is a new {fluidsynth} package with bindings for R!</p>
 <p>Here’s the github repo: <a href="https://github.com/ropensci/fluidsynth/" class="uri">https://github.com/ropensci/fluidsynth/</a></p>
 <p>The package is only four days old and could change, but it is working for me!</p>
 <section id="playback-midi-locally" class="level2">
