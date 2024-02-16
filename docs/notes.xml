@@ -1185,8 +1185,11 @@ background-color: null;
 font-style: inherit;">"TE-EP-133-B.mp3"</span>)</span></code></pre></div>
 </details>
 </div>
-<p><audio controls=""> <source src="TE-EP-133-B-01.mp3" type="audio/wav"> </audio></p>
+<p><audio controls=""> <source src="TE-EP-133-B_01.mp3" type="audio/wav"> </audio></p>
 <p>Look out aphex twin.</p>
+<hr>
+<p>Here’s a blend of those beats with mario for some more midi mangling fun.</p>
+<p><audio controls=""> <source src="mario_TE.mp3" type="audio/wav"> </audio></p>
 
 
 </section>

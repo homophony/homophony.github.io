@@ -291,6 +291,11 @@ fluidsynth::midi_convert(midi = "TE-EP-133-B.mid",
 
 Look out aphex twin.
 
+-------------
+
+Here's a blend of those beats with mario for some more midi mangling fun.
+
+`r html_tag_audio("mario_TE.mp3", type = "wav")`
 
 
 
