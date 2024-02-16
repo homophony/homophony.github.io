@@ -157,6 +157,35 @@ midi <- system.file("generaluser-gs/midi/All_Night_Long.mid", package = "fluidsy
 fluidsynth::midi_convert(midi, output = 'all_night_long.mp3')
 ```
 
+## testing faster renders
+
+```{r}
+#| eval: false
+#| code-fold: show
+midi <- system.file("generaluser-gs/midi/All_Night_Long.mid", package = "fluidsynth")
+fluidsynth::midi_convert(midi, output = 'all_night_long.mp3',
+                         settings = list('player.timing-source' = 'sample',
+                                         'synth.lock-memory' = 0,
+                                         'synth.cpu-cores' = 12),
+                         verbose = FALSE
+                        
+                         )
+
+
+#########
+# compare render speed
+
+track_name <- "All_Night_Long"
+
+wav_name <- paste0(track_name,".wav")
+midi_name <- midi
+mp3_name <- paste0(track_name,".mp3")
+
+system_command <- glue::glue('fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}')
+system(system_command)
+
+```
+
 
 ## fluid synth settings
 

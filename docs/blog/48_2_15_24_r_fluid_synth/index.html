@@ -200,6 +200,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
   <li><a href="#playback-midi-locally" id="toc-playback-midi-locally" class="nav-link active" data-scroll-target="#playback-midi-locally">playback midi locally</a></li>
   <li><a href="#write-midi-to-wav" id="toc-write-midi-to-wav" class="nav-link" data-scroll-target="#write-midi-to-wav">write midi to wav</a></li>
   <li><a href="#midi-to-mp3-all-night-long" id="toc-midi-to-mp3-all-night-long" class="nav-link" data-scroll-target="#midi-to-mp3-all-night-long">midi to mp3 All night long</a></li>
+  <li><a href="#testing-faster-renders" id="toc-testing-faster-renders" class="nav-link" data-scroll-target="#testing-faster-renders">testing faster renders</a></li>
   <li><a href="#fluid-synth-settings" id="toc-fluid-synth-settings" class="nav-link" data-scroll-target="#fluid-synth-settings">fluid synth settings</a></li>
   </ul>
 </nav>
@@ -361,13 +362,42 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </details>
 </div>
 </section>
+<section id="testing-faster-renders" class="level2">
+<h2 class="anchored" data-anchor-id="testing-faster-renders">testing faster renders</h2>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>midi <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"generaluser-gs/midi/All_Night_Long.mid"</span>, <span class="at">package =</span> <span class="st">"fluidsynth"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>fluidsynth<span class="sc">::</span><span class="fu">midi_convert</span>(midi, <span class="at">output =</span> <span class="st">'all_night_long.mp3'</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">settings =</span> <span class="fu">list</span>(<span class="st">'player.timing-source'</span> <span class="ot">=</span> <span class="st">'sample'</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                                         <span class="st">'synth.lock-memory'</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                                         <span class="st">'synth.cpu-cores'</span> <span class="ot">=</span> <span class="dv">12</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">verbose =</span> <span class="cn">FALSE</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                        </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                         )</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="do">#########</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co"># compare render speed</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>track_name <span class="ot">&lt;-</span> <span class="st">"All_Night_Long"</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>wav_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".wav"</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>midi_name <span class="ot">&lt;-</span> midi</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>mp3_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(track_name,<span class="st">".mp3"</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>system_command <span class="ot">&lt;-</span> glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}'</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="fu">system</span>(system_command)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
 <section id="fluid-synth-settings" class="level2">
 <h2 class="anchored" data-anchor-id="fluid-synth-settings">fluid synth settings</h2>
 <p>All of these fluid synth parameters can now be easily modified from R!</p>
 <div class="cell">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(fluidsynth<span class="sc">::</span><span class="fu">fluidsynth_setting_list</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(fluidsynth<span class="sc">::</span><span class="fu">fluidsynth_setting_list</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
