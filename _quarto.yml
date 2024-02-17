@@ -14,7 +14,7 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Home
+        text: Albums
       - about.qmd
       - notes.qmd
     right:

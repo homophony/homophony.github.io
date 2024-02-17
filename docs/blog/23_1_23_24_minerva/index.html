@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.547">
+<meta name="generator" content="quarto-1.4.549">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -164,7 +164,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
     <a class="nav-link" href="../../index.html"> 
-<span class="menu-text">Home</span></a>
+<span class="menu-text">Albums</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../about.html"> 
@@ -634,9 +634,9 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        C        Db         D        Eb         E         F        Gb         G 
-1.0000000 0.2163667 0.4790949 0.4772587 0.4200609 0.5390773 0.3656121 0.5390773 
+1.0000000 0.2186057 0.4809454 0.4785718 0.4217287 0.5377400 0.3701894 0.5377400 
        Ab         A        Bb         B 
-0.4200609 0.4772587 0.4790949 0.2163667 </code></pre>
+0.4217287 0.4785718 0.4809454 0.2186057 </code></pre>
 </div>
 </div>
 <p>I like to think of the echo as the reminder values. Given the model hears a C, it is reminded of things that have a C in them. The echo is a similarity weighted sum of all of those things.</p>
@@ -654,7 +654,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  C  Db   D  Eb   E   F  Gb   G  Ab   A  Bb   B 
-338 338 338 338 338 338 338 338 338 338 338 338 </code></pre>
+339 339 339 339 339 339 339 339 339 339 339 339 </code></pre>
 </div>
 </div>
 <p>Each note appears 338 times across all of the chords in memory. If they were all played at once, the echo would sound like every note played simultaneously with a loudness of 338. If I normalize the echo by dividing by 338, I’d get all 1s, which would be saying play all the notes at 100% amplitude. In other words, if memory reminded you of everything, everywhere, all at once, it sounds like full cacophony.</p>
@@ -686,7 +686,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  C  Db   D  Eb   E   F  Gb   G  Ab   A  Bb   B 
-338  81 172 169 148 191 130 191 148 169 172  81 </code></pre>
+339  82 173 170 149 191 132 191 149 170 173  82 </code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Show the code</summary>
@@ -695,9 +695,9 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        C        Db         D        Eb         E         F        Gb         G 
-1.0000000 0.2396450 0.5088757 0.5000000 0.4378698 0.5650888 0.3846154 0.5650888 
+1.0000000 0.2418879 0.5103245 0.5014749 0.4395280 0.5634218 0.3893805 0.5634218 
        Ab         A        Bb         B 
-0.4378698 0.5000000 0.5088757 0.2396450 </code></pre>
+0.4395280 0.5014749 0.5103245 0.2418879 </code></pre>
 </div>
 </div>
 <p>The first echo is basically co-occurrence context vector containing the co-occurrence frequency between C and the other notes, counting across all of the patterns in memory. The second echo is the same information, just in terms of proportion to the largest value.</p>
@@ -731,9 +731,9 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        C        Db         D        Eb         E         F        Gb         G 
-1.0000000 0.2163667 0.4790949 0.4772587 0.4200609 0.5390773 0.3656121 0.5390773 
+1.0000000 0.2186057 0.4809454 0.4785718 0.4217287 0.5377400 0.3701894 0.5377400 
        Ab         A        Bb         B 
-0.4200609 0.4772587 0.4790949 0.2163667 </code></pre>
+0.4217287 0.4785718 0.4809454 0.2186057 </code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Show the code</summary>
@@ -742,9 +742,9 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        C        Db         D        Eb         E         F        Gb         G 
-1.0000000 0.1731107 0.4114787 0.4288597 0.3797730 0.4798933 0.3271873 0.4798933 
+1.0000000 0.1749929 0.4136884 0.4295841 0.3811846 0.4790434 0.3309256 0.4790434 
        Ab         A        Bb         B 
-0.3797730 0.4288597 0.4114787 0.1731107 </code></pre>
+0.3811846 0.4295841 0.4136884 0.1749929 </code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Show the code</summary>
@@ -752,10 +752,10 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>echo<span class="sc">/</span><span class="fu">max</span>(<span class="fu">abs</span>(echo))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>          C          Db           D          Eb           E           F 
-1.000000000 0.005599951 0.016650339 0.025743877 0.020721170 0.026529044 
-         Gb           G          Ab           A          Bb           B 
-0.018535963 0.026529044 0.020721170 0.025743877 0.016650339 0.005599951 </code></pre>
+<pre><code>         C         Db          D         Eb          E          F         Gb 
+1.00000000 0.00556662 0.01662112 0.02554962 0.02060926 0.02637050 0.01847203 
+         G         Ab          A         Bb          B 
+0.02637050 0.02060926 0.02554962 0.01662112 0.00556662 </code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Show the code</summary>
@@ -793,10 +793,10 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 <span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(echo,<span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>        G         C         E         A         D        Bb         F         B 
-1.0000000 0.9648918 0.9283912 0.6326961 0.6308542 0.4828259 0.4436583 0.4141189 
+<pre><code>        G         C         E         D         A        Bb         F         B 
+1.0000000 0.9654616 0.9301669 0.6300119 0.6298521 0.4878587 0.4449117 0.4129313 
        Gb        Eb        Db        Ab 
-0.3390815 0.3329919 0.3127329 0.3109608 </code></pre>
+0.3429289 0.3350617 0.3179172 0.3120386 </code></pre>
 </div>
 </div>
 <section id="adding-probes-together" class="level3">
@@ -824,9 +824,9 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        C         D         G         F         A         E        Bb        Eb 
-1.0000000 0.9970230 0.9948008 0.9326157 0.9326157 0.5419088 0.5419088 0.4465277 
+1.0000000 0.9959211 0.9949257 0.9327975 0.9327975 0.5428026 0.5428026 0.4500104 
         B        Ab        Gb        Db 
-0.4378429 0.3103659 0.2854669 0.2686588 </code></pre>
+0.4413201 0.3122667 0.2901019 0.2713445 </code></pre>
 </div>
 </div>
 </section>
@@ -861,9 +861,9 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        C        Db         D        Eb         E         F        Gb         G 
-1.0000000 0.2163667 0.4790949 0.4772587 0.4200609 0.5390773 0.3656121 0.5390773 
+1.0000000 0.2186057 0.4809454 0.4785718 0.4217287 0.5377400 0.3701894 0.5377400 
        Ab         A        Bb         B 
-0.4200609 0.4772587 0.4790949 0.2163667 </code></pre>
+0.4217287 0.4785718 0.4809454 0.2186057 </code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Show the code</summary>
@@ -872,9 +872,9 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        C        Db         D        Eb         E         F        Gb         G 
-0.0000000 0.2163667 0.4790949 0.4772587 0.4200609 0.5390773 0.3656121 0.5390773 
+0.0000000 0.2186057 0.4809454 0.4785718 0.4217287 0.5377400 0.3701894 0.5377400 
        Ab         A        Bb         B 
-0.4200609 0.4772587 0.4790949 0.2163667 </code></pre>
+0.4217287 0.4785718 0.4809454 0.2186057 </code></pre>
 </div>
 </div>
 <p>In this case the discrepancy vector has activation across all notes except C. Although the activation is not uniform, this discrepancy vector is similar to the chromatic scale, which is all of the notes.</p>
@@ -894,16 +894,16 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                   chords similarities
-C chromatic   C chromatic    0.9274934
-Db chromatic Db chromatic    0.9274934
-D chromatic   D chromatic    0.9274934
-Eb chromatic Eb chromatic    0.9274934
-E chromatic   E chromatic    0.9274934
-F chromatic   F chromatic    0.9274934
-Gb chromatic Gb chromatic    0.9274934
-G chromatic   G chromatic    0.9274934
-Ab chromatic Ab chromatic    0.9274934
-A chromatic   A chromatic    0.9274934</code></pre>
+C chromatic   C chromatic    0.9281836
+Db chromatic Db chromatic    0.9281836
+D chromatic   D chromatic    0.9281836
+Eb chromatic Eb chromatic    0.9281836
+E chromatic   E chromatic    0.9281836
+F chromatic   F chromatic    0.9281836
+Gb chromatic Gb chromatic    0.9281836
+G chromatic   G chromatic    0.9281836
+Ab chromatic Ab chromatic    0.9281836
+A chromatic   A chromatic    0.9281836</code></pre>
 </div>
 </div>
 <p>Adding the echo to probe. After hearing a note the model retrieves the echo as a response. In this new moment the original note and the retrieved chorus are a new combined probe.</p>
@@ -928,9 +928,9 @@ A chromatic   A chromatic    0.9274934</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        C        Db         D        Eb         E         F        Gb         G 
-1.0000000 0.2163667 0.4790949 0.4772587 0.4200609 0.5390773 0.3656121 0.5390773 
+1.0000000 0.2186057 0.4809454 0.4785718 0.4217287 0.5377400 0.3701894 0.5377400 
        Ab         A        Bb         B 
-0.4200609 0.4772587 0.4790949 0.2163667 </code></pre>
+0.4217287 0.4785718 0.4809454 0.2186057 </code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Show the code</summary>
@@ -948,9 +948,9 @@ A chromatic   A chromatic    0.9274934</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        C        Db         D        Eb         E         F        Gb         G 
-1.0000000 0.6284936 0.7864139 0.7701819 0.7288598 0.8174667 0.6928161 0.8174667 
+1.0000000 0.6316519 0.7881949 0.7720207 0.7313981 0.8173276 0.6973141 0.8173276 
        Ab         A        Bb         B 
-0.7288598 0.7701819 0.7864139 0.6284936 </code></pre>
+0.7313981 0.7720207 0.7881949 0.6316519 </code></pre>
 </div>
 </div>
 <p>This is like having steps of iterative retrieval. A variation is to get the retrieved echo and then submit the echo as the probe. What happens is that the echo fills up with more general co-occurrence information.</p>
@@ -982,9 +982,9 @@ A chromatic   A chromatic    0.9274934</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>         C         Db          D         Eb          E          F         Gb 
-1.00000000 0.02269835 0.06352622 0.08694634 0.07307524 0.09134910 0.06433469 
+1.00000000 0.02266201 0.06354290 0.08637707 0.07279614 0.09085135 0.06428662 
          G         Ab          A         Bb          B 
-0.09134910 0.07307524 0.08694634 0.06352622 0.02269835 </code></pre>
+0.09085135 0.07279614 0.08637707 0.06354290 0.02266201 </code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Show the code</summary>
@@ -996,26 +996,26 @@ A chromatic   A chromatic    0.9274934</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                       chords similarities
-C note                 C note    0.9732485
-Csus                     Csus    0.6645644
-C minor triad   C minor triad    0.6620904
-F major triad   F major triad    0.6620904
-Adim                     Adim    0.6596165
-C major triad   C major triad    0.6542962
-F minor triad   F minor triad    0.6542962
-Ab major triad Ab major triad    0.6518223
-A minor triad   A minor triad    0.6518223
-Fsus                     Fsus    0.6489305
-Gsus                     Gsus    0.6489305
-Cdim                     Cdim    0.6469109
-Gbdim                   Gbdim    0.6469109
-F (add 9)           F (add 9)    0.6178398
-Cm6                       Cm6    0.6156973
-F7                         F7    0.6156973
-Am7(b5)               Am7(b5)    0.6156973
-Fm (add 9)         Fm (add 9)    0.6110898
-C6                         C6    0.6089473
-F∆7                       F∆7    0.6089473</code></pre>
+C note                 C note    0.9734631
+Csus                     Csus    0.6641514
+C minor triad   C minor triad    0.6616367
+F major triad   F major triad    0.6616367
+Adim                     Adim    0.6591220
+C major triad   C major triad    0.6540038
+F minor triad   F minor triad    0.6540038
+Ab major triad Ab major triad    0.6514892
+A minor triad   A minor triad    0.6514892
+Gsus                     Gsus    0.6488032
+Fsus                     Fsus    0.6488032
+Cdim                     Cdim    0.6467066
+Gbdim                   Gbdim    0.6467066
+F (add 9)           F (add 9)    0.6172144
+Cm6                       Cm6    0.6150366
+F7                         F7    0.6150366
+Am7(b5)               Am7(b5)    0.6150366
+Fm (add 9)         Fm (add 9)    0.6106042
+C6                         C6    0.6084264
+F∆7                       F∆7    0.6084264</code></pre>
 </div>
 </div>
 <p>In this variation the echo is submitted as the probe to generate a second echo. The first echo is already very general because even a single C note is in many chords. The second echo is extremely general because it has positive similarity to all chords. The values in the second echo can be thought of as reflecting very general expectations about note co-occurrence. The first echo also has some of these very general expectations.</p>
@@ -1042,9 +1042,9 @@ F∆7                       F∆7    0.6089473</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        C        Db         D        Eb         E         F        Gb         G 
-0.9918638 0.2479850 1.0000000 0.4178599 0.5037347 0.9766951 0.3491312 0.7242753 
+0.9938232 0.2498014 1.0000000 0.4246298 0.5052113 0.9778738 0.3572633 0.7253382 
        Ab         A        Bb         B 
-0.3603990 0.9657370 0.4859291 0.4261934 </code></pre>
+0.3626253 0.9668927 0.4883566 0.4300161 </code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Show the code</summary>
@@ -1062,9 +1062,9 @@ F∆7                       F∆7    0.6089473</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>        C        Db         D        Eb         E         F        Gb         G 
-0.9946912 0.5014757 1.0000000 0.6381784 0.7237607 0.9389013 0.5636836 0.9371725 
+0.9957913 0.5074726 1.0000000 0.6452400 0.7262229 0.9401410 0.5719504 0.9369867 
        Ab         A        Bb         B 
-0.5704482 0.9385442 0.7156892 0.6432196 </code></pre>
+0.5766082 0.9400520 0.7190890 0.6489396 </code></pre>
 </div>
 <details open="" class="code-fold">
 <summary>Show the code</summary>
@@ -1079,26 +1079,26 @@ F∆7                       F∆7    0.6089473</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                               chords similarities
-Dm7                               Dm7    0.8386204
-F6                                 F6    0.8386204
-D minor triad           D minor triad    0.7413557
-F major triad           F major triad    0.7368539
-Dm7(11)                       Dm7(11)    0.7272550
-D minor pentatonic D minor pentatonic    0.7272550
-F major pentatonic F major pentatonic    0.7272550
-G9sus                           G9sus    0.7272550
-Dm9                               Dm9    0.6825942
-Bb∆9                             Bb∆9    0.6724193
-D7#11#9                       D7#11#9    0.6640474
-F (add 9)                   F (add 9)    0.6126096
-Dm11                             Dm11    0.6022796
-G13sus                         G13sus    0.6022796
-G7sus                           G7sus    0.5976717
-C13sus                         C13sus    0.5929913
-Gm11                             Gm11    0.5929913
-F9 (13)                       F9 (13)    0.5880307
-D7sus                           D7sus    0.5869733
-D Blues                       D Blues    0.5853489</code></pre>
+Dm7                               Dm7    0.8371172
+F6                                 F6    0.8371172
+D minor triad           D minor triad    0.7391103
+F major triad           F major triad    0.7358684
+Dm7(11)                       Dm7(11)    0.7270672
+D minor pentatonic D minor pentatonic    0.7270672
+F major pentatonic F major pentatonic    0.7270672
+G9sus                           G9sus    0.7270672
+Dm9                               Dm9    0.6810277
+Bb∆9                             Bb∆9    0.6710651
+F (add 9)                   F (add 9)    0.6130494
+Dm11                             Dm11    0.6019057
+G13sus                         G13sus    0.6019057
+G7sus                           G7sus    0.5982104
+C13sus                         C13sus    0.5928111
+Gm11                             Gm11    0.5928111
+F9 (13)                       F9 (13)    0.5890195
+D7sus                           D7sus    0.5873095
+D Blues                       D Blues    0.5832278
+Dm (add 9)                 Dm (add 9)    0.5643833</code></pre>
 </div>
 </div>
 <p>Lots of breadcrumbs here to follow up on later. Ultimately, I didn’t get close to what I was hoping to accomplish. Making a note here that it would be interesting if this type of analysis could provide insight into chord movement from one to another.</p>
@@ -1209,16 +1209,16 @@ D Blues                       D Blues    0.5853489</code></pre>
 <span id="cb45-36"><a href="#cb45-36" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "D note"
+<pre><code>[1] "D minor triad"
 [1] "C∆7"
-[1] "D note"
-[1] "Am9"
-[1] "D note"
-[1] "B7(#5)"
+[1] "D minor triad"
+[1] "C∆7"
 [1] "Asus"
-[1] "A note"
-[1] "E note"
-[1] "A note"</code></pre>
+[1] "G note"
+[1] "Dm (add 9)"
+[1] "Am13(#11)"
+[1] "D note"
+[1] "G note"</code></pre>
 </div>
 </div>
 

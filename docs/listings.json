@@ -1,5 +1,14 @@
 [
   {
+    "listing": "/index.html",
+    "items": [
+      "/music/New.html",
+      "/music/Basement_Tapes.html",
+      "/music/RS.html",
+      "/music/VO.html"
+    ]
+  },
+  {
     "listing": "/notes.html",
     "items": [
       "/blog/50_2_16_24_comps/index.html",
@@ -54,15 +63,6 @@
       "/blog/2_12_23_23_practice/index.html",
       "/blog/1_12_20_23_dolphin_dance/index.html",
       "/blog/template/index.html"
-    ]
-  },
-  {
-    "listing": "/index.html",
-    "items": [
-      "/music/New.html",
-      "/music/Basement_Tapes.html",
-      "/music/RS.html",
-      "/music/VO.html"
     ]
   }
 ]

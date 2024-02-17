@@ -144,7 +144,7 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
     <a class="nav-link" href="../../index.html"> 
-<span class="menu-text">Home</span></a>
+<span class="menu-text">Albums</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../../about.html"> 
@@ -431,9 +431,9 @@ gtag('config', 'G-C5FTH8QPGW', { 'anonymize_ip': true});
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>           C7            C9        C7(b9)       Gb7b9b5          Edim 
-    1.0000000     0.9763873     0.9701562     0.9691460     0.9633453 
-C major triad       C9(#11)       C9 (13)       Em7(b5)           Gm6 
-    0.9597563     0.9528986     0.9527819     0.9401221     0.9401221 </code></pre>
+    1.0000000     0.9764781     0.9703234     0.9693413     0.9634478 
+C major triad       C9(#11)       C9 (13)       C7#11#9       Em7(b5) 
+    0.9600099     0.9531714     0.9530408     0.9442887     0.9404673 </code></pre>
 </div>
 </div>
 <p>Step 4: This is what I’ve been waiting for. Time for some teeny tiny steps. Basically, the plan is to generate a complex tone for each chord, in order of decreasing similarity, then stitch them together and then listen to them.</p>
@@ -881,8 +881,8 @@ C major triad       C9(#11)       C9 (13)       Em7(b5)           Gm6
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(middle_chord)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>     Cm13 
-0.8095027 </code></pre>
+<pre><code>Cm13(#11) 
+0.8119234 </code></pre>
 </div>
 </div>
 <p>This one works fine between C and G</p>
@@ -895,10 +895,8 @@ C major triad       C9(#11)       C9 (13)       Em7(b5)           Gm6
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>starting_chord_similarities[(<span class="fu">round</span>(target_id<span class="sc">/</span><span class="dv">2</span>)<span class="sc">-</span><span class="dv">3</span>)<span class="sc">:</span>(<span class="fu">round</span>(target_id<span class="sc">/</span><span class="dv">2</span>)<span class="sc">+</span><span class="dv">3</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>      Ab∆9(#11)       Gm13(#11)       Cm13(#11)            Cm13         F9(#11) 
-      0.8113597       0.8111463       0.8101535       0.8095027       0.8088325 
-C melodic minor      Em (add 9) 
-      0.8085356       0.8084651 </code></pre>
+<pre><code>  C13susb9  Ab∆9(#11)  Gm13(#11)  Cm13(#11)       Cm13 Em (add 9)   Gbm9(b5) 
+ 0.8140695  0.8131349  0.8128380  0.8119234  0.8109059  0.8105701  0.8100552 </code></pre>
 </div>
 </div>
 <p>After another fix, mostly look fine. Good that there are good options!</p>
@@ -919,8 +917,8 @@ C melodic minor      Em (add 9)
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(progression)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>C major triad      Edim(∆7)          Cm13        C note G major triad 
-    1.0000000     0.8436963     0.8095027     0.7804147     0.7302693 </code></pre>
+<pre><code>C major triad      Edim(∆7)          Cm13      Db7#11#9 G major triad 
+    1.0000000     0.8453354     0.8109059     0.7797304     0.7312787 </code></pre>
 </div>
 </div>
 <p>This is pretty cool, damn. Sometimes I’m getting back scales instead of chords, so I’d need to clean this up a little bit.</p>
@@ -940,8 +938,8 @@ C melodic minor      Em (add 9)
 <span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(progression)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>G major triad      Bdim(∆7)  C Mixolydian        G note C major triad 
-    1.0000000     0.8436963     0.8095027     0.7804147     0.7302693 </code></pre>
+<pre><code>G major triad      Bdim(∆7)  C Mixolydian      Ab7#11#9 C major triad 
+    1.0000000     0.8453354     0.8109059     0.7797304     0.7312787 </code></pre>
 </div>
 </div>
 <hr>
@@ -963,8 +961,8 @@ C melodic minor      Em (add 9)
 <span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(progression)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>       D7   D∆9(13)        G7 
-1.0000000 0.8595150 0.7792604 </code></pre>
+<pre><code>       D7  D Lydian        G7 
+1.0000000 0.8601924 0.7791177 </code></pre>
 </div>
 </div>
 </section>
@@ -1094,8 +1092,8 @@ C melodic minor      Em (add 9)
 <span id="cb24-113"><a href="#cb24-113" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_intermediate_chords</span>(<span class="st">"C7"</span>,<span class="st">"G7"</span>, <span class="at">steps =</span> <span class="dv">3</span>, second_order_chords)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>       C7      Gsus  D13susb9   Em7(11)        G7 
-1.0000000 0.8677997 0.8211606 0.7944620 0.7368894 </code></pre>
+<pre><code>       C7  Eb9 (13)  D13susb9   Em7(11)        G7 
+1.0000000 0.8677174 0.8210745 0.7958189 0.7367877 </code></pre>
 </div>
 </div>
 <p>That’s good enough for now. I have a bunch more things I’d want to add to this function</p>
