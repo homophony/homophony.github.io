@@ -1,0 +1,477 @@
+---
+title: "Composition tests"
+author: "Matt Crump"
+date: 2/17/24
+description: "Trying to make things that sound interesting!"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - midiblender
+  - soundfont
+  - fluidsynth
+execute: 
+  echo: true
+  message: false
+  warning: false
+  eval: false
+format:
+  html:
+    code-fold: true
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "Chunky square wave. house beats. convolution reverb. A little dark analog delay. lots of stereo. busy. synthesizers. megazord. linocut"
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1024,width = 1024,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+"Chunky square wave. house beats. convolution reverb. A little dark analog delay. lots of stereo. busy. synthesizers. megazord. linocut"
+
+-----------------
+
+This image was produced by dreamshaper-xl-turbo using the above prompt, and should be reproducible with the source code.
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+## Comp 1
+
+Some tests.
+
+-add drums and synth voices
+
+```{r}
+#| eval: false
+library(midiblender)
+library(dplyr)
+library(pyramidi)
+library(fluidsynth)
+
+all_tracks <- data.frame()
+
+# note parameters
+  bars <- 12 
+  repeat_bars <- 2
+  possible_time_steps <- 16
+  note_interval <- 24
+  note_duration <- 48
+  
+  track_params <- list(track_1_kick =
+                         list(possible_notes = rep(1:5, times = rep(5,2,1,1,1)), 
+                              key_vector = rep(rep(c(0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 15), 
+                                                 each = possible_time_steps), 
+                                             times = repeat_bars),
+                              possible_beats = rep(c(4, 7,13,1), times=c(7,1,1,2)),
+                              program = 0,
+                              channel = 1,
+                              note_interval = 24,
+                              note_duration = 48
+                           ),
+                       track_2_snare =
+                         list(possible_notes = rep(1:5, times = rep(5,2,1,1,1)),  
+                            key_vector = rep(rep(c(0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 15), 
+                                                 each = possible_time_steps), 
+                                             times = repeat_bars),
+                            possible_beats = rep(c(1, 2, 7), times=c(4,1,1)),
+                            program = 1,
+                            channel = 2,
+                            note_interval = 24,
+                            note_duration = 48
+                          ),
+                       track_3_cymb =
+                         list(possible_notes = rep(1:5, times = rep(5,2,1,1,1)),  
+                            key_vector = rep(rep(c(0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 15), 
+                                                 each = possible_time_steps), 
+                                             times = repeat_bars),
+                            possible_beats = rep(c(8, 11, 12, 16,1), times=c(4,1,1,1,1)),
+                            program = 2,
+                            channel = 3,
+                            note_interval = 24,
+                            note_duration = 48
+                          ),
+                       track_4_synth =
+                         list(possible_notes = rep(((60:72)-24),   #1     2     3  4     5     6     7  8 
+                                                   times = c(8, 0, 0, 3, 0, 0, 0, 0, 0, 0, 2, 0, 1)), 
+                            key_vector = rep(rep(c(0, 0, 0, 0, -2, -2, -2, -2, 0, 0, 0, 5), 
+                                                 each = possible_time_steps), 
+                                             times = repeat_bars),
+                            possible_beats = rep(c(15,16,13,13), times=c(3,3,1,1)),
+                            program = 4,
+                            channel = 4,
+                            note_interval = 24,
+                            note_duration = sample(c(8,8,8,8,16,24), possible_time_steps*bars*repeat_bars, replace = T)
+                          ),
+                       track_5_synth =
+                         list(possible_notes = rep(((60:72)),   #1     2     3  4     5     6     7  8 
+                                                   times = c(8, 0, 0, 3, 0, 1, 1, 1, 0, 0, 2, 0, 1)), 
+                            key_vector = rep(rep(c(0, 0, 0, 0, -2, -2, -2, -2, 0, 0, 0, 5), 
+                                                 each = possible_time_steps), 
+                                             times = repeat_bars),
+                            possible_beats = rep(c(2,3,1,13), times=c(3,3,1,1)),
+                            program = 4,
+                            channel = 5,
+                            note_interval = 24,
+                            note_duration = sample(c(8,8,8,8,16,24), possible_time_steps*bars*repeat_bars, replace = T)
+                          )
+  )
+                       
+                           
+# loop for each track
+for(t in 1:5) {
+  
+  compose_notes <- tibble::tibble(
+    note_id = integer(),
+    note = integer(),
+    beat_on = integer(),
+    note_on = integer(),
+    note_off = integer()
+  ) %>%
+    # use euclidean rhythm
+    rowwise() %>%
+    add_row(
+      beat_on = c(replicate(
+        bars*repeat_bars,
+        bresenham_euclidean(sample(track_params[[t]]$possible_beats, 1), 
+                            possible_time_steps,
+                            start = 1)
+      )),
+      note = sample(track_params[[t]]$possible_notes,
+                    size = possible_time_steps * (bars*repeat_bars),
+                    replace = TRUE) + track_params[[t]]$key_vector
+    ) %>%
+    ungroup() %>%
+    # handle note times
+    mutate(
+      note_id = 1:n(),
+      note_on = (1:n() - 1) * track_params[[t]]$note_interval,
+      note_off = note_on + track_params[[t]]$note_duration
+    ) %>%
+    filter(beat_on == 1) %>%
+    #pivot to long
+    tidyr::pivot_longer(c("note_on", "note_off"),
+                        names_to = "type",
+                        values_to = "time") %>%
+    arrange(time) %>%
+    mutate(time = time - lag(time, default = 0),
+           channel = track_params[[t]]$channel)
+  ######################
+  # End composition 
+  
+  #######################
+  ## add composition to a new midi df
+  new_midi_df <- create_empty_midi_df() %>% # initialize
+    add_meta_track_name(name = "My track") %>%
+    add_meta_tempo(tempo = 500000) %>%
+    add_meta_time_sig(
+      numerator = 4,
+      denominator = 4,
+      clocks_per_click = 36,
+      notated_32nd_notes_per_beat = 8
+    ) %>%
+    add_program_change(program = track_params[[t]]$program,
+                       channel = track_params[[t]]$channel) %>%
+    add_control_change(control = 0, value = 0) %>%
+    # Composition added here
+    add_row(
+      i_track = rep(0, dim(compose_notes)[1]),
+      meta = rep(FALSE, dim(compose_notes)[1]),
+      note = compose_notes$note,
+      type = compose_notes$type,
+      time = compose_notes$time,
+      channel = compose_notes$channel,
+      velocity = sample(100L:112L,dim(compose_notes)[1],replace=T)
+      #velocity = 64
+    ) %>%
+    add_meta_end_of_track() %>%
+    mutate(i_track = t) %>%
+    mutate(velocity = case_when(type == "note_on" ~ velocity,
+                                type == "note_off" ~ 0))# set current track number
+  
+  all_tracks <- rbind(all_tracks,new_midi_df)
+  
+}
+
+#write midi
+#Initialize new pyramidi object
+new_pyramidi_object <- pyramidi::MidiFramer$new()
+# update ticks per beat
+new_pyramidi_object$ticks_per_beat <- 96L
+# update object with new midi df
+new_pyramidi_object$mf$midi_frame_unnested$update_unnested_mf(all_tracks)
+# write to midi file
+new_pyramidi_object$mf$write_file("TE-EP-133-C.mid")
+
+# play
+fluidsynth::midi_play(midi = "TE-EP-133-C.mid",soundfont = "~/Library/Audio/Sounds/Banks/TE-EP-133-A.sf2")
+
+#bounce
+fluidsynth::midi_convert(midi = "TE-EP-133-C.mid",
+                         soundfont = "~/Library/Audio/Sounds/Banks/TE-EP-133-A.sf2",
+                         output = "TE-EP-133-D.mp3")
+
+```
+
+`r html_tag_audio("TE-EP-133-D.mp3", type = "wav")`
+
+
+## Comp 2
+
+- get super basic, increase repetition, 4 on floor
+- increase gain
+
+```{r}
+#| eval: false
+library(midiblender)
+library(dplyr)
+library(pyramidi)
+library(fluidsynth)
+
+```
+
+```{r}
+#| eval: false
+all_tracks <- data.frame()
+
+# note parameters
+  bars <- 12 
+  repeat_bars <- 2
+  possible_time_steps <- 16
+  note_interval <- 24
+  note_duration <- 48
+  
+  track_params <- list(track_1_kick =
+                         list(possible_notes = rep(c(20,16), times = c(10,1)), 
+                              key_vector = rep(rep(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15), 
+                                                 each = possible_time_steps), 
+                                             times = repeat_bars),
+                              possible_beats = rep(c(4,5,6,7), times=c(10,1,1,1)),
+                              program = 0,
+                              channel = 1,
+                              note_interval = 24,
+                              note_duration = 48,
+                              velocity = sample(80:127,size = (possible_time_steps*bars*repeat_bars), replace = T)
+                           ),
+                       track_2_snare =
+                         list(possible_notes = rep(c(5,9), times = c(5,1)),  
+                            key_vector = rep(rep(c(0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 10, 15), 
+                                                 each = possible_time_steps), 
+                                             times = repeat_bars),
+                            possible_beats = rep(c(2,1,7), times=c(8,1,1)),
+                            program = 1,
+                            channel = 2,
+                            note_interval = 24,
+                            note_duration = 48,
+                            velocity = sample(80:127,size = (possible_time_steps*bars*repeat_bars), replace = T)
+                          ),
+                       track_3_cymb =
+                         list(possible_notes = rep(c(3,35,33), times = c(64,1,1)),  
+                            key_vector = rep(rep(c(0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 10, 15), 
+                                                 each = possible_time_steps), 
+                                             times = repeat_bars),
+                            possible_beats = rep(c(15,13,11,16), times=c(5,1,1,1)),
+                            program = 2,
+                            channel = 3,
+                            note_interval = 24,
+                            note_duration = 48,
+                            velocity = sample(10:127,size = (possible_time_steps*bars*repeat_bars), replace = T)
+                          ),
+                       track_4_synth =
+                         list(possible_notes = rep(((60:72)-24),   #1     2     3  4     5     6     7  8 
+                                                   times = c(8, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1)), 
+                            key_vector = rep(rep(c(0, 0, 0, 0, -2, -2, -2, -2, 0, 0, 0, 5), 
+                                                 each = possible_time_steps), 
+                                             times = repeat_bars),
+                            possible_beats = rep(c(8,16,13,13), times=c(3,3,1,1)),
+                            program = 4,
+                            channel = 4,
+                            note_interval = 24,
+                            note_duration = sample(c(8,8,8,8,16,24), possible_time_steps*bars*repeat_bars, replace = T),
+                            velocity = rep(127,times = (possible_time_steps*bars*repeat_bars))
+                          ),
+                       track_5_synth =
+                         list(possible_notes = rep(((60:72)),   #1     2     3  4     5     6     7  8 
+                                                   times = c(8, 0, 0, 3, 0, 1, 1, 1, 0, 0, 2, 0, 1)), 
+                            key_vector = rep(rep(c(0, 0, 0, 0, -2, -2, -2, -2, 0, 0, 0, 5), 
+                                                 each = possible_time_steps), 
+                                             times = repeat_bars),
+                            possible_beats = rep(c(2,3,1,13), times=c(3,3,1,1)),
+                            program = 4,
+                            channel = 5,
+                            note_interval = 24,
+                            note_duration = sample(c(8,8,8,8,16,24), possible_time_steps*bars*repeat_bars, replace = T),
+                            velocity = rep(127,times = (possible_time_steps*bars*repeat_bars))
+                          )
+  )
+                       
+                           
+# loop for each track
+for(t in 4:5) {
+  
+  compose_notes <- tibble::tibble(
+    note_id = integer(),
+    note = integer(),
+    beat_on = integer(),
+    note_on = integer(),
+    note_off = integer(),
+    velocity = integer()
+  ) %>%
+    # use euclidean rhythm
+    rowwise() %>%
+    add_row(
+      beat_on = c(replicate(
+        bars*repeat_bars,
+        bresenham_euclidean(sample(track_params[[t]]$possible_beats, 1), 
+                            possible_time_steps,
+                            start = 1)
+      )),
+      note = sample(track_params[[t]]$possible_notes,
+                    size = possible_time_steps * (bars*repeat_bars),
+                    replace = TRUE) + track_params[[t]]$key_vector,
+      velocity = track_params[[t]]$velocity 
+    ) %>%
+    ungroup() %>%
+    # handle note times
+    mutate(
+      note_id = 1:n(),
+      note_on = (1:n() - 1) * track_params[[t]]$note_interval,
+      note_off = note_on + track_params[[t]]$note_duration
+    ) %>%
+    filter(beat_on == 1) %>%
+    #pivot to long
+    tidyr::pivot_longer(c("note_on", "note_off"),
+                        names_to = "type",
+                        values_to = "time") %>%
+    arrange(time) %>%
+    mutate(time = time - lag(time, default = 0),
+           channel = track_params[[t]]$channel)
+  ######################
+  # End composition 
+  
+  #######################
+  ## add composition to a new midi df
+  new_midi_df <- create_empty_midi_df() %>% # initialize
+    add_meta_track_name(name = "My track") %>%
+    add_meta_tempo(tempo = 600000) %>%
+    add_meta_time_sig(
+      numerator = 4,
+      denominator = 4,
+      clocks_per_click = 36,
+      notated_32nd_notes_per_beat = 8
+    ) %>%
+    add_program_change(program = track_params[[t]]$program,
+                       channel = track_params[[t]]$channel) %>%
+    add_control_change(control = 0, value = 0) %>%
+    # Composition added here
+    add_row(
+      i_track = rep(0, dim(compose_notes)[1]),
+      meta = rep(FALSE, dim(compose_notes)[1]),
+      note = compose_notes$note,
+      type = compose_notes$type,
+      time = compose_notes$time,
+      channel = compose_notes$channel,
+      velocity = compose_notes$velocity
+      #velocity = 64
+    ) %>%
+    add_meta_end_of_track() %>%
+    mutate(velocity = case_when(type == "note_on" ~ velocity,
+                                type == "note_off" ~ 0))
+  
+  all_tracks <- rbind(all_tracks,new_midi_df)
+  
+}
+
+#write midi
+#Initialize new pyramidi object
+new_pyramidi_object <- pyramidi::MidiFramer$new()
+# update ticks per beat
+new_pyramidi_object$ticks_per_beat <- 96L
+# update object with new midi df
+new_pyramidi_object$mf$midi_frame_unnested$update_unnested_mf(all_tracks)
+# write to midi file
+new_pyramidi_object$mf$write_file("TE-EP-133-E.mid")
+
+# play
+fluidsynth::midi_play(midi = "TE-EP-133-E.mid",
+                      soundfont = "~/Library/Audio/Sounds/Banks/TE-EP-133-A.sf2",
+                      settings = list('synth.gain' = 2))
+```
+
+```{r}
+#| eval: false
+#bounce
+fluidsynth::midi_convert(midi = "TE-EP-133-E.mid",
+                         soundfont = "~/Library/Audio/Sounds/Banks/TE-EP-133-A.sf2",
+                         output = "TE-EP-133-E_synth_Eb.mp3",
+                         settings = list('synth.gain' = 2))
+
+```
+This ended up being fun. I bounced a couple 24 bar drum tracks to ableton generated from this script. And, a simple synth track. Then used that source material to get this going.
+
+
+`r html_tag_audio("EP-133_E_song.mp3", type = "wav")`
+
+
+
+
+
+
+
+
+
