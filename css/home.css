@@ -12,6 +12,15 @@ main {
   padding-top: 0;
 }
 
+/*
+
 #quarto-margin-sidebar {
   display: none;
 }
+*/
+
+h1.title {
+ display: none;
+}
+
+

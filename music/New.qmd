@@ -1,11 +1,11 @@
 ---
-title: "New stuff"
+title: "Possibly some new stuff"
 image: imgs/Untitled Generative 1.jpeg
-description: "Some newer tracks"
+description: "Sometimes sharing newer things here"
 about:
   template: trestles
   image: imgs/Untitled Generative 1.jpeg
-order: 1
+order: 4
 ---
 
 ```{r}

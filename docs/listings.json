@@ -2,10 +2,10 @@
   {
     "listing": "/index.html",
     "items": [
-      "/music/New.html",
       "/music/Basement_Tapes.html",
       "/music/RS.html",
-      "/music/VO.html"
+      "/music/VO.html",
+      "/music/New.html"
     ]
   },
   {

@@ -1,25 +1,53 @@
 ---
-title: "Basement Tapes"
-image: imgs/Tape_2_midjourney.jpg
-description: "synth explorations"
+title: "Basement Tapes 1"
+image: imgs/BT_cover.jpg
+description: "**NEW RELEASE 2024**: Synth explorations"
 about:
   template: trestles
-  image: imgs/Tape_2_midjourney.jpg
+  image: imgs/BT_cover.jpg
   links:
+    - icon: apple
+      text: Streaming on Apple Music
+      href: https://music.apple.com/us/album/basement-tapes-1/1731748994
+    - icon: spotify
+      text: Streaming on Spotify
+      href: https://open.spotify.com/album/559sZuYnny6UacbXOXDF74?si=aVjkGR_uSz2H6YCr1HNxvA
     - icon: globe
-      text: Tracks streaming on soundcloud
-      href: https://soundcloud.com/matt-crump-913298049?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
+      text: Streaming a bunch of other places
+      href: https://distrokid.com/hyperfollow/homophony/basement-tapes-1
 
-order: 2
+order: 1
 ---
 
+## Apple music player
 
+<iframe allow="autoplay *; encrypted-media *;" frameborder="0" height="450" style="width:100%;max-width:660px;overflow:hidden;background:transparent;" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" src="https://embed.music.apple.com/us/album/basement-tapes-1/1731748994"></iframe>
+
+## Spotify player
+
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/559sZuYnny6UacbXOXDF74?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 
 ## Concept
 
-Some newer tracks, sharing them on soundcloud.
+Playing synthesizer music in my basement onto a tape deck.
 
 ## Production Notes
 
-I promise to say more about this, maybe, at some point.
+Released 2/18/2024
 
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(rio)
+
+bt_table <- rio::import("Homophony Basement Tapes 1 998accceaefe4a6f9c61a5c7a292cad2.csv")
+
+select_table <- bt_table %>%
+  select("Track Name","Description","Gear","Hashtags")
+
+knitr::kable(select_table)
+
+```

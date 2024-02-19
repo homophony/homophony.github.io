@@ -1,5 +1,5 @@
 ---
-title: " "
+title: "Homophony"
 listing:
   contents: music
   id: music_list
@@ -10,20 +10,26 @@ listing:
   image-height: '100%'
 format:
   html: 
-    toc: true
     css: css/home.css
-    page-layout: full
     linkcolor: black
 ---
 
 ```{=html}
 <img src="imgs/homophony_banner_short.jpg" alt="HOMOPHONY" width="100%">
+<br>
+<br>
 ```
 
+## Blog: [Wall of notes](notes.qmd)
 
+## Albums
+
+::: {#music_list}
+:::
+
+## Videos
 
 {{< video https://www.youtube.com/watch?v=qzE-E7dHNSI >}}
 
 
-::: {#music_list}
-:::
+

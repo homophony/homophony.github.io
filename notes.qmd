@@ -2,7 +2,7 @@
 title: "Wall of Notes"
 author: Matt Crump
 description: Music blog for motivation to play more music
-image: images/notesE_0.jpg
+image: images/cover.jpg
 editor: visual
 listing:
   contents: blog
