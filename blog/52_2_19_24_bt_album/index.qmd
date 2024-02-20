@@ -1,14 +1,16 @@
 ---
-title: "New Album: Basement Tapes 1"
+title: "Process thoughts on a new album: Basement Tapes 1"
 author: "Matt Crump"
-date: 2/19/24
-description: "A few album liner notes."
+date: 2/20/24
+description: "Album liner notes to self and general talk about making and sharing the music."
 image: "cover.jpg"
 comments:
   giscus: 
     repo: CrumpLab/crumplab_comments
 categories: 
-  - album
+  - New Release
+  - Basement Tapes 1
+  - distrokid
 execute: 
   echo: true
   message: false
@@ -17,7 +19,10 @@ execute:
 format:
   html:
     code-fold: true
-draft: true
+lightbox: 
+  match: auto
+  desc-position: right
+  loop: true
 ---
 
 ```{r}
@@ -66,7 +71,7 @@ for s in range(30):
 ![](cover.jpg){width="50%" fig-align="left"}
 
 ::: column-margin
-Album cover
+Basement Tapes 1: Album cover
 :::
 
 ```{r}
@@ -85,5 +90,137 @@ html_tag_audio <- function(file, type = c("wav")) {
 }
 
 ```
+
+
+I wasn't expecting to [release an album this weekend](https://homophony.quest/music/Basement_Tapes.html). It just turned out that way. 
+
+This post is an "album-liner-notes" to self about some of the process steps. In general, I hope that writing about these things will both the make the process easier next time, and potentially suggest new things to try or old things to avoid.
+
+As a solo-artist (i.e., part-time basement synth hermit dabbler) I've "released" three whole albums: [VO](https://homophony.quest/music/VO.html), [RS](https://homophony.quest/music/RS.html), and now [Basement Tapes 1](https://homophony.quest/music/Basement_Tapes.html). I say "released" because besides making the music, all I did was pay [distrokid](https://distrokid.com/) to distribute the tracks to most major streaming platforms. 
+
+I've been playing and recording music since I was a kid, gigged with a few bands here and there-- all for fun and the joy of playing. Up until a few years ago, the prospect of releasing a whole album in some kind of standard media format seemed very challenging, and I didn't have any time for it. I had a lot of extra time during the pandemic, was playing and recording a bunch of music, and at some point I started wondering how artists got their music up on streaming platforms. I was surprised to learn about services like distrokid that will get your music onto major streaming platforms...for pretty cheap too. So, in 2020 I put [VO](https://homophony.quest/music/VO.html) together and did the distrokid thing to get it out there. 
+
+Some topics to cover for this post: general music production approach, Basement Tapes 1 notes, sharing music online, using distrokid, all the extra stuff
+
+## General music production approach
+
+I'll make this section short, as my general approach is to try things and listen to what happens.
+
+I have a synth room full of fun gear. I really like to play live more than fidget with things. Everything feeds into a multi-track mixer that records to an SD card, or to a tape deck, or to a computer. Sometimes I have a musical idea and sometimes I don't and it develops over a session. I'll typically lay down all of the parts of some song, play lots of variations of everything (e.g., using take lanes in Ableton), and then sit down and edit things. When I get bored of editing, I'll aim for a process where everything is recorded live, and whatever happens is what I get.
+
+If I'm a hobby musician, I'm an absolute hack sound engineer. It's 100% that my final mixes are completely boneheaded in a gajillion ways from Sunday. Still, it's been a lot of fun learning about mixing and mastering. So much there to learn. 
+
+My basic mixing/mastering process is:
+
+1. Get rid of line noise, make sure input gain is decent for recording
+2. Set levels while playing to things that sound good to me
+3. If I'm in Ableton, totally mess around with every track adding bits of effects here and there, lots of parameter automation. Keep it subtle for the most part.
+4. Slap a "mixing and mastering" ableton effect rack onto the master channel, followed by a limiter to get the loudness under control.
+5. Leave it, come back, listen to it again in horror of what was I thinking the first time I did this.
+6. Maybe remove noise in Adobe Audition, especially if the tape deck was involved.
+
+## Basement Tapes 1 notes
+
+The first two albums, [VO](https://homophony.quest/music/VO.html) and [RS](https://homophony.quest/music/RS.html), are more in the experimental "synth pop" direction. I had bought a vocoder and couldn't resist singing into it...resulting in VO. RS has much less "singing", which is better for everybody. But, both of those albums involved heavy use of Ableton to get the final tracks into shape. 
+
+[Basement Tapes 1](https://homophony.quest/music/Basement_Tapes.html) are a collection of mostly impromptu live recordings from about 2020 onward...the recording dates for each track are a bit hazy.
+
+My neighbor had bought a PYLE cassette tape deck to transfer a whole bunch of tapes to digital. However, he couldn't get the USB drivers to work for his computer and gifted me the tape deck instead. It had been ages since I had a tape deck, and I love the squishy compression of recording to tape. So, I spent a bunch of time recording whole live tracks onto tape, as a kind of musical journal.
+
+I was making heavy use of the Rhodes, OB-6, Matriarch, and modular stuff. Most of the tracks have a slower downtempo feel. Occasionally they devolve into the sounds of modems connecting to the internet. My overall take on these tracks are they are things I made and decided to share for fun, and to help me document my process a little bit.
+
+## Sharing music online
+
+I've maintained websites for sharing some of the [visual things I make](https://www.crumplab.com/things/) for years, but it's only relatively recently that I've tried to share music. 
+
+I joined soundcloud way back and occasionally posted tracks [here](https://soundcloud.com/matt-crump-913298049). I think the Basement Tape tracks are still there. But, ugh, soundcloud, it's seems to have gotten worse and worse, and I am not feeling it.
+
+[Basement Tapes 1](https://homophony.quest/music/Basement_Tapes.html) mostly emerged out of my desire to try different methods of sharing music, and to use the sharing process as a side adventure in curating my own work. For example, in 2022 I discovered mastodon and got interested in sharing music using fediverse tools like funkwhale ([blogged about my set up attempts here](https://www.crumplab.com/blog/778_funkwhale/)). Ultimately, I didn't stick with funkwhale, but the experience helped me get closer to a sharing process that made sense for me. 
+
+In terms of sharing music, I was interested in being able to bundle assets together and share them all in one place. For example, I'd want to have the track somewhere, along with possible cover art, production notes, gear notes, musical concept notes, or any other tidbits I might want to attach. Funkwhale offered some of these things. At the same time, so did Mastodon in general. For a while, I was posting about each of the tracks on [Basement Tapes 1](https://homophony.quest/music/Basement_Tapes.html) on my old mastodon instance. Each of the posts had the track and usually some "tasting notes" about what the track sounded like. 
+
+After I shut down those things, I moved all of the tracks to a notion database, and that worked pretty well for general track organization. And, in principle I could have shared the music from notion.
+
+At some point I had purchased the domain for this site,  [https://homophony.quest](https://homophony.quest), and eventually decided to build a [quarto](https://quarto.org) website here to "officially" share music. It keeps me busy, and gives me some motivation to keep playing more music. 
+
+This weekend I gave the album pages for 
+[VO](https://homophony.quest/music/VO.html), [RS](https://homophony.quest/music/RS.html), and [Basement Tapes 1](https://homophony.quest/music/Basement_Tapes.html) a facelift and added embedded players for apple music and spotify. For [Basement Tapes 1](https://homophony.quest/music/Basement_Tapes.html), I also added a bunch of production notes I had been keeping in the notion database.
+
+I could share the music for these albums directly on [https://homophony.quest](https://homophony.quest), but I haven't done that yet. VO and RS were already distributed by distrokid, and Basement Tapes 1 was up on soundcloud. Plus, I hadn't yet figured out how to share a playable audio file on a quarto page, but I have since. Still, if I put too many tracks on a single page they are very slow to load, so I haven't figured everything out. Also, although I have some ambivalence about using major streaming platforms, at least it makes it easy for me to listen to my own music on my own devices in a flexible way. For example, if my tracks are on apple music, it's easy for me to stream them to myself, or put them in a playlist etc.
+
+A couple months ago I added this blog onto [https://homophony.quest](https://homophony.quest) and have shared a [few new tracks](https://homophony.quest/music/New.html), and bits and pieces of things across [blog posts](https://homophony.quest/notes.html). I've really enjoyed this set up. It's easy to publish whenever I want. It's easy to add a track, or write about some musical process, or both. I'm sticking with this rough pattern more or less for now.
+
+At the same time, I found this [NYT article](https://www.nytimes.com/2024/01/13/business/music-streaming-fraud-spotify.html) on phantom artists stealing music very upsetting. I'm not looking to make cash from music, but the idea of someone else stealing it (say, off of soundcloud, or wherever your music is posted to the internet) to make cash for themselves gives me major frowny face. 
+
+Whereas, it would be fun to develop a track and post about it and share it on this blog, be it resolved that it would suck to have someone steal it and distribute it without your knowledge.
+
+I suspect that I'm not a major target for this type of music theft, but nevertheless, it left a sad trombone sound in my ear. And, this whole nonsense was the major reason why I released [Basement Tapes 1](https://homophony.quest/music/Basement_Tapes.html) over the weekend. I had a spare hour (and that's almost all it takes to upload tracks to distrokid), and decided to put the tracks out there. They had been up on soundcloud for over a year. I was curious if someone had pirated them and tried to distribute them already without my knowledge. I assumed I might learn about that by attempting to distribute them with distrokid. For example, perhaps these music stores do some quick plagiarism checks or something, and would deny my tracks if they were already somehow on the service. Fortunately that didn't happen. 
+
+I'm not sure what my plans are for sharing finished tracks in the future. Some mix of bits and pieces on the blog, and then distributing full tracks through distrokid or a similar service.
+
+## Using Distrokid
+
+I don't have too much to say about this right now. I've found the service to be fairly smooth. I'm not paying for all the bells and whistles, which quickly add cost to releasing an album. It's nice that they distribute widely to various platforms, which makes it easy for me to access the tracks depending on the situation. 
+
+I did click through the option to manage my artist profile on spotify, apple music, and youtube, which adds even more stuff to do, should one care to do extra stuff
+
+## Extra stuff
+
+It's almost time to start work. 
+
+This time the extra stuff was to make short mp4 videos for the Spotify canvas feature. I had previously created cover art for each track using a combination of midjourney, and the "tasting notes" that I wrote for each track as a prompt to midjourney. I put these images into Adobe After effects and made short 7 sec clips for each of them. I stopped using Spotify in general, so I'm not sure why I went overboard on this extra stuff, but it was fun to make the video clips.
+
+## Midjourney cover pictures
+
+I still don't know what to think about using generative models to make pictures. Nowadays it's mostly misgivings, with some idle curiosity about what happens if I try x?
+
+I have had some interest in programmatically generating images for a long time, and have done all sorts of weird computer image stuff. The cover art for VO and RS was generated by a very early latent image space model. I like the in-between weird images.
+
+When I was bouncing tracks for this album midjourney had started to become available. I think this was my first and only time trying to do anything on discord. Anyway, I generated these images using prompts for describing what I heard in the music. 
+
+I still have the prompts, but I doubt any of this is reproducible, so I have no idea how to attribute any of this.
+
+::: {layout-ncol=4}
+
+![Tape 1](album_imgs/Tape_1_midjourney.jpg){group="my-gallery"}
+
+![Tape 2](album_imgs/Tape_2_midjourney.jpg){group="my-gallery"}
+
+![Tape 3](album_imgs/Tape_3_midjourney.jpg){group="my-gallery"}
+
+![Tape 4](album_imgs/Tape_4_midjourney.jpg){group="my-gallery"}
+
+![Tape 5](album_imgs/Tape_5_midjourney.jpg){group="my-gallery"}
+
+![Tape 6](album_imgs/Tape_6_midjourney.jpg){group="my-gallery"}
+
+![Tape 7](album_imgs/Tape_7_midjourney.jpg){group="my-gallery"}
+
+![Tape 8](album_imgs/Tape_8_midjourney.jpg){group="my-gallery"}
+
+![Tape 10](album_imgs/Tape_10_midjourney.jpg){group="my-gallery"}
+
+![Tape 11](album_imgs/Tape_11_midjourney.jpg){group="my-gallery"}
+
+![Tape 13](album_imgs/Tape_13_midjourney.jpg){group="my-gallery"}
+
+![Tape 14](album_imgs/Track_14_midjourney.jpg){group="my-gallery"}
+
+:::
+
+## Spotify banner pictures
+
+I recently updated my spotify artist banner with this image. Although, I mostly do not use generative models when [I make visual things](https://www.crumplab.com/things/), I have been generating images a fair amount on this music blog. 
+
+For example, the spotify banner was made with [Dreamshaper-xl-turbo](https://huggingface.co/Lykon/dreamshaper-xl-turbo), and the source code for this one is in the python code chunk at the top of this post. This image and the others made with this process should be reproducible by using the source code and the same random seeds that I used.
+
+Ideally there would be a way to at least attribute the construction of these images to their sources, as well as pay for it, perhaps like a streaming service. 
+
+![synth_27_11](images/synth_27_11.jpeg){group="my-gallery-2"}
+
+For example, this image is in some sense composed from a weighted combination from source images in the generative model, or at least it might have an interpretation as a weighted combination. If the source images and their originators were known, then this image could be attributed with a vector assigning weights to the original sources. 
+
+Anyway, I like cheesy stuff, and these generated images are super cheese, even smelly cheese. I will probably keep fooling around with them until I eat too much of this cheese, and go find some other cheese.
+
 
 

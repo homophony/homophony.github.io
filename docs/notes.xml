@@ -15,7 +15,367 @@
 <link>https://homophony.quest/notes.html</link>
 </image>
 <generator>quarto-1.4.549</generator>
-<lastBuildDate>Sun, 18 Feb 2024 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 20 Feb 2024 05:00:00 GMT</lastBuildDate>
+<item>
+  <title>New Album: Basement Tapes 1</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/52_2_19_24_bt_album/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> set_seed</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Image</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> random</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ssl</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#locate library</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mps"</span>)</span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"max"</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"synthesizer city. sunset. synthesizers everywhere. mountains. retro. 80s cartoon. linocut. synthwave. neon."</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>):</span>
+<span id="cb1-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]:</span>
+<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span></span>
+<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-29">    set_seed(seed)</span>
+<span id="cb1-30">    </span>
+<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">576</span>,width <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1336</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>num_steps)</span>
+<span id="cb1-32">    </span>
+<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpeg"</span></span>
+<span id="cb1-34">    </span>
+<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><a href="cover.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></a></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Basement Tapes 1: Album cover</p>
+</div></div><p>I wasn’t expecting to release an album this weekend. It just turned out that way.</p>
+<p>This post is an “album-liner-notes” to self about some of the process steps. In general, I hope that writing about these things will both the make the process easier next time, and potentially suggest new things to try or old things to avoid.</p>
+<p>As a solo-artist (i.e., part-time basement synth hermit dabbler) I’ve “released” three whole albums: <a href="https://homophony.quest/music/VO.html">VO</a>, <a href="https://homophony.quest/music/RS.html">RS</a>, and now <a href="https://homophony.quest/music/Basement_Tapes.html">Basement Tapes 1</a>. I say “released” because besides making the music, all I did was pay <a href="https://distrokid.com/">distrokid</a> to distribute the tracks to most major streaming platforms.</p>
+<p>I’ve been playing and recording music since I was a kid, gigged with a few bands here and there– all for fun and the joy of playing. Up until a few years ago, the prospect of releasing a whole album in some kind of standard media format seemed very challenging, and I didn’t have any time for it. I had a lot of extra time during the pandemic, was playing and recording a bunch of music, and at some point I started wondering how artists got their music up on streaming platforms. I was surprised to learn about services like distrokid that will get your music onto major streaming platforms…for pretty cheap too. So, in 2020 I put <a href="https://homophony.quest/music/VO.html">VO</a> together and did the distrokid thing to get it out there.</p>
+<p>Anyway, some topics to cover for this: general music production approach, Basement Tapes 1 notes, sharing music online, using distrokid, all the extra stuff</p>
+<section id="general-music-production-approach" class="level2">
+<h2 class="anchored" data-anchor-id="general-music-production-approach">General music production approach</h2>
+<p>I’ll make this section short, as my general approach is to try things and listen to what happens.</p>
+<p>I have a synth room full of fun gear. I really like to play live more than fidget with things. Everything feeds into a multi-track mixer where I can record immediately to an SD card, or to a tape deck, or to my computer. Sometimes I have a musical idea and sometimes I don’t and it develops over a session. I’ll typically lay down all of the parts of some song, play lots of variations of everything (e.g., using take lanes in Ableton), and then sit down and edit things. When I get bored of editing, I’ll aim for a process where everything is recorded live, and whatever happens is what I get.</p>
+<p>If I’m a hobby musician, I’m an absolute hack sound engineer. It’s 100% that my final mixes are completely boneheaded in a gajillion ways from Sunday. Still, it’s been a lot of fun learning about mixing and mastering. So much there to learn.</p>
+<p>My basic mixing/mastering process is:</p>
+<ol type="1">
+<li>Get rid of line noise, make sure input gain is decent for recording</li>
+<li>Set levels while playing to things that sound good to me</li>
+<li>If I’m in Ableton, totally mess around with every track adding bits of effects here and there, lots of parameter automation</li>
+<li>Slap a “mixing and mastering” ableton effect rack onto the master channel, followed by a limiter to get the loudness under control.</li>
+<li>Leave it, come back, listen to it again in horror of what was I thinking</li>
+<li>Maybe remove noise in Adobe Audition, especially if the tape deck was involved.</li>
+</ol>
+</section>
+<section id="basement-tapes-1-notes" class="level2">
+<h2 class="anchored" data-anchor-id="basement-tapes-1-notes">Basement Tapes 1 notes</h2>
+<p>The first two albums, <a href="https://homophony.quest/music/VO.html">VO</a> and <a href="https://homophony.quest/music/RS.html">RS</a>, are more in the experimental “synth pop” direction. I had bought a vocoder, and couldn’t resist singing into, and then VO happened. RS has much less “singing”, which is better for everybody. But, both of those albums involved heavy use of Ableton to get the final tracks into shape.</p>
+<p><a href="https://homophony.quest/music/Basement_Tapes.html">Basement Tapes 1</a> are a collection of mostly impromptu live recordings from about 2020 onward…the recording dates for each track are a bit hazy.</p>
+<p>My neighbor had bought a PYLE cassette tape deck to transfer a whole bunch of tapes to digital. However, he couldn’t get the USB drivers to work for his computer and gifted me the tape deck instead. It had been ages since I had a tape deck, and I love the squishy compression of recording to tape. So, I spent a bunch of time recording whole live tracks onto tape, as a kind of musical journal.</p>
+<p>I was making heavy use of the Rhodes, OB-6, Matriarch, and modular stuff. Most of the tracks have a slower downtempo feel. Occasionally they devolve into the sounds of modems connecting to the internet. My overall take on these tracks are they are things I made and decided to share for fun, and to help me document my process a little bit.</p>
+</section>
+<section id="sharing-music-online" class="level2">
+<h2 class="anchored" data-anchor-id="sharing-music-online">Sharing music online</h2>
+<p>I’ve maintained websites for sharing some of the <a href="https://www.crumplab.com/things/">visual things I make</a> for years, but it’s only relatively recently that I’ve tried to share music.</p>
+<p>I joined soundcloud way back and occasionally posted tracks <a href="https://soundcloud.com/matt-crump-913298049">here</a>. I think the Basement Tape tracks are still there. But, ugh, soundcloud, it’s seems to have gotten worse and worse, and I am not feeling it.</p>
+<p><a href="https://homophony.quest/music/Basement_Tapes.html">Basement Tapes 1</a> mostly emerged out of my desire to try different methods of sharing music, and to use the sharing process as a side adventure in curating my own work. For example, in 2022 I discovered mastodon and got interested in sharing music using fediverse tools like funkwhale (<a href="https://www.crumplab.com/blog/778_funkwhale/">blogged about my set up attempts here</a>). Ultimately, I didn’t stick with funkwhale, but the experience helped me get closer to a sharing process that made sense for me.</p>
+<p>In terms of sharing music, I was interested in being able to bundle assets together and share them all in one place. For example, I’d want to have the track somewhere, along with possible cover art, production notes, gear notes, musical concept notes, or any other tidbits I might want to attach. Funkwhale offered some of these things. At the same time, so did Mastodon in general. For a while, I was posting about each of the tracks on <a href="https://homophony.quest/music/Basement_Tapes.html">Basement Tapes 1</a> on my old mastodon instance. Each of the posts had the track and usually some “tasting notes” about what the track sounded like.</p>
+<p>After I shut down those things, I moved all of the tracks to a notion database, and that worked pretty well for general track organization. And, in principle I could have shared the music from notion.</p>
+<p>At some point I had purchased the domain for this site, <a href="https://homophony.quest">https://homophony.quest</a>, and eventually decided to build a <a href="https://quarto.org">quarto</a> website here to “officially” share music. It keeps me busy, and gives me some motivation to keep playing more music.</p>
+<p>This weekend I gave the album pages for <a href="https://homophony.quest/music/VO.html">VO</a>, <a href="https://homophony.quest/music/RS.html">RS</a>, and <a href="https://homophony.quest/music/Basement_Tapes.html">Basement Tapes 1</a> a facelift and added embedded players for apple music and spotify. For <a href="https://homophony.quest/music/Basement_Tapes.html">Basement Tapes 1</a>, I also added a bunch of production notes I had been keeping in the notion database.</p>
+<p>In principle I could share the music for these albums directly on <a href="https://homophony.quest">https://homophony.quest</a>, but I haven’t done that yet. VO, RS were already distributed by distrokid, and Basement Tapes 1 was up on soundcloud. Plus, I hadn’t yet figured out how to share a playable audio file on a quarto page, but I have since figured that part out. Still, if I put too many tracks on a single page they are very slow to load, so I haven’t figured everything out. Also, although I have some ambivalence about using major streaming platforms, at least it makes it easy for me to listen to my own music on my own devices in a flexible way. For example, if my tracks are on apple music, it’s easy for me to stream them to myself, or put them in a playlist etc.</p>
+<p>A couple months ago I added this blog onto <a href="https://homophony.quest">https://homophony.quest</a> and have shared a <a href="https://homophony.quest/music/New.html">few new tracks</a>, and bits and pieces of things across <a href="https://homophony.quest/notes.html">blog posts</a>. So far I’ve really enjoyed this set up. It’s easy to publish whenever I want. It’s easy to add a track, or write about some musical process, or both. I’m sticking with this rough pattern more or less for now.</p>
+<p>At the same time, I found this [NYT article] (https://www.nytimes.com/2024/01/13/business/music-streaming-fraud-spotify.html) on phantom artists stealing music very upsetting. I’m not looking to make cash from music, but the idea of someone else stealing it (say, off of soundcloud, or wherever your music is posted to the internet) to make cash for themselves gives me major frowny face.</p>
+<p>Whereas, it would be fun to develop a track and post about it and share it on this blog, be it resolved that it would suck to have someone steal it and distribute it without your knowledge.</p>
+<p>I suspect that I’m not a major target for this type of music theft, but nevertheless, it left a sad trombone sound in my ear. And, this whole nonsense was the major reason why I released <a href="https://homophony.quest/music/Basement_Tapes.html">Basement Tapes 1</a> over the weekend. I had a spare hour (and that’s almost all it takes to upload tracks to distrokid), and decided to put the tracks out there. They had been up on soundcloud for over a year. I was curious if someone had pirated them and tried to distribute them already without my knowledge. I assumed I might learn about that by attempting to distribute them with distrokid. For example, perhaps these music stores do some quick plagiarism checks or something, and would deny my tracks if they were already somehow on the service. Fortunately that didn’t happen.</p>
+<p>I’m not sure what my plans are for sharing finished tracks in the future. Some mix of bits and pieces on the blog, and then distributing full tracks through distrokid or a similar service.</p>
+</section>
+<section id="using-distrokid" class="level2">
+<h2 class="anchored" data-anchor-id="using-distrokid">Using Distrokid</h2>
+<p>I don’t have too much to say about this right now. I’ve found the service to be fairly smooth. I’m not paying for all the bells and whistles, which quickly add cost to releasing an album. It’s nice that they distribute widely to various platforms, which makes it easy for me to access the tracks depending on the situation.</p>
+<p>I did click through the option to manage my artist profile on spotify, apple music, and youtube, which adds even more stuff to do, should one care to do extra stuff</p>
+</section>
+<section id="extra-stuff" class="level2">
+<h2 class="anchored" data-anchor-id="extra-stuff">Extra stuff</h2>
+<p>It’s almost time to start work.</p>
+<p>This time the extra stuff was to make short mp4 videos for the Spotify canvas feature. I had previously created cover art for each track using a combination of midjourney, and the “tasting notes” that I wrote for each track as a prompt to midjourney. I put these images into Adobe After effects and made short 7 sec clips for each of them. I stopped using Spotify in general, so I’m not sure why I went overboard on this extra stuff, but it was fun to make the video clips.</p>
+</section>
+<section id="midjourney-cover-pictures" class="level2">
+<h2 class="anchored" data-anchor-id="midjourney-cover-pictures">Midjourney cover pictures</h2>
+<p>I still don’t know what to think about using generative models to make pictures. Nowadays it’s mostly misgivings, with some idle curiosity about what happens if I try x?</p>
+<p>I have had some interest in programmatically generating images for a long time, and have done all sorts of weird computer image stuff. The cover art for VO and RS was generated by a very early latent image space model. I like the in-between weird images.</p>
+<p>When I was bouncing tracks for this album midjourney had started to become available. I think this was my first and only time trying to do anything on discord. Anyway, I generated these images using prompts for describing what I heard in the music.</p>
+<p>I still have the prompts, but I doubt any of this is reproducible, so I have no idea how to attribute any of this.</p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="4">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="album_imgs/Tape_1_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="my-gallery" title="Tape 1"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_1_midjourney.jpg" class="img-fluid figure-img" alt="Tape 1"></a></p>
+<figcaption>Tape 1</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="album_imgs/Tape_2_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="my-gallery" title="Tape 2"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_2_midjourney.jpg" class="img-fluid figure-img" alt="Tape 2"></a></p>
+<figcaption>Tape 2</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="album_imgs/Tape_3_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="my-gallery" title="Tape 3"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_3_midjourney.jpg" class="img-fluid figure-img" alt="Tape 3"></a></p>
+<figcaption>Tape 3</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="album_imgs/Tape_4_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="my-gallery" title="Tape 4"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_4_midjourney.jpg" class="img-fluid figure-img" alt="Tape 4"></a></p>
+<figcaption>Tape 4</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="album_imgs/Tape_5_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="my-gallery" title="Tape 5"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_5_midjourney.jpg" class="img-fluid figure-img" alt="Tape 5"></a></p>
+<figcaption>Tape 5</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="album_imgs/Tape_6_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="my-gallery" title="Tape 6"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_6_midjourney.jpg" class="img-fluid figure-img" alt="Tape 6"></a></p>
+<figcaption>Tape 6</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="album_imgs/Tape_7_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="my-gallery" title="Tape 7"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_7_midjourney.jpg" class="img-fluid figure-img" alt="Tape 7"></a></p>
+<figcaption>Tape 7</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="album_imgs/Tape_8_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-9" data-gallery="my-gallery" title="Tape 8"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_8_midjourney.jpg" class="img-fluid figure-img" alt="Tape 8"></a></p>
+<figcaption>Tape 8</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="album_imgs/Tape_10_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-10" data-gallery="my-gallery" title="Tape 10"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_10_midjourney.jpg" class="img-fluid figure-img" alt="Tape 10"></a></p>
+<figcaption>Tape 10</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="album_imgs/Tape_11_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-11" data-gallery="my-gallery" title="Tape 11"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_11_midjourney.jpg" class="img-fluid figure-img" alt="Tape 11"></a></p>
+<figcaption>Tape 11</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="album_imgs/Tape_13_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-12" data-gallery="my-gallery" title="Tape 13"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_13_midjourney.jpg" class="img-fluid figure-img" alt="Tape 13"></a></p>
+<figcaption>Tape 13</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="album_imgs/Track_14_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-13" data-gallery="my-gallery" title="Tape 14"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Track_14_midjourney.jpg" class="img-fluid figure-img" alt="Tape 14"></a></p>
+<figcaption>Tape 14</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="spotify-banner-pictures" class="level2">
+<h2 class="anchored" data-anchor-id="spotify-banner-pictures">Spotify banner pictures</h2>
+<p>I recently updated my spotify artist banner with this image. Although, I mostly do not use generative models when <a href="https://www.crumplab.com/things/">I make visual things</a>, I have been generating images a fair amount on this music blog.</p>
+<p>For example, the spotify banner was made with <a href="https://huggingface.co/Lykon/dreamshaper-xl-turbo">Dreamshaper-xl-turbo</a>, and the source code for this one is in the python code chunk at the top of this post. This image and the others made with this process should be reproducible by using the source code and the same random seeds that I used.</p>
+<p>Ideally there would be a way to at least attribute the construction of these images to their sources, as well as pay for it, perhaps like a streaming service.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/synth_27_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-14" data-gallery="my-gallery-2" title="synth_27_11"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/images/synth_27_11.jpeg" class="img-fluid figure-img" alt="synth_27_11"></a></p>
+<figcaption>synth_27_11</figcaption>
+</figure>
+</div>
+<p>For example, this image in some sense in composed as a weighted combination from source images in the generative model, or at least it might have an interpretation as a weighted combination. If the source images and their originators were known, then this image could be attributed with a vector assigning weights to the original sources.</p>
+<p>Anyway, I like cheesy stuff, and these generated images are super cheese, even smelly cheese. I will probably keep fooling around with them until I eat too much of this cheese, and go find some other cheese.</p>
+
+
+
+</section>
+
+ ]]></description>
+  <category>New Release</category>
+  <category>Basement Tapes 1</category>
+  <category>distrokid</category>
+  <guid>https://homophony.quest/blog/52_2_19_24_bt_album/</guid>
+  <pubDate>Tue, 20 Feb 2024 05:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/52_2_19_24_bt_album/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Airwolf trap remix</title>
   <dc:creator>Matt Crump</dc:creator>
@@ -32805,2290 +33165,6 @@ font-style: inherit;">+</span>Bm7b5)</span></code></pre></div>
   <guid>https://homophony.quest/blog/30_1_30_24_spinning_chords/</guid>
   <pubDate>Tue, 30 Jan 2024 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/30_1_30_24_spinning_chords/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Midi and synthesis in R</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/32_1_30_24_R_synth/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> DiffusionPipeline</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> set_seed</span>
-<span id="cb1-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> Image</span>
-<span id="cb1-4"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> torch</span>
-<span id="cb1-5"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> random</span>
-<span id="cb1-6"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> ssl</span>
-<span id="cb1-7"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> os</span>
-<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> ssl._create_unverified_context</span>
-<span id="cb1-9"></span>
-<span id="cb1-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#locate library</span></span>
-<span id="cb1-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
-<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
-<span id="cb1-13"></span>
-<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
-<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
-<span id="cb1-16">)</span>
-<span id="cb1-17"></span>
-<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"mps"</span>)</span>
-<span id="cb1-19"></span>
-<span id="cb1-20"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
-<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"max"</span>)</span>
-<span id="cb1-22"></span>
-<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"computer music. musical computer. music represented as bits going into the fabric of the universe. 80s cartoon retro."</span></span>
-<span id="cb1-24"></span>
-<span id="cb1-25"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span>):</span>
-<span id="cb1-26">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>]:</span>
-<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">21</span></span>
-<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span>
-<span id="cb1-29">    set_seed(seed)</span>
-<span id="cb1-30">    </span>
-<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>num_steps)</span>
-<span id="cb1-32">    </span>
-<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">.jpeg"</span></span>
-<span id="cb1-34">    </span>
-<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
-</details>
-</div>
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/32_1_30_24_R_synth/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>computer music. musical computer. music represented as bits going into the fabric of the universe. 80s cartoon retro. - Dreamshaper v7</p>
-</div></div><p>I’m going to be running a cognition experiment or two this semester that will involve creating musical stimuli. I would like programmatic control over that, so I’m delighted to learn that there are existing R packages that will help me with a few things.</p>
-<p>I’m just testing a few things out here, which means this page will be a loose collection of notes and scraps of code.</p>
-<section id="reading-in-midi-with-pyramidi" class="level2">
-<h2 class="anchored" data-anchor-id="reading-in-midi-with-pyramidi">Reading in MIDI with pyramidi</h2>
-<p>It looks like I can read in MIDI data to a dataframe with <a href="https://urswilke.github.io/pyramidi/">pyramidi</a>.</p>
-<p>Requires some python stuff, but it is working. Kudos to Urs Wilke for developing <code>pyramidi</code>! It uses <a href="https://adv-r.hadley.nz/r6.html">R6</a>, which I don’t use very often.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(pyramidi)</span>
-<span id="cb2-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(dplyr)</span>
-<span id="cb2-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidyr)</span>
-<span id="cb2-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(purrr)</span>
-<span id="cb2-5"></span>
-<span id="cb2-6">midifile <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> MidiFramer<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">new</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Top Gun Theme.mid"</span>)</span>
-<span id="cb2-7"></span>
-<span id="cb2-8">knitr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">kable</span>(midifile<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_notes_wide[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>,])</span></code></pre></div>
-</details>
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<colgroup>
-<col style="width: 8%">
-<col style="width: 6%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 6%">
-<col style="width: 5%">
-<col style="width: 7%">
-<col style="width: 17%">
-<col style="width: 14%">
-<col style="width: 10%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: right;">i_track</th>
-<th style="text-align: left;">meta</th>
-<th style="text-align: right;">program</th>
-<th style="text-align: right;">channel</th>
-<th style="text-align: right;">control</th>
-<th style="text-align: right;">value</th>
-<th style="text-align: right;">note</th>
-<th style="text-align: right;">i_note</th>
-<th style="text-align: right;">velocity_note_on</th>
-<th style="text-align: right;">ticks_note_on</th>
-<th style="text-align: right;">b_note_on</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">24</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">110</td>
-<td style="text-align: right;">2304</td>
-<td style="text-align: right;">48</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">24</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3792</td>
-<td style="text-align: right;">79</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">24</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">110</td>
-<td style="text-align: right;">3840</td>
-<td style="text-align: right;">80</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">24</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">5328</td>
-<td style="text-align: right;">111</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">24</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">110</td>
-<td style="text-align: right;">5376</td>
-<td style="text-align: right;">112</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">36</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">110</td>
-<td style="text-align: right;">5376</td>
-<td style="text-align: right;">112</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">24</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">6096</td>
-<td style="text-align: right;">127</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">36</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">6096</td>
-<td style="text-align: right;">127</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">24</td>
-<td style="text-align: right;">7</td>
-<td style="text-align: right;">110</td>
-<td style="text-align: right;">6144</td>
-<td style="text-align: right;">128</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">FALSE</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">NaN</td>
-<td style="text-align: right;">41</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">110</td>
-<td style="text-align: right;">6144</td>
-<td style="text-align: right;">128</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</section>
-<section id="synthesizing-midi-to-wav-and-mp3" class="level2">
-<h2 class="anchored" data-anchor-id="synthesizing-midi-to-wav-and-mp3">Synthesizing midi to wav and mp3</h2>
-<p><a href="https://urswilke.github.io/raudiomate/">raudiomate</a></p>
-<p>also need <a href="https://www.fluidsynth.org">fluid synth</a></p>
-<p>And, apparently fluid synth needs sound fonts. Got this one <a href="https://member.keymusician.com/Member/FluidR3_GM/index.html" class="uri">https://member.keymusician.com/Member/FluidR3_GM/index.html</a></p>
-<p>I could also try timidity, but I haven’t gone there yet.</p>
-<p>I could not get <code>raudiomate</code> helper functions to work. The <code>processx::run</code> command kept putting quotes where they didn’t belong</p>
-<ul>
-<li>used the system command to run fluidsynth</li>
-<li>used the <code>av</code> package to turn the wav into an mp3</li>
-</ul>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">system</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"fluidsynth -F out.wav ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 'Top Gun Theme.mid'"</span>)</span>
-<span id="cb3-2"></span>
-<span id="cb3-3">av<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">av_audio_convert</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"out.wav"</span>,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"out.mp3"</span>)</span></code></pre></div>
-</details>
-</div>
-<p><audio controls=""> <source src="out.mp3" type="audio/wav"> </audio></p>
-<p>This all took way longer than I expected. Mostly fiddling with python packages and paths to things. But, I declare victory because it made the Top Gun theme song into an mp3.</p>
-<hr>
-<p>Very happy that it is possible to import, manipulate, and render midi files using R as a central command language. Although I have been messing with midi stuff for since the 80s, I have not tried to programmatically mess with it, or dug into midi file convention and structure.</p>
-<p>I have some work ahead if I want to compose “computer music” with R. That would be fun though. I would probably glitch out until everything descends into modem sounds. Actually, I’m secretly extremely excited about some possibilities that I’ve wanted to explore.</p>
-<p>Anyway, below is scraps of code trying out various things and making notes to my future self.</p>
-</section>
-<section id="writing-some-random-notes" class="level2">
-<h2 class="anchored" data-anchor-id="writing-some-random-notes">Writing some random notes</h2>
-<p>I’ve only got 30 minutes right now, can I make this thing randomize notes?</p>
-<p>Strategy: Read the pyramidi docs, borrow some code from there, and try to play some random notes.</p>
-<p>Answer: yes, close enough for now.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># trying stuff from the pyramidi docs</span></span>
-<span id="cb4-2"></span>
-<span id="cb4-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># load in a basic midi file</span></span>
-<span id="cb4-4">midi_file_string <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">system.file</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"extdata"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"test_midi_file.mid"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">package =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pyramidi"</span>)</span>
-<span id="cb4-5"></span>
-<span id="cb4-6">mfr <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> MidiFramer<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">new</span>(midi_file_string)</span>
-<span id="cb4-7"></span>
-<span id="cb4-8"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># mfr has a bunch of midi dataframes in it</span></span>
-<span id="cb4-9"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#mfr$df_notes_wide[1:10]</span></span>
-<span id="cb4-10"></span>
-<span id="cb4-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># helper function</span></span>
-<span id="cb4-12">beats_to_ticks <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span>(notes_wide) {</span>
-<span id="cb4-13">  notes_wide <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb4-14">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(</span>
-<span id="cb4-15">      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ticks_note_on  =</span> b_note_on  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> ticks_per_beat,</span>
-<span id="cb4-16">      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ticks_note_off =</span> b_note_off <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> ticks_per_beat</span>
-<span id="cb4-17">    )</span>
-<span id="cb4-18">}</span>
-<span id="cb4-19"></span>
-<span id="cb4-20">n_beats <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span></span>
-<span id="cb4-21">ticks_per_beat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">960</span>L</span>
-<span id="cb4-22"></span>
-<span id="cb4-23"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#(b_note_on = (0:(n_beats-1) %/% 4) * 4)</span></span>
-<span id="cb4-24"></span>
-<span id="cb4-25">b_note_on <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>(n_beats<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">-1</span>)</span>
-<span id="cb4-26"></span>
-<span id="cb4-27"></span>
-<span id="cb4-28">notes <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(</span>
-<span id="cb4-29">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">i_track =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,</span>
-<span id="cb4-30">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">meta =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>,</span>
-<span id="cb4-31">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">note =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sample</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">60</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">64</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">67</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">72</span>), <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">replace=</span>T),</span>
-<span id="cb4-32">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">channel =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,</span>
-<span id="cb4-33">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">i_note =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>n_beats,</span>
-<span id="cb4-34">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">velocity_note_on =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>,</span>
-<span id="cb4-35">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">velocity_note_off =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,</span>
-<span id="cb4-36">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">b_note_on =</span> b_note_on,</span>
-<span id="cb4-37">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">b_note_off =</span> b_note_on <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,</span>
-<span id="cb4-38">)</span>
-<span id="cb4-39"></span>
-<span id="cb4-40">mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">update_notes_wide</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">beats_to_ticks</span>(notes))</span>
-<span id="cb4-41"></span>
-<span id="cb4-42">df_notes_long <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pivot_long_notes</span>(mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_notes_wide)</span>
-<span id="cb4-43">df_midi_out <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">merge_midi_frames</span>(mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_meta, mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_notes_long, mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_not_notes)</span>
-<span id="cb4-44"></span>
-<span id="cb4-45">dfc2 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> df_midi_out <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb4-46">        miditapyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">nest_midi</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">repair_reticulate_conversion =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span>
-<span id="cb4-47"></span>
-<span id="cb4-48">miditapyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">write_midi</span>(dfc2, ticks_per_beat, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"test.mid"</span>)</span>
-<span id="cb4-49"></span>
-<span id="cb4-50"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">system</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"fluidsynth -F test.wav ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 'test.mid'"</span>)</span>
-<span id="cb4-51"></span>
-<span id="cb4-52">av<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">av_audio_convert</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"test.wav"</span>,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"test.mp3"</span>)</span></code></pre></div>
-</details>
-</div>
-<p><audio controls=""> <source src="test.mp3" type="audio/wav"> </audio></p>
-</section>
-<section id="midi-specs" class="level2">
-<h2 class="anchored" data-anchor-id="midi-specs">Midi specs</h2>
-<p>Don’t have time to read through this today, but here it is.</p>
-<ul>
-<li><a href="https://www.midi.org/specifications" class="uri">https://www.midi.org/specifications</a></li>
-</ul>
-</section>
-<section id="drums" class="level2">
-<h2 class="anchored" data-anchor-id="drums">Drums</h2>
-<p>On BPM, tempo, and midi ticks</p>
-<ul>
-<li><a href="https://majicdesigns.github.io/MD_MIDIFile/page_timing.html" class="uri">https://majicdesigns.github.io/MD_MIDIFile/page_timing.html</a></li>
-</ul>
-<p>The next bit is straight from <a href="https://urswilke.github.io/pyramidi/articles/compose.html" class="uri">https://urswilke.github.io/pyramidi/articles/compose.html</a>, with a few minor modifications to get things working on my machine.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># load system midi file to start</span></span>
-<span id="cb5-2">midi_file_string <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">system.file</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"extdata"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"test_midi_file.mid"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">package =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pyramidi"</span>)</span>
-<span id="cb5-3"></span>
-<span id="cb5-4">mfr <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> MidiFramer<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">new</span>(midi_file_string)</span>
-<span id="cb5-5"></span>
-<span id="cb5-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># set some timing params</span></span>
-<span id="cb5-7">n_beats <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span></span>
-<span id="cb5-8">ticks_per_beat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">960</span>L</span>
-<span id="cb5-9"></span>
-<span id="cb5-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># construct a tibble</span></span>
-<span id="cb5-11">drum <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(</span>
-<span id="cb5-12">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">i_track =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,</span>
-<span id="cb5-13">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">meta =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>,</span>
-<span id="cb5-14">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># This is just a repetition of a classical rock beat:</span></span>
-<span id="cb5-15">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">note =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rep</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">36</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">38</span>), n_beats <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>),</span>
-<span id="cb5-16">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">channel =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">9</span>,</span>
-<span id="cb5-17">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">i_note =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>n_beats,</span>
-<span id="cb5-18">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">velocity_note_on =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>,</span>
-<span id="cb5-19">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">velocity_note_off =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,</span>
-<span id="cb5-20">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">b_note_on =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>(n_beats <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>),</span>
-<span id="cb5-21">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">b_note_off =</span> b_note_on <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>,</span>
-<span id="cb5-22">)</span>
-<span id="cb5-23"></span>
-<span id="cb5-24"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># helper function</span></span>
-<span id="cb5-25">beats_to_ticks <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span>(notes_wide) {</span>
-<span id="cb5-26">  notes_wide <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-27">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(</span>
-<span id="cb5-28">      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ticks_note_on  =</span> b_note_on  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> ticks_per_beat,</span>
-<span id="cb5-29">      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ticks_note_off =</span> b_note_off <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> ticks_per_beat</span>
-<span id="cb5-30">    )</span>
-<span id="cb5-31">}</span>
-<span id="cb5-32"></span>
-<span id="cb5-33"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># pass the tibble back to the midi df</span></span>
-<span id="cb5-34">mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">update_notes_wide</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">beats_to_ticks</span>(drum))</span>
-<span id="cb5-35"></span>
-<span id="cb5-36">mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>mf<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">write_file</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"testagain.mid"</span>)</span>
-<span id="cb5-37"></span>
-<span id="cb5-38"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># do pyramidi stuff to get the tibble back into the format it needs to be</span></span>
-<span id="cb5-39">df_notes_long <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pivot_long_notes</span>(mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_notes_wide)</span>
-<span id="cb5-40">df_midi_out <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">merge_midi_frames</span>(mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_meta, mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_notes_long, mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_not_notes)</span>
-<span id="cb5-41"></span>
-<span id="cb5-42">dfc2 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> df_midi_out <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb5-43">        miditapyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">nest_midi</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">repair_reticulate_conversion =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span>
-<span id="cb5-44"></span>
-<span id="cb5-45"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># write the midi file to disk</span></span>
-<span id="cb5-46">miditapyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">write_midi</span>(dfc2, ticks_per_beat, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"test_drums.mid"</span>)</span>
-<span id="cb5-47"></span>
-<span id="cb5-48"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># synthesize midi file to wav with fluid synth</span></span>
-<span id="cb5-49"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">system</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"fluidsynth -F test_drums.wav ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 'test_drums.mid'"</span>)</span>
-<span id="cb5-50"></span>
-<span id="cb5-51"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># convert wav to mp3</span></span>
-<span id="cb5-52">av<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">av_audio_convert</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"test_drums.wav"</span>,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"test_drums.mp3"</span>)</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "/Users/mattcrump/Github/homophony.github.io/blog/32_1_30_24_R_synth/test_drums.mp3"</code></pre>
-</div>
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># clean up and delete wav</span></span>
-<span id="cb7-2"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.exists</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"test_drums.wav"</span>)){</span>
-<span id="cb7-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.remove</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"test_drums.wav"</span>)</span>
-<span id="cb7-4">}</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
-</div>
-<p><audio controls=""> <source src="test_drums.mp3" type="audio/wav"> </audio></p>
-<p>Cool, a basic rock beat.</p>
-<hr>
-<p>Attempting to add hi-hats, change tempo, and generally mess about.</p>
-<p>hopefully this percussion midi map helps <a href="https://usermanuals.finalemusic.com/SongWriter2012Win/Content/PercussionMaps.htm" class="uri">https://usermanuals.finalemusic.com/SongWriter2012Win/Content/PercussionMaps.htm</a></p>
-<p>Got the hihats, changed the tempo. I’m missing something about timing, the resulting wav file is playing with silence at the end, and that seems wrong. Need to tinker some more.</p>
-<p><a href="https://mido.readthedocs.io/en/latest/files/midi.html?highlight=set_tempo#about-the-time-attribute" class="uri">https://mido.readthedocs.io/en/latest/files/midi.html?highlight=set_tempo#about-the-time-attribute</a></p>
-<p>There seems to be some issues with <code>merge_midi_frames()</code>. The merged dataframe may contain some out of order rows.</p>
-<ul>
-<li>arranging by ticks gets screwed up when there are 0 ticks in meta and note dfs</li>
-</ul>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># add additional sorting by i_note, seems to solve the curent problem</span></span>
-<span id="cb9-2">merge_midi_frames_matt <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span></span>
-<span id="cb9-3">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span>(df_meta, df_notes_long, df_not_notes) {</span>
-<span id="cb9-4">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">is.null</span>(df_meta) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span></span>
-<span id="cb9-5">        <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">is.null</span>(df_notes_long) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">is.null</span>(df_not_notes)) {</span>
-<span id="cb9-6">      <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">return</span>(<span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NULL</span>)</span>
-<span id="cb9-7">    }</span>
-<span id="cb9-8">    cols_to_remove <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"i_note"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ticks"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"t"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"m"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"b"</span>)</span>
-<span id="cb9-9">    </span>
-<span id="cb9-10">    res <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> df_notes_long <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb9-11">      dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">bind_rows</span>(df_meta) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb9-12">      dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">bind_rows</span>(df_not_notes)</span>
-<span id="cb9-13">    </span>
-<span id="cb9-14">    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># if in tab_measures() there weren't all columns built, we have to remove them here:</span></span>
-<span id="cb9-15">    cols_to_remove <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">intersect</span>(cols_to_remove, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">names</span>(res))</span>
-<span id="cb9-16">    res <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb9-17">      dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">arrange</span>(.data<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>i_track, .data<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>ticks, .data<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>i_note) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb9-18">      dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">group_by</span>(.data<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>i_track) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb9-19">      dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">time =</span> .data<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>ticks <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">lag</span>(.data<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>ticks) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span> {</span>
-<span id="cb9-20">        .[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>] <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span></span>
-<span id="cb9-21">        .</span>
-<span id="cb9-22">      }) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb9-23">      dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ungroup</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb9-24">      dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">select</span>(<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-!!</span>cols_to_remove)</span>
-<span id="cb9-25">  }</span></code></pre></div>
-</details>
-</div>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># load system midi file to start</span></span>
-<span id="cb10-2">midi_file_string <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">system.file</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"extdata"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"test_midi_file.mid"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">package =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pyramidi"</span>)</span>
-<span id="cb10-3"></span>
-<span id="cb10-4">mfr <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> MidiFramer<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">new</span>(midi_file_string)</span>
-<span id="cb10-5"></span>
-<span id="cb10-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># set tempo</span></span>
-<span id="cb10-7">BPM_to_microsecond_tempo <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span>(BPM) {</span>
-<span id="cb10-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">return</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">60000000</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span>BPM)</span>
-<span id="cb10-9">}</span>
-<span id="cb10-10"></span>
-<span id="cb10-11">midi_tempo <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">BPM_to_microsecond_tempo</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">120</span>)</span>
-<span id="cb10-12"></span>
-<span id="cb10-13">mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_meta <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_meta <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb10-14">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">tempo =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">case_when</span>(type <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"set_tempo"</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> midi_tempo),</span>
-<span id="cb10-15">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">clocks_per_click =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">case_when</span>(type <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"time_signature"</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">24</span>),</span>
-<span id="cb10-16">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">b =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb10-17">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#keep the first track</span></span>
-<span id="cb10-18">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(i_track <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)</span>
-<span id="cb10-19"></span>
-<span id="cb10-20"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#View(mfr$df_meta)</span></span>
-<span id="cb10-21"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#mfr$ticks_per_beat</span></span>
-<span id="cb10-22"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#View(mfr$df_notes_wide)</span></span>
-<span id="cb10-23"></span>
-<span id="cb10-24"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># set some timing params</span></span>
-<span id="cb10-25">num_bars <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span>
-<span id="cb10-26">n_beats <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> num_bars<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span></span>
-<span id="cb10-27">smallest_note_per_bar <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span></span>
-<span id="cb10-28">max_steps <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> num_bars<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span>smallest_note_per_bar</span>
-<span id="cb10-29"></span>
-<span id="cb10-30">ticks_per_beat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">960</span>L</span>
-<span id="cb10-31">mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>ticks_per_beat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">960</span>L</span>
-<span id="cb10-32"></span>
-<span id="cb10-33"></span>
-<span id="cb10-34"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Construct a beat with hihats</span></span>
-<span id="cb10-35">drum <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tibble</span>(</span>
-<span id="cb10-36">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">i_track =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,</span>
-<span id="cb10-37">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">i_note =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>max_steps,</span>
-<span id="cb10-38">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">kick =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rep</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>,<span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>,<span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>),<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>),</span>
-<span id="cb10-39">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">snare =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rep</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>,<span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NA</span>),<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>),</span>
-<span id="cb10-40">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">hihat_closed =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rep</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">16</span>),</span>
-<span id="cb10-41">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">meta =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>,</span>
-<span id="cb10-42">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">channel =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">9</span>,</span>
-<span id="cb10-43">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">velocity_note_on =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>,</span>
-<span id="cb10-44">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">velocity_note_off =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,</span>
-<span id="cb10-45">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">b_note_on =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span>(max_steps <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>),</span>
-<span id="cb10-46">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">b_note_off =</span> b_note_on <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span></span>
-<span id="cb10-47">) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb10-48">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">kick =</span> kick<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">36</span>,</span>
-<span id="cb10-49">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">snare =</span> snare<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">38</span>,</span>
-<span id="cb10-50">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">hihat_closed =</span> hihat_closed<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">42</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb10-51">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pivot_longer</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">cols =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"kick"</span>,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"snare"</span>,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"hihat_closed"</span>), </span>
-<span id="cb10-52">               <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">values_to =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"note"</span>,</span>
-<span id="cb10-53">               <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">values_drop_na =</span> T) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb10-54">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">b_note_on =</span> b_note_on<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>),</span>
-<span id="cb10-55">         <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">b_note_off =</span> b_note_off<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>))</span>
-<span id="cb10-56"></span>
-<span id="cb10-57">drum<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>i_note <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">:</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dim</span>(drum)[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]</span>
-<span id="cb10-58"></span>
-<span id="cb10-59"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># helper function</span></span>
-<span id="cb10-60">beats_to_ticks <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">function</span>(notes_wide) {</span>
-<span id="cb10-61">  notes_wide <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb10-62">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(</span>
-<span id="cb10-63">      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ticks_note_on  =</span> b_note_on  <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> ticks_per_beat,</span>
-<span id="cb10-64">      <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ticks_note_off =</span> b_note_off <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> ticks_per_beat</span>
-<span id="cb10-65">    )</span>
-<span id="cb10-66">}</span>
-<span id="cb10-67"></span>
-<span id="cb10-68"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># pass the tibble back to the midi df</span></span>
-<span id="cb10-69">mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">update_notes_wide</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">beats_to_ticks</span>(drum))</span>
-<span id="cb10-70"></span>
-<span id="cb10-71">df_notes_long <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pivot_long_notes</span>(mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_notes_wide)</span>
-<span id="cb10-72">df_not_notes <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_not_notes</span>
-<span id="cb10-73"></span>
-<span id="cb10-74"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># do pyramidi stuff to get the tibble back into the format it needs to be</span></span>
-<span id="cb10-75"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#mfr$df_notes_long &lt;- pivot_long_notes(mfr$df_notes_wide)</span></span>
-<span id="cb10-76"></span>
-<span id="cb10-77">df_meta <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> mfr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df_meta <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb10-78">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ticks =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">case_when</span>(type <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"end_of_track"</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> (<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">max</span>(df_notes_long<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>ticks)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span>ticks_per_beat),</span>
-<span id="cb10-79">                           type <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"end_of_track"</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>))</span>
-<span id="cb10-80"></span>
-<span id="cb10-81"></span>
-<span id="cb10-82"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#mfr$df_meta &lt;- mfr$df_meta %&gt;%</span></span>
-<span id="cb10-83"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#  mutate(ticks = case_when(type == "end_of_track" ~ (max(mfr$df_notes_long$ticks)+ticks_per_beat)))</span></span>
-<span id="cb10-84"></span>
-<span id="cb10-85">df_midi_out <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">merge_midi_frames_matt</span>(df_meta, df_notes_long, df_not_notes)</span>
-<span id="cb10-86"></span>
-<span id="cb10-87">dfc2 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> df_midi_out <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb10-88">        miditapyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">nest_midi</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">repair_reticulate_conversion =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>)</span>
-<span id="cb10-89"></span>
-<span id="cb10-90"><span class="do" style="color: #5E5E5E;
-background-color: null;
-font-style: italic;">#########</span></span>
-<span id="cb10-91"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># bounce </span></span>
-<span id="cb10-92"></span>
-<span id="cb10-93">track_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"try_Write"</span></span>
-<span id="cb10-94"></span>
-<span id="cb10-95">wav_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".wav"</span>)</span>
-<span id="cb10-96">midi_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".mid"</span>)</span>
-<span id="cb10-97">mp3_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".mp3"</span>)</span>
-<span id="cb10-98"></span>
-<span id="cb10-99"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># write the midi file to disk</span></span>
-<span id="cb10-100">miditapyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">write_midi</span>(dfc2, ticks_per_beat, midi_name)</span>
-<span id="cb10-101"></span>
-<span id="cb10-102"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># synthesize midi file to wav with fluid synth</span></span>
-<span id="cb10-103">system_command <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> glue<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">glue</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/FluidR3_GM.sf2 {midi_name}'</span>)</span>
-<span id="cb10-104"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">system</span>(system_command)</span>
-<span id="cb10-105"></span>
-<span id="cb10-106"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># convert wav to mp3</span></span>
-<span id="cb10-107">av<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">av_audio_convert</span>(wav_name,mp3_name)</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] "/Users/mattcrump/Github/homophony.github.io/blog/32_1_30_24_R_synth/try_Write.mp3"</code></pre>
-</div>
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># clean up and delete wav</span></span>
-<span id="cb12-2"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.exists</span>(wav_name)){</span>
-<span id="cb12-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.remove</span>(wav_name)</span>
-<span id="cb12-4">}</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
-</div>
-<p><audio controls=""> <source src="try_Write.mp3" type="audio/wav"> </audio></p>
-<p>This works sort of. MIDI fried my brain here. For some reason the file has extra bars of silence, can’t figure out why right now. I’m missing something here about how midi time works.</p>
-<ul>
-<li>loaded better in musescore.</li>
-<li>musescore shows two bars, but it plays through 4 bars…not sure what is going on.</li>
-</ul>
-</section>
-<section id="piano-keyboard-plot-with-ggplot2" class="level2">
-<h2 class="anchored" data-anchor-id="piano-keyboard-plot-with-ggplot2">Piano keyboard plot with ggplot2</h2>
-<p>Neat, this is from <a href="https://urswilke.github.io/pyramidi/reference/piano_keys_coordinates.html">pyramidi</a>.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(ggplot2)</span>
-<span id="cb14-2"></span>
-<span id="cb14-3">piano_keys_coordinates <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb14-4">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># plot white keys first that they don't cover half of the black keys:</span></span>
-<span id="cb14-5">  dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">arrange</span>(layer) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb14-6">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(</span>
-<span id="cb14-7">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ymin =</span> ymin,</span>
-<span id="cb14-8">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ymax =</span> ymax,</span>
-<span id="cb14-9">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xmin =</span> xmin,</span>
-<span id="cb14-10">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xmax =</span> xmax,</span>
-<span id="cb14-11">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">factor</span>(layer)</span>
-<span id="cb14-12">  )) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb14-13">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_rect</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"black"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">show.legend =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb14-14">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_fill_manual</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">values =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#ffffdd"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#113300"</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb14-15">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">coord_fixed</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ratio =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>)</span></code></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/32_1_30_24_R_synth/index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Let’s try plotting a chord, C7. Cool!</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># get midi notes from table look up</span></span>
-<span id="cb15-2">note_numbers <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> midi_defs <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb15-3">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filter</span>(note_name <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"C4"</span>,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"E4"</span>,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"G4"</span>,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Bb4"</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb15-4">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">pull</span>(note)</span>
-<span id="cb15-5"></span>
-<span id="cb15-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># plot</span></span>
-<span id="cb15-7">piano_keys_coordinates <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb15-8">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># make black keys 3rd order for printing</span></span>
-<span id="cb15-9">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">layer =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">case_when</span>(layer <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>,</span>
-<span id="cb15-10">                           layer <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb15-11">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># set played keys to layer 2</span></span>
-<span id="cb15-12">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">layer =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">case_when</span>(midi <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%in%</span> note_numbers <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>,</span>
-<span id="cb15-13">                           midi <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%in%</span> note_numbers <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> layer)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb15-14">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># plot white keys first that they don't cover half of the black keys:</span></span>
-<span id="cb15-15">  dplyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">arrange</span>(layer) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb15-16">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(</span>
-<span id="cb15-17">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ymin =</span> ymin,</span>
-<span id="cb15-18">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ymax =</span> ymax,</span>
-<span id="cb15-19">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xmin =</span> xmin,</span>
-<span id="cb15-20">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">xmax =</span> xmax,</span>
-<span id="cb15-21">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">fill =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">factor</span>(layer)</span>
-<span id="cb15-22">  )) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb15-23">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_rect</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"black"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">show.legend =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb15-24">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_fill_manual</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">values =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#ffffdd"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pink"</span>,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#113300"</span>)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb15-25">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">coord_fixed</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ratio =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>)</span></code></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/32_1_30_24_R_synth/index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="miditapyr" class="level2">
-<h2 class="anchored" data-anchor-id="miditapyr">miditapyr</h2>
-<p><a href="https://miditapyr.readthedocs.io/en/latest/notebooks/midi_frame_usage.html" class="uri">https://miditapyr.readthedocs.io/en/latest/notebooks/midi_frame_usage.html</a></p>
-<p>Learning more about the miditapyr workflow.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#import midi using miditapyr</span></span>
-<span id="cb16-2">test_midi <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span>miditapyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">MidiFrames</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ableton.mid"</span>)</span>
-<span id="cb16-3"></span>
-<span id="cb16-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#View(test_midi$midi_frame_unnested$df)</span></span>
-<span id="cb16-5"></span>
-<span id="cb16-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># modify something</span></span>
-<span id="cb16-7">mod_df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> test_midi<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>midi_frame_unnested<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>df <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb16-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">note =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">case_when</span>(note <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">72</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">63</span>,</span>
-<span id="cb16-9">                          <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span> note))</span>
-<span id="cb16-10"></span>
-<span id="cb16-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># update df</span></span>
-<span id="cb16-12">test_midi<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>midi_frame_unnested<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">update_unnested_mf</span>(mod_df)</span>
-<span id="cb16-13"></span>
-<span id="cb16-14"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># write midi file</span></span>
-<span id="cb16-15"></span>
-<span id="cb16-16">test_midi<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">write_file</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ableton2.mid"</span>)</span></code></pre></div>
-</details>
-</div>
-<p>I made a 1 bar drum loop in ableton, using the clip view. Apparently this kind of midi file does not contain the meta set_tempo message…</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#import midi using miditapyr</span></span>
-<span id="cb17-2">test_midi <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span>miditapyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">MidiFrames</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ableton.mid"</span>)</span>
-<span id="cb17-3"></span>
-<span id="cb17-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#import using mido</span></span>
-<span id="cb17-5">mido_import <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span>mido<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">MidiFile</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ableton.mid"</span>)</span>
-<span id="cb17-6"></span>
-<span id="cb17-7"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># to R dataframe</span></span>
-<span id="cb17-8">dfc <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span>miditapyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">frame_midi</span>(mido_import)</span>
-<span id="cb17-9">ticks_per_beat <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> mido_import<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>ticks_per_beat</span>
-<span id="cb17-10"></span>
-<span id="cb17-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># unnest the dataframe</span></span>
-<span id="cb17-12">df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span>miditapyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unnest_midi</span>(dfc)</span>
-<span id="cb17-13"></span>
-<span id="cb17-14"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># add set_tempo message</span></span>
-<span id="cb17-15"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># missing from ableton midi clip</span></span>
-<span id="cb17-16"></span>
-<span id="cb17-17">df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> df <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb17-18">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">tempo =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NaN</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb17-19">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">add_row</span>(</span>
-<span id="cb17-20">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">i_track =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,</span>
-<span id="cb17-21">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">time =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,</span>
-<span id="cb17-22">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">meta =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>,</span>
-<span id="cb17-23">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"set_tempo"</span>,</span>
-<span id="cb17-24">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">tempo =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">500000</span>,</span>
-<span id="cb17-25">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">.before =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span></span>
-<span id="cb17-26">  )</span></code></pre></div>
-</details>
-</div>
-<p>Before I go on, I need to do some timing tests to make sure I understand a few things.</p>
-<p>The beat is 1 bar. There are 4 beats per bar. The hi hats are in 16th notes, and there are 16 hi hats. The tempo is set to 120. What happens if I play with the time column.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># reload df</span></span>
-<span id="cb18-2">df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> pyramidi<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span>miditapyr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unnest_midi</span>(dfc)</span>
-<span id="cb18-3"></span>
-<span id="cb18-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># add set_tempo message</span></span>
-<span id="cb18-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># missing from ableton midi clip</span></span>
-<span id="cb18-6"></span>
-<span id="cb18-7">df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> df <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb18-8">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">tempo =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">NaN</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb18-9">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">add_row</span>(</span>
-<span id="cb18-10">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">i_track =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,</span>
-<span id="cb18-11">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">time =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,</span>
-<span id="cb18-12">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">meta =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>,</span>
-<span id="cb18-13">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"set_tempo"</span>,</span>
-<span id="cb18-14">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">tempo =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">500000</span>,</span>
-<span id="cb18-15">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">.before =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span></span>
-<span id="cb18-16">  )</span>
-<span id="cb18-17"></span>
-<span id="cb18-18"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># futz with the time column</span></span>
-<span id="cb18-19"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># behaves as expected, yah!</span></span>
-<span id="cb18-20">df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> df <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%&gt;%</span></span>
-<span id="cb18-21">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">time =</span> time<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>)</span>
-<span id="cb18-22"></span>
-<span id="cb18-23"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># update df</span></span>
-<span id="cb18-24">test_midi<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>midi_frame_unnested<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">update_unnested_mf</span>(df)</span>
-<span id="cb18-25"></span>
-<span id="cb18-26"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># write midi file</span></span>
-<span id="cb18-27"></span>
-<span id="cb18-28">test_midi<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">write_file</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ableton2.mid"</span>)</span></code></pre></div>
-</details>
-</div>
-<p>The pyramidi package has a <code>tab_measures()</code> function that adds additional timing information, for later use in composition and modification.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># add more time info</span></span>
-<span id="cb19-2"></span>
-<span id="cb19-3">dfm <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tab_measures</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">df =</span> df, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ticks_per_beat =</span> ticks_per_beat)</span></code></pre></div>
-</details>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>midi</category>
-  <category>fluidsynth</category>
-  <category>rstats</category>
-  <guid>https://homophony.quest/blog/32_1_30_24_R_synth/</guid>
-  <pubDate>Tue, 30 Jan 2024 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/32_1_30_24_R_synth/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
