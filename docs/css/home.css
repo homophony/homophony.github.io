@@ -1,3 +1,4 @@
+
 .quarto-title-banner {
   padding-top: 10em;
   padding-bottom: 10em;
@@ -21,6 +22,18 @@ main {
 
 h1.title {
  display: none;
+}
+
+.card-text {
+  font-family: "Courier New";
+}
+
+.card-title {
+  font-family: "Courier New";
+}
+
+h3 {
+  font-family: "Courier New";
 }
 
 
