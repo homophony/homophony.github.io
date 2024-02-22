@@ -1,0 +1,144 @@
+---
+title: "VO: Slow Down: Canvas Animation"
+author: "Matt Crump"
+date: 2/22/24
+description: "More messing around with adobe after effects"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - VO
+  - video
+  - canvas animation
+  - youtube short
+execute: 
+  echo: true
+  message: false
+  warning: false
+  eval: false
+format:
+  html:
+    code-fold: true
+lightbox: 
+  match: auto
+  desc-position: right
+  loop: true
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "Record player. White background. Robot Transformer record player. 3d. Linocut. Neon. Lasers. Awesomeness"
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1080,width = 1080,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+Record player. White background. Robot Transformer record player. 3d. Linocut. Neon. Lasers. Awesomeness - dreamshaper-xl-turbo
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+Following in the same footsteps as other posts where I mangle some visuals for a track off an older album
+
+## VO: Slow down
+
+This one is [slow down from VO](https://homophony.quest/music/VO.html). It's short and kind of breakbeat-ish. 
+
+## Animation details
+
+Feeding this prompt to dreamshaper-xl-turbo:
+
+"Record player. White background. Robot Transformer record player. 3d. Linocut. Neon. Lasers. Awesomeness"
+
+Then, do something with one or another of these.
+
+```{r}
+#| echo: false
+#| eval: true
+#| results: asis
+
+#quick gallery
+library(glue)
+
+list_images_with_path <- list.files("images",full.names = T)
+list_images<- list.files("images/")
+
+cat("::: {layout-ncol=4}")
+cat("\n","\n")
+for(i in 1:8){
+  gallery_name <- "my-gallery"
+  im_name <- list_images[i]
+  im_path <- list_images_with_path[i]
+  cat(glue::glue('![{im_name}]({im_path}){{group="{gallery_name}"}}') , "\n" ,"\n")
+}
+cat(":::")
+
+```
+
+
+## Youtube Short
+
+Some digitally noised up transformer djs.
+
+<iframe width="315" height="560"
+src="https://www.youtube.com/embed/DYjPAHZ5sBc"
+title="YouTube video player"
+frameborder="0"
+allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+allowfullscreen></iframe>
+
+
