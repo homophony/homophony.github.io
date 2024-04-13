@@ -1,0 +1,104 @@
+---
+title: "Weekly stuff April 13"
+author: "Matt Crump"
+date: 4/13/24
+description: "Basement jam notes"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - music practice
+execute: 
+  echo: true
+  message: false
+  warning: false
+  eval: false
+format:
+  html:
+    code-fold: true
+lightbox: 
+  match: auto
+  desc-position: right
+  loop: true
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "messy room full of synthesizers. wires going everywhere. musical chaos. modular synthesizers everywhere. cluttered music room of synthesizers."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1080,width = 1080,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+messy room full of synthesizers. wires going everywhere. musical chaos. modular synthesizers everywhere. cluttered music room of synthesizers.
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+The room of synthesizers isn't quite this bad, but some changes are needed to make everything more playable.
+
+------------------------------------------------------------------------
+
+![](images/IMG_3257-01.jpeg)
+
+I've been really enjoying this simple setup. The zoom h6 is recording the EP133 through channels 1 and 2, and the piano is recorded with the stereo x/y capsule on top. Fun times jamming with a killer ep-133 metronome. Also, do really long takes, not caring about getting anything perfect, just laying down things that might turn into ideas later.
+
+------------------------------------------------------------------------
+
+![](images/BOSS RC505 MKII 2-01.jpg)
+
+It's been ages since I used a proper looper and the time seemed right. Apparently this will be arriving sometime this weekend, looking forward to messing around.
