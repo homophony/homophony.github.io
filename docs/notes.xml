@@ -15,9 +15,218 @@
 <link>https://homophony.quest/notes.html</link>
 </image>
 <generator>quarto-1.4.549</generator>
-<lastBuildDate>Sat, 13 Apr 2024 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 06 Aug 2024 04:00:00 GMT</lastBuildDate>
 <item>
-  <title>Weekly stuff April 13</title>
+  <title>Fixing up my Sears Kawai 26133 electric guitar</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/62_8_6_24_kawai_guitar/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> set_seed</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Image</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> random</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ssl</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#locate library</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mps"</span>)</span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"max"</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"practicing synthesizer on a beach. the sunset is a synthesizer. The moon in the sky is a synthesizer. The trees are made of synthesizers. The ocean is music. colorful. 3d."</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>):</span>
+<span id="cb1-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]:</span>
+<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span></span>
+<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-29">    set_seed(seed)</span>
+<span id="cb1-30">    </span>
+<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1080</span>,width <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1080</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>num_steps)</span>
+<span id="cb1-32">    </span>
+<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpeg"</span></span>
+<span id="cb1-34">    </span>
+<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><a href="cover.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="https://homophony.quest/blog/62_8_6_24_kawai_guitar/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></a></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Three guitars with problems sat on wall.</p>
+</div></div><p>All three of these guitars have issues. The one in the middle has the most issues for the longest period of time.</p>
+<p>I can’t remember when I first picked this up, say 14 or 16, or something like that. For the longest time I had no idea what kind of guitar it was (no label or model number anywhere).</p>
+<p>It never really worked that well. The action was fine. It looked neat. It crackled. It only made sound when all the faders were in one direction. Pieces chipped off. One day it stopped working altogether. It’s been broken and hanging around for years.</p>
+<section id="finding-similar-guitars-online" class="level2">
+<h2 class="anchored" data-anchor-id="finding-similar-guitars-online">Finding similar guitars online</h2>
+<p>Found some info:</p>
+<p>Seems like this could be a Sears Kawai 26133 (or some version of this).</p>
+<p><a href="https://reverb.com/item/36471562-vintage-sears-kawai-26133-1969-sunburst" class="uri">https://reverb.com/item/36471562-vintage-sears-kawai-26133-1969-sunburst</a></p>
+<p>Saturn Guitar circuits:</p>
+<p><a href="https://www.saturn-guitar-circuits.com" class="uri">https://www.saturn-guitar-circuits.com</a></p>
+</section>
+<section id="nice-example-of-repairing-a-similar-guitar" class="level2">
+<h2 class="anchored" data-anchor-id="nice-example-of-repairing-a-similar-guitar">nice example of repairing a similar guitar</h2>
+<p><a href="https://www.youtube.com/watch?v=OebpmmNFJ6Q&amp;t=1208s" class="uri">https://www.youtube.com/watch?v=OebpmmNFJ6Q&amp;t=1208s</a></p>
+</section>
+<section id="what-i-did-so-far" class="level2">
+<h2 class="anchored" data-anchor-id="what-i-did-so-far">What I did so far</h2>
+<p>Not much</p>
+<ul>
+<li>Some light resoldering. The neck pick-up was disconnected from one of the faders</li>
+<li>cleaned the neck, looks much better</li>
+<li>restrung</li>
+<li>works a bit better</li>
+<li>waiting on circuit cleaner</li>
+<li>probably need to do a bunch more</li>
+</ul>
+</section>
+<section id="tone" class="level2">
+<h2 class="anchored" data-anchor-id="tone">Tone</h2>
+<p>Interesting surf clunker tone. Treble is super muffled. Need to investigate more.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>guitars</category>
+  <category>gear</category>
+  <category>repair</category>
+  <guid>https://homophony.quest/blog/62_8_6_24_kawai_guitar/</guid>
+  <pubDate>Tue, 06 Aug 2024 04:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/62_8_6_24_kawai_guitar/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>Boss rc-505 mk ii looper</title>
   <dc:creator>Matt Crump</dc:creator>
   <link>https://homophony.quest/blog/60_4_13_24_weekly/</link>
   <description><![CDATA[ 
@@ -182,19 +391,72 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 </div>
 
 <div class="no-row-height column-margin column-container"><div class="">
-<p>messy room full of synthesizers. wires going everywhere. musical chaos. modular synthesizers everywhere. cluttered music room of synthesizers.</p>
-</div></div><p>The room of synthesizers isn’t quite this bad, but some changes are needed to make everything more playable.</p>
-<hr>
-<p><a href="images/IMG_3257-01.jpeg" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="https://homophony.quest/blog/60_4_13_24_weekly/images/IMG_3257-01.jpeg" class="img-fluid"></a></p>
-<p>I’ve been really enjoying this simple setup. The zoom h6 is recording the EP133 through channels 1 and 2, and the piano is recorded with the stereo x/y capsule on top. Fun times jamming with a killer ep-133 metronome. Also, do really long takes, not caring about getting anything perfect, just laying down things that might turn into ideas later.</p>
-<hr>
-<p><a href="images/BOSS RC505 MKII 2-01.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="https://homophony.quest/blog/60_4_13_24_weekly/images/BOSS RC505 MKII 2-01.jpg" class="img-fluid"></a></p>
-<p>It’s been ages since I used a proper looper and the time seemed right. Apparently this will be arriving sometime this weekend, looking forward to messing around.</p>
+<p>Boss rc-505 mk ii looper</p>
+</div></div><p>This thing was supposed to be delivered on a Sunday, but it came early, so I got to spend most of Saturday playing around with it.</p>
+<p>First impressions are that this is TOO MUCH FUN.</p>
+<p>There is a huge amount of possibilities to this device and was expecting to have to be overwhelmed by figuring out how to set it up just the way I wanted it to work. Surprise, the default settings were great, and pretty much spot on with what I would use this for.</p>
+<p>I’m sure there will be other things to try, and my plan is to make random notes to self here.</p>
+<section id="copy-settings-from-one-memory-to-another" class="level2">
+<h2 class="anchored" data-anchor-id="copy-settings-from-one-memory-to-another">Copy settings from one memory to another</h2>
+<p>I set up a midi foot pedal (midi captain) as a trigger option for the first track. Took a bit of fiddling, but got that working. Then, after I saved a loop session to the first memory and scrolled over to the second memory, the midi trigger wasn’t working. It seems that each memory saves all of the settings. I had changed the settings from default for the first memory, and I had to change them again for the second memory.</p>
+<p>I’m not sure yet if the defaults can be changed and applied across all memories? But, it is possible to copy/paste one memory to another. So, I guess I would make a memory with a settings template, and then copy/paste it across a bunch of memories.</p>
+<p>To copy/paste, apparently this is the same as “write”, but, you would turn the encoder for memory and save the current one to a different number.</p>
+<p><a href="https://www.reddit.com/r/LoopArtists/comments/oyk51f/boss_rc505_apply_memory_settings_to_all_memories/" class="uri">https://www.reddit.com/r/LoopArtists/comments/oyk51f/boss_rc505_apply_memory_settings_to_all_memories/</a></p>
+<ul>
+<li>got this working now, it’s totally easy. I still need to learn which settings are actually global. Otherwise, it’s fast to take any memory, write it to another location, and then clear the tracks (and keep the settings)</li>
+</ul>
+</section>
+<section id="sounds-great" class="level2">
+<h2 class="anchored" data-anchor-id="sounds-great">Sounds great</h2>
+<p>I’m really impressed with the sound quality. This is all very subjective and also determined by my other gear, but I have not had the same experience with some other similar devices. For example, I have an MPC Live, and although it is very good for some things, I did not like how audio sounded playing through it. Some instruments sounded lifeless and muted by comparison to the main system. This looper though…the A/D converters are apparently very good. When everything is clean and passing through, it sounds great, almost invisible. And, I’m OK with the general character of the other stuff like the compressor etc., or I’ll just turn it off.</p>
+</section>
+<section id="guitar-pedal-multi-fx" class="level2">
+<h2 class="anchored" data-anchor-id="guitar-pedal-multi-fx">Guitar pedal multi fx</h2>
+<p>I wasn’t expecting the FX to be so use-able, especially the live input FX. I feel like I got a bunch of guitar pedals for free here. Damn, OK, yes.</p>
+</section>
+<section id="snappy" class="level2">
+<h2 class="anchored" data-anchor-id="snappy">Snappy</h2>
+<p>So far, no latency problems. none. wow.</p>
+</section>
+<section id="fun-machine-with-constraints" class="level2">
+<h2 class="anchored" data-anchor-id="fun-machine-with-constraints">Fun machine with constraints</h2>
+<p>The gear situation at hand can suggest or afford workflows. These days, with a bunch of gear and a laptop, there are many possible workflows. It’s fun to explore them. Sometimes it’s nice to work within the constraints of a particular device. So far, this is one of those times.</p>
+</section>
+<section id="freeze" class="level2">
+<h2 class="anchored" data-anchor-id="freeze">Freeze</h2>
+<p>There is a decent freeze effect in here. I have a midi pedal, I should set it up to make the freeze effect happen when I press a foot pedal. Goals for the future.</p>
+</section>
+<section id="incrementing-memory-foot-switch" class="level2">
+<h2 class="anchored" data-anchor-id="incrementing-memory-foot-switch">Incrementing memory foot switch</h2>
+<p>Haven’t tried this yet, but it is apparently possible in a song context. My experience with loopers before was getting stuck in a loop, and being able to switch between parts is a nice option.</p>
+<p>Tried this out a little bit…sending program changes from the midi captain changes the memory.</p>
+<p>Warning…Memories need to be saved, so if they are not saved it is very easy to switch between a memory and accidentally wipe the one you were on.</p>
+</section>
+<section id="thinking-through-some-setup-options-with-other-gear" class="level2">
+<h2 class="anchored" data-anchor-id="thinking-through-some-setup-options-with-other-gear">Thinking through some setup options with other gear</h2>
+<section id="program-changes-mpc-live" class="level3">
+<h3 class="anchored" data-anchor-id="program-changes-mpc-live">Program changes, MPC live</h3>
+<p>Current setup:</p>
+<p>Midi captain foot switches into RC-505, controlling track record/play and undo/redo. Another page of midi controls 1-8 program changes, to change memories.</p>
+<p>MPC live receives midi clock and start/stop from RC-505. MPC live sends audio through RC-505. MPC Live receives program change messages from RC-505, set to change the MPC Live sequence.</p>
+<p>Observations:</p>
+<p>I have never tried to midi control the mpc live in terms of program changes. There are three options: program, sequence, track. I have it set to change the sequence.</p>
+<p>Issues:</p>
+<p>Need to send the MPC to the mixer, not through the RC-505.</p>
+<p>Is there a footswitch to trigger memory write?</p>
+<p>To Do:</p>
+<p>Plan is to make an MPC live program to pair with the rc-505. Sequence numbers on the MPC will correspond to memory numbers on the rc-505 (by program change value). Note, that on start-up the rc-505 does not send a program change message, need to toggle into it.</p>
+<p>This combo adds a whole bunch of track possibilities. Main audio looping will be taken care of by the rc-505. At the same time, it is possible to record audio into the MPC. I’ll probably avoid this for now. Constraints are good. Very easy to make unlimited midi tracks.</p>
+<p>Assign say 4 drum kits to tracks 1-4 on the MPC. Could add more. This gives a few options for beats and kits at a sequence level.</p>
+<p>One big MPC program should be able to provide backing beats/tracks to the rc-505.</p>
 
 
+</section>
+</section>
 
  ]]></description>
-  <category>music practice</category>
+  <category>looping</category>
+  <category>gear</category>
   <guid>https://homophony.quest/blog/60_4_13_24_weekly/</guid>
   <pubDate>Sat, 13 Apr 2024 04:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/60_4_13_24_weekly/cover.jpg" medium="image" type="image/jpeg"/>
@@ -458,6 +720,266 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
   <guid>https://homophony.quest/blog/59_3_24_24_ep_133/</guid>
   <pubDate>Sun, 24 Mar 2024 04:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/59_3_24_24_ep_133/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>Ep-133 K.O. II random notes</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/61_4_13_24_rc505mkii/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> DiffusionPipeline</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> set_seed</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Image</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> torch</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> random</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> ssl</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ssl._create_unverified_context</span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#locate library</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
+<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
+<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
+<span id="cb1-16">)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mps"</span>)</span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
+<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"max"</span>)</span>
+<span id="cb1-22"></span>
+<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"practicing synthesizer on a beach. the sunset is a synthesizer. The moon in the sky is a synthesizer. The trees are made of synthesizers. The ocean is music. colorful. 3d."</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span>):</span>
+<span id="cb1-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>]:</span>
+<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">21</span></span>
+<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb1-29">    set_seed(seed)</span>
+<span id="cb1-30">    </span>
+<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1080</span>,width <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1080</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>num_steps)</span>
+<span id="cb1-32">    </span>
+<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.jpeg"</span></span>
+<span id="cb1-34">    </span>
+<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><a href="cover.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="https://homophony.quest/blog/61_4_13_24_rc505mkii/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></a></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>EP-133</p>
+</div></div><p>This little sampler is loads of fun. The buttons are snappy. The preloaded samples are fantastic. I loved them so much I put them in a <a href="https://homophony.quest/blog/49_2_15_24_r_soundfonts/index.html#te-ep-133-k.o.-ii">soundfont a while back</a>.</p>
+<p>This page is just random notes to self about the EP-133. I haven’t spent too much time with it, and hopefully making notes will help with learning it better, and using it more often.</p>
+<section id="manual" class="level2">
+<h2 class="anchored" data-anchor-id="manual">Manual</h2>
+<p>Official TE online guide:</p>
+<p><a href="https://teenage.engineering/guides/ep-133" class="uri">https://teenage.engineering/guides/ep-133</a></p>
+</section>
+<section id="firmware" class="level2">
+<h2 class="anchored" data-anchor-id="firmware">Firmware</h2>
+<p>Firmware updates:</p>
+<p><a href="https://teenage.engineering/downloads/ep-133" class="uri">https://teenage.engineering/downloads/ep-133</a></p>
+<p>Oops, I’m behind. Need to update the firmware. I get to use the handy web-utility: <a href="https://teenage.engineering/apps/update" class="uri">https://teenage.engineering/apps/update</a></p>
+<ul>
+<li>updated to most recent firmware</li>
+</ul>
+</section>
+<section id="online-sample-tool" class="level2">
+<h2 class="anchored" data-anchor-id="online-sample-tool">Online Sample tool</h2>
+<p><a href="https://teenage.engineering/apps/ep-sample-tool" class="uri">https://teenage.engineering/apps/ep-sample-tool</a></p>
+<ul>
+<li>did a factory restore, glad they added that option.</li>
+</ul>
+</section>
+<section id="using-it" class="level2">
+<h2 class="anchored" data-anchor-id="using-it">Using it</h2>
+<p>The fun factor for finger drumming is really high on this one.</p>
+<ol type="1">
+<li>Finger drumming straight into a DAW or whatever is close.</li>
+</ol>
+</section>
+<section id="stand-alone" class="level2">
+<h2 class="anchored" data-anchor-id="stand-alone">Stand-alone</h2>
+<p>Record with the sequencer, play back and record into DAW later.</p>
+<p>Projects 1 - 9</p>
+<ul>
+<li>Each project has four groups (A-D)</li>
+<li>12 samples per group</li>
+<li>99 patterns per group (up to 99 bars)</li>
+<li>99 scenes per pattern (arrangement of scenes)</li>
+</ul>
+<p>Default factory settings - Projects 1-5 are populated - Projects 6-9 are empty</p>
+<p><strong>Change Project</strong>? HOLD MAIN and HOLD one of the pads (1-9), about 1 second together</p>
+<ul>
+<li>Hold main, blinking light shows current project</li>
+</ul>
+<p><strong>Pattern Length</strong></p>
+<ul>
+<li>Default is 1 bar</li>
+<li>Increase length HOLD RECORD then +</li>
+</ul>
+<p><strong>Recording</strong></p>
+<ul>
+<li>Press record then play, metronome plays</li>
+<li>finger drum</li>
+<li>erase</li>
+<li>undo Shift + B</li>
+</ul>
+<p><strong>Commit</strong></p>
+<hr>
+</section>
+<section id="things-that-are-annoying" class="level2">
+<h2 class="anchored" data-anchor-id="things-that-are-annoying">Things that are annoying</h2>
+<p>The main thing I find annoying is an unreasonable thing. So, I’m not actually annoyed, but I am annoyed.</p>
+<p>I want to start finger drumming and settle into a groove without any nuisance factors, and then have that groove automatically loop with no effort, and be able to export the loop with no effort.</p>
+<p>One approach is to set a bar length, set tempo, turn the metronome on, press record, then jam it out and hope it works (and repeat over and over and over, until I get a take that works). The problem is that I hate metronomes. I don’t “feel” in the groove doing this. I can make stuff that is OK, with lot’s of editing and effort, and on the whole it is NOT FUN.</p>
+<p>I’ve tried various ways of playing live and recording into Ableton, but this is also NOT FUN, for lots of reasons.</p>
+<p>I’m looking for “The timeless way of having fun finger drumming”.</p>
+</section>
+<section id="things-im-actually-doing" class="level2">
+<h2 class="anchored" data-anchor-id="things-im-actually-doing">Things I’m actually doing</h2>
+<section id="record-to-tape-grab-loops-later" class="level3">
+<h3 class="anchored" data-anchor-id="record-to-tape-grab-loops-later">Record to “tape”, grab loops later</h3>
+<p>This seems to work pretty well. I like to use the EP-133 as a portable device. It’s too bad that it doesn’t record itself. Instead, I need to record into another portable device. I have a Zoom H6 that works well for this kind of thing.</p>
+<p>I run the Ep-133 output to the H6 recorder, press record, then drum it out for 10 minutes or whatever. I like this because it is so fun, and I enjoy the actual playing part. I don’t care about mistakes or timing or anything. Alternatively, if I’m nearby a laptop, I’ll record into the laptop, using Adobe Audition. Or, if I’m in the home studio, I’ll record to an SD card through my mixer.</p>
+<p>Bottom line is that there is lot’s of flow, and I enjoy this.</p>
+<p>Afterward, I bring the wav file into Adobe Audition, listen through it, and cut out any drum loops that I think work. Then, I load these into Ableton, and the warping feature seems to work pretty well at this point.</p>
+</section>
+<section id="set-really-long-bar-lengths-on-the-ep-133-and-play-live-for-a-long-time" class="level3">
+<h3 class="anchored" data-anchor-id="set-really-long-bar-lengths-on-the-ep-133-and-play-live-for-a-long-time">Set really long bar lengths on the EP-133, and play live for a long time</h3>
+<p>This works pretty well too.</p>
+<p>Hold record, then +, increases the number of bars. Hold + down and it zooms up to 99 bars. I use free play (no quantize), and drum away. Even if it is a big mess, it’s lots of fun, and I can grab any good parts later. Bonus points for being able to use the FX during playback.</p>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>EP-133</category>
+  <category>gear</category>
+  <guid>https://homophony.quest/blog/61_4_13_24_rc505mkii/</guid>
+  <pubDate>Sun, 24 Mar 2024 04:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/61_4_13_24_rc505mkii/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 <item>
   <title>Weekly practice March 17-22</title>
@@ -20524,970 +21046,6 @@ font-style: inherit;">file.remove</span>(wav_name)</span>
   <guid>https://homophony.quest/blog/43_2_9_24_max_random/</guid>
   <pubDate>Fri, 09 Feb 2024 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/43_2_9_24_max_random/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Analyzing and filtering note occurence by point estimation</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/42_2_8_24_prob_filter/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> DiffusionPipeline</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> set_seed</span>
-<span id="cb1-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> Image</span>
-<span id="cb1-4"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> torch</span>
-<span id="cb1-5"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> random</span>
-<span id="cb1-6"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> ssl</span>
-<span id="cb1-7"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> os</span>
-<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> ssl._create_unverified_context</span>
-<span id="cb1-9"></span>
-<span id="cb1-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#locate library</span></span>
-<span id="cb1-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
-<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
-<span id="cb1-13"></span>
-<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
-<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
-<span id="cb1-16">)</span>
-<span id="cb1-17"></span>
-<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"mps"</span>)</span>
-<span id="cb1-19"></span>
-<span id="cb1-20"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
-<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"max"</span>)</span>
-<span id="cb1-22"></span>
-<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"futuristic vacuum cleaner on white background. sucking up probabilities of musical notes. cartoon. 80s retro."</span></span>
-<span id="cb1-24"></span>
-<span id="cb1-25"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span>):</span>
-<span id="cb1-26">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>]:</span>
-<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">21</span></span>
-<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span>
-<span id="cb1-29">    set_seed(seed)</span>
-<span id="cb1-30">    </span>
-<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>num_steps)</span>
-<span id="cb1-32">    </span>
-<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">.jpeg"</span></span>
-<span id="cb1-34">    </span>
-<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
-</details>
-</div>
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/42_2_8_24_prob_filter/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>futuristic vacuum cleaner on white background. sucking up probabilities of musical notes. cartoon. 80s retro.</p>
-</div></div><p>There’s many ideas swirling around leading me to this MIDI mangling experiment. My preference would be to discuss them in advance of the code, but I’m going to mostly resist that urge. Perhaps another time.</p>
-<p>Getting right into then, let’s use <a href="https://www.crumplab.com/midiblender/">midiblender</a> to import the mario music into a matrix.</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(midiblender)</span>
-<span id="cb2-2"></span>
-<span id="cb2-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#import midi</span></span>
-<span id="cb2-4">mario <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">midi_to_object</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"all_overworld.mid"</span>)</span>
-<span id="cb2-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">list2env</span>(mario, .GlobalEnv) <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># send objects to global environment</span></span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;environment: R_GlobalEnv&gt;</code></pre>
-</div>
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># convert midi to matrix</span></span>
-<span id="cb4-2">piano_roll <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">midi_df_to_matrix</span>(midi_df,<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">track=</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)</span>
-<span id="cb4-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">dim</span>(piano_roll)</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1]   128 14113</code></pre>
-</div>
-</div>
-<p>The <code>piano_roll</code> matrix has 128 rows for each possible midi note, and 14113 columns for each midi time tick. All of the notes are coded as 1s in this matrix. All other cells are set to 0.</p>
-<section id="point-estimates-of-note-occurrence-probability" class="level2">
-<h2 class="anchored" data-anchor-id="point-estimates-of-note-occurrence-probability">Point estimates of note occurrence probability</h2>
-<p>Let’s do a bit of data analysis. How many notes occur in this midi file?</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(piano_roll)</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 901</code></pre>
-</div>
-</div>
-<p>What are the frequencies of each note across the song?</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">note_frequencies <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rowSums</span>(piano_roll)</span>
-<span id="cb8-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(note_frequencies)</span></code></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/42_2_8_24_prob_filter/index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Most of the notes are between MIDI note 40ish and 85ish. The most frequent note is clocking in around 90 occurences.</p>
-<p>Dividing the vector of note frequencies by the total sum gives point estimates of the probabilities for each note.</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">note_probabilities <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> note_frequencies<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(note_frequencies)</span>
-<span id="cb9-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">plot</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sort</span>(note_probabilities))</span></code></pre></div>
-</details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/42_2_8_24_prob_filter/index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>There a quick sorted plot, most notes have 0 probability of occurrence, and then it swings up to a max of 0.1054384. Neato.</p>
-<p>In previous posts I’ve been taking point estimation much further in terms of reshaping the matrix and estimating probabilities for notes in particular time slices. I haven’t yet tried doing something simple like the above, and using only these probabilities to generate new sequences. And, I’m not going to do that here either.</p>
-</section>
-<section id="filtering-note-occurrences-by-point-estimates." class="level2">
-<h2 class="anchored" data-anchor-id="filtering-note-occurrences-by-point-estimates.">Filtering note occurrences by point estimates.</h2>
-<p>I have a bunch of things I want to try with this, but in this post I’ll keep it simple to get the idea down.</p>
-<p>Here’s a simple filtering idea. Remove notes from the original piece depending on their point estimates. We could listen to mario with all of the high probability notes removed, or all of the low probability notes removed, or whatever combo one desires.</p>
-<p>The more complicated plans involve deriving point estimates for conditional probabilities based on prior note occurrence, and/or note x time probabilities, and then filtering notes on that basis.</p>
-<p>Before I do that, here’s a short digression. Consider listening to note sequences as an exercise in dynamic expectation. This is a pretty common notion in music and music cognition. You hear notes over time as they repeat and change, and have feelings of expectation about what comes next.</p>
-<p>Let’s say you are a note accumulator matrix, like the piano roll. As you accumulate note occurrences, some happen more often than others. If the music has repetitive structure, then there could be a sense of expectation. The new notes might have the same frequency profiles as the old notes, giving a sense of congruency…this is what the matrix was expecting. The new notes might have different frequencies, violating the expectation of the matrix, but nevertheless adding to the total accumulation of notes…the matrix would be less surprised about similar deviations the next time. Apologies for over-anthropomorphizing the matrix.</p>
-<p>The point estimates above are very global point estimates of note probability taken over all local contexts. After listening to mario music on repeat, as I did for who knows how long as a kid, these probabilities represent a kind of mean expectation about what notes I should be hearing in general.</p>
-<p>I don’t know the music analysis literature well enough to know what this would be called, but it would be pretty straightforward to look at notes in a musical piece in terms of how they deviate from their point estimates. And, there are lots of interesting questions here about which point estimates to choose. Ones from the song, or set of songs like it, or a massive corpus of midi files, or a person’s entire listening experience. But, the analysis stuff is for another day.</p>
-<p>Gotta reign in this digression. One point is there seems to be some interesting applied value in being able to quickly code notes in terms of their point estimates. It’ll be super easy to do this in R. For example, we would just replace all the 1s in each row of the piano matrix with their respective point estimates.</p>
-<p>Fortunately, R does the <a href="https://en.wikipedia.org/wiki/Hadamard_product_(matrices)">hadamard product</a>, so it’s just this.</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">point_estimate_matrix <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> piano_roll <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> note_probabilities</span></code></pre></div>
-</details>
-</div>
-<p>Great, so what do we do with the new matrix? Lots of possibilities come to mind. This could be a quick way to edit for wrong notes. If this was a recorded performance, and you accidentally flubbed a couple notes, these could be low frequency occurrences with very low probability of occurrence. Just delete the really low probability notes and re-constitute the midi file from the matrix.</p>
-<p>Need to be delicate with the low probability notes, they might be really surprising and special. Maybe there needs to be more low probability notes.</p>
-<p>The goal of this post was to listen to mario with high probability notes deleted, or with low probability notes deleted. We’ll do both. I suspect the technique could be interesting also with respect to probabilistically generated notes, many of which sound awful. Maybe tracking them and deleting them by their point estimates could make the probabilistic sequences sound “better”. If I think about this in terms of a eurorack module, I don’t really care how musical it sounds, I just want a knob to turn and mangle the probabilities in any direction for fun timez.</p>
-<p>No more digression, let’s do this thing.</p>
-</section>
-<section id="high-pass-probability-filtering-mario-without-high-probability-notes" class="level2">
-<h2 class="anchored" data-anchor-id="high-pass-probability-filtering-mario-without-high-probability-notes">High pass probability filtering: Mario without high probability notes</h2>
-<p>Did a quick check and notes with a higher than 5% point estimate account for about 56% of all of the note occurrences. These notes get played a lot in mario.</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(note_probabilities[note_probabilities <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> .<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">05</span>])</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.5615982</code></pre>
-</div>
-</div>
-<p>OK, bye bye high frequency notes. Setting those ones to 0. Setting all other values to 1, converting this back into a note occurrence matrix.</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1">mario_no_high <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> point_estimate_matrix</span>
-<span id="cb13-2">mario_no_high[mario_no_high <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> .<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">05</span>] <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span></span>
-<span id="cb13-3">mario_no_high[mario_no_high <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>] <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> </span></code></pre></div>
-</details>
-</div>
-<p>Now, a bit of {midiblender} magic, and let’s turn this matrix back into a midi file and listen to it.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1">track_0 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">copy_midi_df_track</span>(midi_df,<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">track_num =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)</span>
-<span id="cb14-2"></span>
-<span id="cb14-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># transform back to midi</span></span>
-<span id="cb14-4">midi_time_df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">matrix_to_midi_time</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">midi_matrix =</span> mario_no_high,</span>
-<span id="cb14-5">                                    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">smallest_time_unit =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,</span>
-<span id="cb14-6">                                    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">note_off_length =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">8</span>)</span>
-<span id="cb14-7"></span>
-<span id="cb14-8">meta_messages_df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">get_midi_meta_df</span>(track_0)</span>
-<span id="cb14-9"></span>
-<span id="cb14-10">meta_messages_df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set_midi_tempo_meta</span>(meta_messages_df,<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">update_tempo =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">500000</span>)</span>
-<span id="cb14-11"></span>
-<span id="cb14-12">split_meta_messages_df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">split_meta_df</span>(meta_messages_df)</span>
-<span id="cb14-13"></span>
-<span id="cb14-14">new_midi_df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">matrix_to_midi_track</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">midi_time_df =</span> midi_time_df,</span>
-<span id="cb14-15">                                    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">split_meta_list =</span> split_meta_messages_df,</span>
-<span id="cb14-16">                                    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">channel =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,</span>
-<span id="cb14-17">                                    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">velocity =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb14-18"></span>
-<span id="cb14-19"><span class="do" style="color: #5E5E5E;
-background-color: null;
-font-style: italic;">#### bounce</span></span>
-<span id="cb14-20"></span>
-<span id="cb14-21"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># update miditapyr df</span></span>
-<span id="cb14-22">miditapyr_object<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>midi_frame_unnested<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">update_unnested_mf</span>(new_midi_df)</span>
-<span id="cb14-23"></span>
-<span id="cb14-24"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#write midi file to disk</span></span>
-<span id="cb14-25">miditapyr_object<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">write_file</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"mario_no_high.mid"</span>)</span>
-<span id="cb14-26"></span>
-<span id="cb14-27"><span class="do" style="color: #5E5E5E;
-background-color: null;
-font-style: italic;">#########</span></span>
-<span id="cb14-28"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># bounce to mp3 with fluid synth</span></span>
-<span id="cb14-29"></span>
-<span id="cb14-30">track_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"mario_no_high"</span></span>
-<span id="cb14-31"></span>
-<span id="cb14-32">wav_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".wav"</span>)</span>
-<span id="cb14-33">midi_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".mid"</span>)</span>
-<span id="cb14-34">mp3_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".mp3"</span>)</span>
-<span id="cb14-35"></span>
-<span id="cb14-36"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># synthesize midi file to wav with fluid synth</span></span>
-<span id="cb14-37">system_command <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> glue<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">glue</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}'</span>)</span>
-<span id="cb14-38"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">system</span>(system_command)</span>
-<span id="cb14-39"></span>
-<span id="cb14-40"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># convert wav to mp3</span></span>
-<span id="cb14-41">av<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">av_audio_convert</span>(wav_name,mp3_name)</span>
-<span id="cb14-42"></span>
-<span id="cb14-43"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># clean up and delete wav</span></span>
-<span id="cb14-44"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.exists</span>(wav_name)){</span>
-<span id="cb14-45">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.remove</span>(wav_name)</span>
-<span id="cb14-46">}</span></code></pre></div>
-</details>
-</div>
-<p><audio controls=""> <source src="mario_no_high.mp3" type="audio/wav"> </audio></p>
-<p>Well, half of the notes are gone, and it sounds pretty sparse. Very cool function though.</p>
-</section>
-<section id="low-pass-probability-filtering-mario-without-low-probability-notes" class="level2">
-<h2 class="anchored" data-anchor-id="low-pass-probability-filtering-mario-without-low-probability-notes">Low pass probability filtering: Mario without low probability notes</h2>
-<p>Let’s do the opposite, and take out the low probability notes. It will be even more sparse using .05 as the cutoff. But it must be done.</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sum</span>(note_probabilities[note_probabilities <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> .<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">05</span>])</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.4384018</code></pre>
-</div>
-</div>
-<p>OK, bye bye high frequency notes. Setting those ones to 0. Setting all other values to 1, converting this back into a note occurrence matrix.</p>
-<div class="cell">
-<details open="" class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1">mario_no_low <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> point_estimate_matrix</span>
-<span id="cb17-2">mario_no_low[mario_no_low <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> .<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">05</span>] <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span></span>
-<span id="cb17-3">mario_no_low[mario_no_low <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>] <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> </span></code></pre></div>
-</details>
-</div>
-<p>Now, a bit of {midiblender} magic, and let’s turn this matrix back into a midi file and listen to it.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1">track_0 <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">copy_midi_df_track</span>(midi_df,<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">track_num =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>)</span>
-<span id="cb18-2"></span>
-<span id="cb18-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># transform back to midi</span></span>
-<span id="cb18-4">midi_time_df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">matrix_to_midi_time</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">midi_matrix =</span> mario_no_low,</span>
-<span id="cb18-5">                                    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">smallest_time_unit =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,</span>
-<span id="cb18-6">                                    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">note_off_length =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">8</span>)</span>
-<span id="cb18-7"></span>
-<span id="cb18-8">meta_messages_df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">get_midi_meta_df</span>(track_0)</span>
-<span id="cb18-9"></span>
-<span id="cb18-10">meta_messages_df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set_midi_tempo_meta</span>(meta_messages_df,<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">update_tempo =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">500000</span>)</span>
-<span id="cb18-11"></span>
-<span id="cb18-12">split_meta_messages_df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">split_meta_df</span>(meta_messages_df)</span>
-<span id="cb18-13"></span>
-<span id="cb18-14">new_midi_df <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">matrix_to_midi_track</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">midi_time_df =</span> midi_time_df,</span>
-<span id="cb18-15">                                    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">split_meta_list =</span> split_meta_messages_df,</span>
-<span id="cb18-16">                                    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">channel =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>,</span>
-<span id="cb18-17">                                    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">velocity =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb18-18"></span>
-<span id="cb18-19"><span class="do" style="color: #5E5E5E;
-background-color: null;
-font-style: italic;">#### bounce</span></span>
-<span id="cb18-20"></span>
-<span id="cb18-21"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># update miditapyr df</span></span>
-<span id="cb18-22">miditapyr_object<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>midi_frame_unnested<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">update_unnested_mf</span>(new_midi_df)</span>
-<span id="cb18-23"></span>
-<span id="cb18-24"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#write midi file to disk</span></span>
-<span id="cb18-25">miditapyr_object<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">write_file</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"mario_no_low.mid"</span>)</span>
-<span id="cb18-26"></span>
-<span id="cb18-27"><span class="do" style="color: #5E5E5E;
-background-color: null;
-font-style: italic;">#########</span></span>
-<span id="cb18-28"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># bounce to mp3 with fluid synth</span></span>
-<span id="cb18-29"></span>
-<span id="cb18-30">track_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"mario_no_low"</span></span>
-<span id="cb18-31"></span>
-<span id="cb18-32">wav_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".wav"</span>)</span>
-<span id="cb18-33">midi_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".mid"</span>)</span>
-<span id="cb18-34">mp3_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste0</span>(track_name,<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".mp3"</span>)</span>
-<span id="cb18-35"></span>
-<span id="cb18-36"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># synthesize midi file to wav with fluid synth</span></span>
-<span id="cb18-37">system_command <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> glue<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">glue</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'fluidsynth -F {wav_name} ~/Library/Audio/Sounds/Banks/nintendo_soundfont.sf2 {midi_name}'</span>)</span>
-<span id="cb18-38"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">system</span>(system_command)</span>
-<span id="cb18-39"></span>
-<span id="cb18-40"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># convert wav to mp3</span></span>
-<span id="cb18-41">av<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">av_audio_convert</span>(wav_name,mp3_name)</span>
-<span id="cb18-42"></span>
-<span id="cb18-43"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># clean up and delete wav</span></span>
-<span id="cb18-44"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.exists</span>(wav_name)){</span>
-<span id="cb18-45">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.remove</span>(wav_name)</span>
-<span id="cb18-46">}</span></code></pre></div>
-</details>
-</div>
-<p><audio controls=""> <source src="mario_no_low.mp3" type="audio/wav"> </audio></p>
-<p>Again, pretty sparse, but emphasizing different aspects of mario.</p>
-</section>
-<section id="conclusions-i-want-a-eurorack-module-for-this" class="level2">
-<h2 class="anchored" data-anchor-id="conclusions-i-want-a-eurorack-module-for-this">Conclusions: I want a eurorack module for this</h2>
-<p>I wish I could just dial around a knob, like a filter knob, that did this to a midi file while it was playing. Maybe someday I’ll figure out how to do that for a eurorack module.</p>
-<p>These examples didn’t sound like much, but whatever. I could imagine this being very useful in general. For example, it would be nice to step back and look some composition and quickly appreciate what the spread of point estimates are. Maybe it is too regular, so you filter down the high probability stuff, or the opposite. It would be fun to have an equalizer like situation, where instead of emphasizing different wave frequencies, it allowed one to bring up or down different note probabilities. I think this would have really interesting effects, especially on super dense improvisational stuff, where I would probably want to delete things, and being able to do that on the basis of probabilities seems promising.</p>
-<p>This is just a quick and dirty example, will fool around with this more for sure.</p>
-
-
-</section>
-
- ]]></description>
-  <category>midiblender</category>
-  <category>probabilistic filtering</category>
-  <category>rstatsmusic</category>
-  <category>midi</category>
-  <category>rstats</category>
-  <guid>https://homophony.quest/blog/42_2_8_24_prob_filter/</guid>
-  <pubDate>Thu, 08 Feb 2024 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/42_2_8_24_prob_filter/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>{midiblender} is alive!</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/41_2_8_24_midiblender_alive/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="cell">
-<details class="code-fold">
-<summary>Show the code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> DiffusionPipeline</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> set_seed</span>
-<span id="cb1-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> Image</span>
-<span id="cb1-4"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> torch</span>
-<span id="cb1-5"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> random</span>
-<span id="cb1-6"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> ssl</span>
-<span id="cb1-7"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> os</span>
-<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> ssl._create_unverified_context</span>
-<span id="cb1-9"></span>
-<span id="cb1-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#locate library</span></span>
-<span id="cb1-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
-<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
-<span id="cb1-13"></span>
-<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
-<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
-<span id="cb1-16">)</span>
-<span id="cb1-17"></span>
-<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"mps"</span>)</span>
-<span id="cb1-19"></span>
-<span id="cb1-20"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
-<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"max"</span>)</span>
-<span id="cb1-22"></span>
-<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"blender on white background. blender blending musical notes. cartoon. 80s retro."</span></span>
-<span id="cb1-24"></span>
-<span id="cb1-25"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span>):</span>
-<span id="cb1-26">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>]:</span>
-<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">21</span></span>
-<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span>
-<span id="cb1-29">    set_seed(seed)</span>
-<span id="cb1-30">    </span>
-<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>num_steps)</span>
-<span id="cb1-32">    </span>
-<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">.jpeg"</span></span>
-<span id="cb1-34">    </span>
-<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
-</details>
-</div>
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/41_2_8_24_midiblender_alive/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>R stats package logo</p>
-</div></div><p>A super quick post to say that <a href="https://www.crumplab.com/midiblender/">midiblender</a> is alive on github.</p>
-<p>The github repo is: <a href="https://github.com/CrumpLab/midiblender" class="uri">https://github.com/CrumpLab/midiblender</a></p>
-<p>This is the beginnings of an #rstats package for experimental mangling of #MIDI files. TBH, it’s my personal experimental hacky-code base wrapped in R package clothing. I’m messing with it constantly, and sharing in case others are interested.</p>
-<p>I wrote a <a href="https://www.crumplab.com/midiblender/articles/Getting_started.html">getting starting vignette</a> that could be helpful for others to try stuff out.</p>
-<p>Otherwise, I’m planning to keep posting examples and experiments on this blog. So, more {midiblender} to come.</p>
-
-
-
- ]]></description>
-  <category>midiblender</category>
-  <category>generativemusic</category>
-  <category>rstatsmusic</category>
-  <category>midi</category>
-  <category>rstats</category>
-  <guid>https://homophony.quest/blog/41_2_8_24_midiblender_alive/</guid>
-  <pubDate>Thu, 08 Feb 2024 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/41_2_8_24_midiblender_alive/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>

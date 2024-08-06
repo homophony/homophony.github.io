@@ -1,0 +1,206 @@
+---
+title: "Ep-133 K.O. II random notes"
+author: "Matt Crump"
+date: 3/24/24
+description: "Practice notes on the 64 MB Sampler Composer by Teenage Engineering"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - "EP-133"
+  - gear
+execute: 
+  echo: true
+  message: false
+  warning: false
+  eval: false
+format:
+  html:
+    code-fold: true
+lightbox: 
+  match: auto
+  desc-position: right
+  loop: true
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "practicing synthesizer on a beach. the sunset is a synthesizer. The moon in the sky is a synthesizer. The trees are made of synthesizers. The ocean is music. colorful. 3d."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1080,width = 1080,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+EP-133 
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+This little sampler is loads of fun. The buttons are snappy. The preloaded samples are fantastic. I loved them so much I put them in a [soundfont a while back](https://homophony.quest/blog/49_2_15_24_r_soundfonts/index.html#te-ep-133-k.o.-ii).
+
+This page is just random notes to self about the EP-133. I haven't spent too much time with it, and hopefully making notes will help with learning it better, and using it more often.
+
+## Manual
+
+Official TE online guide:
+
+<https://teenage.engineering/guides/ep-133>
+
+## Firmware
+
+Firmware updates:
+
+<https://teenage.engineering/downloads/ep-133>
+
+Oops, I'm behind. Need to update the firmware. I get to use the handy web-utility: <https://teenage.engineering/apps/update>
+
+- updated to most recent firmware
+
+## Online Sample tool
+
+<https://teenage.engineering/apps/ep-sample-tool>
+
+- did a factory restore, glad they added that option.
+
+## Using it
+
+The fun factor for finger drumming is really high on this one.
+
+1. Finger drumming straight into a DAW or whatever is close.
+
+
+## Stand-alone
+
+Record with the sequencer, play back and record into DAW later.
+
+Projects 1 - 9
+
+  - Each project has four groups (A-D)
+  - 12 samples per group
+  - 99 patterns per group (up to 99 bars)
+  - 99 scenes per pattern (arrangement of scenes)
+  
+Default factory settings
+  - Projects 1-5 are populated
+  - Projects 6-9 are empty
+  
+**Change Project**? HOLD MAIN and HOLD one of the pads (1-9), about 1 second together
+
+  - Hold main, blinking light shows current project
+
+**Pattern Length**
+  
+  - Default is 1 bar
+  - Increase length HOLD RECORD then +
+  
+**Recording**
+
+  - Press record then play, metronome plays
+  - finger drum
+  - erase 
+  - undo Shift + B
+  
+**Commit**
+
+----------------------------
+
+## Things that are annoying
+
+The main thing I find annoying is an unreasonable thing. So, I'm not actually annoyed, but I am annoyed.
+
+I want to start finger drumming and settle into a groove without any nuisance factors, and then have that groove automatically loop with no effort, and be able to export the loop with no effort.
+
+One approach is to set a bar length, set tempo, turn the metronome on, press record, then jam it out and hope it works (and repeat over and over and over, until I get a take that works). The problem is that I hate metronomes. I don't "feel" in the groove doing this. I can make stuff that is OK, with lot's of editing and effort, and on the whole it is NOT FUN.
+
+I've tried various ways of playing live and recording into Ableton, but this is also NOT FUN, for lots of reasons.
+
+I'm looking for "The timeless way of having fun finger drumming".
+
+## Things I'm actually doing
+
+### Record to "tape", grab loops later
+
+This seems to work pretty well. I like to use the EP-133 as a portable device. It's too bad that it doesn't record itself. Instead, I need to record into another portable device. I have a Zoom H6 that works well for this kind of thing. 
+
+I run the Ep-133 output to the H6 recorder, press record, then drum it out for 10 minutes or whatever. I like this because it is so fun, and I enjoy the actual playing part. I don't care about mistakes or timing or anything. Alternatively, if I'm nearby a laptop, I'll record into the laptop, using Adobe Audition. Or, if I'm in the home studio, I'll record to an SD card through my mixer. 
+
+Bottom line is that there is lot's of flow, and I enjoy this.
+
+Afterward, I bring the wav file into Adobe Audition, listen through it, and cut out any drum loops that I think work. Then, I load these into Ableton, and the warping feature seems to work pretty well at this point. 
+
+### Set really long bar lengths on the EP-133, and play live for a long time
+
+This works pretty well too. 
+
+Hold record, then +, increases the number of bars. Hold + down and it zooms up to 99 bars. I use free play (no quantize), and drum away. Even if it is a big mess, it's lots of fun, and I can grab any good parts later. Bonus points for being able to use the FX during playback.
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,143 @@
+---
+title: "Fixing up my Sears Kawai 26133 electric guitar"
+author: "Matt Crump"
+date: 8/6/24
+description: "Should've tried to do this a while ago"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - guitars
+  - gear
+  - repair
+execute: 
+  echo: true
+  message: false
+  warning: false
+  eval: false
+format:
+  html:
+    code-fold: true
+lightbox: 
+  match: auto
+  desc-position: right
+  loop: true
+---
+
+```{r}
+
+```
+
+```{python, eval = FALSE}
+from diffusers import DiffusionPipeline
+from transformers import set_seed
+from PIL import Image
+import torch
+import random
+import ssl
+import os
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#locate library
+#model_id = "./stable-diffusion-v1-5"
+model_id = "dreamshaper-xl-turbo"
+
+pipeline = DiffusionPipeline.from_pretrained(
+	pretrained_model_name_or_path = "../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"
+)
+
+pipeline = pipeline.to("mps")
+
+# Recommended if your computer has < 64 GB of RAM
+pipeline.enable_attention_slicing("max")
+
+prompt = "practicing synthesizer on a beach. the sunset is a synthesizer. The moon in the sky is a synthesizer. The trees are made of synthesizers. The ocean is music. colorful. 3d."
+
+for s in range(30):
+  for n in [5,10]:
+    seed = s+21
+    num_steps = n+1
+    set_seed(seed)
+    
+    image = pipeline(prompt,height = 1080,width = 1080,num_images_per_prompt = 1,num_inference_steps=num_steps)
+    
+    image_name = "images/synth_{}_{}.jpeg"
+    
+    image_save = image.images[0].save(image_name.format(seed,num_steps))
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+Three guitars with problems sat on wall.
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+
+All three of these guitars have issues. The one in the middle has the most issues for the longest period of time. 
+
+I can't remember when I first picked this up, say 14 or 16, or something like that. For the longest time I had no idea what kind of guitar it was (no label or model number anywhere).
+
+It never really worked that well. The action was fine. It looked neat. It crackled. It only made sound when all the faders were in one direction. Pieces chipped off. One day it stopped working altogether. It's been broken and hanging around for years. 
+
+## Finding similar guitars online
+
+Found some info:
+
+Seems like this could be a Sears Kawai 26133 (or some version of this).
+
+<https://reverb.com/item/36471562-vintage-sears-kawai-26133-1969-sunburst>
+
+Saturn Guitar circuits:
+
+<https://www.saturn-guitar-circuits.com>
+
+## nice example of repairing a similar guitar
+
+<https://www.youtube.com/watch?v=OebpmmNFJ6Q&t=1208s>
+
+## What I did so far
+
+Not much
+
+- Some light resoldering. The neck pick-up was disconnected from one of the faders
+- cleaned the neck, looks much better
+- restrung
+- works a bit better
+- waiting on circuit cleaner
+- probably need to do a bunch more
+
+## Tone
+
+Interesting surf clunker tone. Treble is super muffled. Need to investigate more.
+
+
+
+
+
+
+
+
+
+
+
+
+

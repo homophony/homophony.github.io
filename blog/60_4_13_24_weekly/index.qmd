@@ -1,5 +1,5 @@
 ---
-title: "Weekly stuff April 13"
+title: "Boss rc-505 mk ii looper"
 author: "Matt Crump"
 date: 4/13/24
 description: "Basement jam notes"
@@ -8,7 +8,8 @@ comments:
   giscus: 
     repo: CrumpLab/crumplab_comments
 categories: 
-  - music practice
+  - looping
+  - gear
 execute: 
   echo: true
   message: false
@@ -69,7 +70,7 @@ for s in range(30):
 ![](cover.jpg){width="50%" fig-align="left"}
 
 ::: column-margin
-messy room full of synthesizers. wires going everywhere. musical chaos. modular synthesizers everywhere. cluttered music room of synthesizers.
+Boss rc-505 mk ii looper
 :::
 
 ```{r}
@@ -89,16 +90,94 @@ html_tag_audio <- function(file, type = c("wav")) {
 
 ```
 
-The room of synthesizers isn't quite this bad, but some changes are needed to make everything more playable.
+This thing was supposed to be delivered on a Sunday, but it came early, so I got to spend most of Saturday playing around with it. 
 
-------------------------------------------------------------------------
+First impressions are that this is TOO MUCH FUN.
 
-![](images/IMG_3257-01.jpeg)
+There is a huge amount of possibilities to this device and was expecting to have to be overwhelmed by figuring out how to set it up just the way I wanted it to work. Surprise, the default settings were great, and pretty much spot on with what I would use this for.
 
-I've been really enjoying this simple setup. The zoom h6 is recording the EP133 through channels 1 and 2, and the piano is recorded with the stereo x/y capsule on top. Fun times jamming with a killer ep-133 metronome. Also, do really long takes, not caring about getting anything perfect, just laying down things that might turn into ideas later.
+I'm sure there will be other things to try, and my plan is to make random notes to self here.
 
-------------------------------------------------------------------------
+## Copy settings from one memory to another
 
-![](images/BOSS RC505 MKII 2-01.jpg)
+I set up a midi foot pedal (midi captain) as a trigger option for the first track. Took a bit of fiddling, but got that working. Then, after I saved a loop session to the first memory and scrolled over to the second memory, the midi trigger wasn't working. It seems that each memory saves all of the settings. I had changed the settings from default for the first memory, and I had to change them again for the second memory.
 
-It's been ages since I used a proper looper and the time seemed right. Apparently this will be arriving sometime this weekend, looking forward to messing around.
+I'm not sure yet if the defaults can be changed and applied across all memories? But, it is possible to copy/paste one memory to another. So, I guess I would make a memory with a settings template, and then copy/paste it across a bunch of memories. 
+
+To copy/paste, apparently this is the same as "write", but, you would turn the encoder for memory and save the current one to a different number.
+
+<https://www.reddit.com/r/LoopArtists/comments/oyk51f/boss_rc505_apply_memory_settings_to_all_memories/>
+
+- got this working now, it's totally easy. I still need to learn which settings are actually global. Otherwise, it's fast to take any memory, write it to another location, and then clear the tracks (and keep the settings)
+
+## Sounds great
+
+I'm really impressed with the sound quality. This is all very subjective and also determined by my other gear, but I have not had the same experience with some other similar devices. For example, I have an MPC Live, and although it is very good for some things, I did not like how audio sounded playing through it. Some instruments sounded lifeless and muted by comparison to the main system. This looper though...the A/D converters are apparently very good. When everything is clean and passing through, it sounds great, almost invisible. And, I'm OK with the general character of the other stuff like the compressor etc., or I'll just turn it off.
+
+## Guitar pedal multi fx
+
+I wasn't expecting the FX to be so use-able, especially the live input FX. I feel like I got a bunch of guitar pedals for free here. Damn, OK, yes.
+
+## Snappy
+
+So far, no latency problems. none. wow.
+
+## Fun machine with constraints
+
+The gear situation at hand can suggest or afford workflows. These days, with a bunch of gear and a laptop, there are many possible workflows. It's fun to explore them. Sometimes it's nice to work within the constraints of a particular device. So far, this is one of those times.
+
+## Freeze
+
+There is a decent freeze effect in here. I have a midi pedal, I should set it up to make the freeze effect happen when I press a foot pedal. Goals for the future.
+
+## Incrementing memory foot switch
+
+Haven't tried this yet, but it is apparently possible in a song context. My experience with loopers before was getting stuck in a loop, and being able to switch between parts is a nice option.
+
+Tried this out a little bit...sending program changes from the midi captain changes the memory.
+
+Warning...Memories need to be saved, so if they are not saved it is very easy to switch between a memory and accidentally wipe the one you were on.
+
+## Thinking through some setup options with other gear
+
+### Program changes, MPC live
+
+Current setup:
+
+Midi captain foot switches into RC-505, controlling track record/play and undo/redo. Another page of midi controls 1-8 program changes, to change memories.
+
+MPC live receives midi clock and start/stop from RC-505. MPC live sends audio through RC-505. MPC Live receives program change messages from RC-505, set to change the MPC Live sequence.
+
+Observations:
+
+I have never tried to midi control the mpc live in terms of program changes. There are three options: program, sequence, track. I have it set to change the sequence.
+
+Issues:
+
+Need to send the MPC to the mixer, not through the RC-505.
+
+Is there a footswitch to trigger memory write?
+
+To Do:
+
+Plan is to make an MPC live program to pair with the rc-505. Sequence numbers on the MPC will correspond to memory numbers on the rc-505 (by program change value). Note, that on start-up the rc-505 does not send a program change message, need to toggle into it.
+
+This combo adds a whole bunch of track possibilities. Main audio looping will be taken care of by the rc-505. At the same time, it is possible to record audio into the MPC. I'll probably avoid this for now. Constraints are good. Very easy to make unlimited midi tracks. 
+
+Assign say 4 drum kits to tracks 1-4 on the MPC. Could add more. This gives a few options for beats and kits at a sequence level. 
+
+One big MPC program should be able to provide backing beats/tracks to the rc-505.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
