@@ -51,30 +51,29 @@ html_tag_audio <- function(file, type = c("wav")) {
 
 ```
 
-
 Haven't posted here in way to long.
 
 Recently got turned onto the [dirtywave m8 tracker](https://dirtywave.com), and it's blowing me away. Amazing software and device.
 
-Just collecting random bits and pieces on the m8 here for my own reference. If I get round to it, I may post some tricks as I explore this thing. 
+Just collecting random bits and pieces on the m8 here for my own reference. If I get round to it, I may post some tricks as I explore this thing.
 
 # m8
 
-Still waiting to buy a real m8 (mark II)...they're all sold out. 
+Still waiting to buy a real m8 (mark II)...they're all sold out.
 
-Amazingly, the software is free and can be loaded onto a teensy, so I did all of that in advance of getting in an m8 pre-order. 
+Amazingly, the software is free and can be loaded onto a teensy, so I did all of that in advance of getting in an m8 pre-order.
 
 # lsdj + anbernic
 
-A week or two ago I got started with lsdj, which m8 is based on. 
+A week or two ago I got started with lsdj, which m8 is based on.
 
 Steps:
 
-1. Bought an [anbernic game-boy](https://anbernic.com/products/rg-40xxv) RG 40XXV. Had I known at that time that I would be running a teensy with this, I would have got one of the ones with two usb-c ports (one for charging. oh well)
+1.  Bought an [anbernic game-boy](https://anbernic.com/products/rg-40xxv) RG 40XXV. Had I known at that time that I would be running a teensy with this, I would have got one of the ones with two usb-c ports (one for charging. oh well)
 
-2. Installed [lsdj](https://www.littlesounddj.com/lsd/index.php) 
+2.  Installed [lsdj](https://www.littlesounddj.com/lsd/index.php)
 
-3. Had loads of fun 
+3.  Had loads of fun
 
 So many helpful youtube videos out there to get started, and starting with lsdj made the switch to m8 nearly seamless
 
@@ -82,19 +81,18 @@ So many helpful youtube videos out there to get started, and starting with lsdj 
 
 Not sure I can remember all the steps, but followed the directions on github, <https://github.com/Dirtywave/M8HeadlessFirmware>.
 
-1. Bought a teensy, two micro sd cards, and a short cable
+1.  Bought a teensy, two micro sd cards, and a short cable
 
-2. Installed knulli on the anbernic <https://github.com/jamesMcMeex/m8c-rg35xx-knulli>
+2.  Installed knulli on the anbernic <https://github.com/jamesMcMeex/m8c-rg35xx-knulli>
 
-3. followed this [advice from Auodafe on youtube](https://www.youtube.com/watch?v=79USMsdRxhw).
+3.  followed this [advice from Auodafe on youtube](https://www.youtube.com/watch?v=79USMsdRxhw).
 
 # m8 links
 
-- [awesome m8](https://github.com/v3rm0n/awesome-m8?tab=readme-ov-file)
-- [ideas for programming euclidean triggers](https://www.youtube.com/watch?v=-0QVcb4YwG8)
-- [chords using the fm synth and tables](https://bit-101.com/blog/posts/2025-04-22/fm-synth-chords-on-m8/)
-- [good intro to tables on m8](https://www.youtube.com/watch?v=2OgxO4W8oJk)
-
+-   [awesome m8](https://github.com/v3rm0n/awesome-m8?tab=readme-ov-file)
+-   [ideas for programming euclidean triggers](https://www.youtube.com/watch?v=-0QVcb4YwG8)
+-   [chords using the fm synth and tables](https://bit-101.com/blog/posts/2025-04-22/fm-synth-chords-on-m8/)
+-   [good intro to tables on m8](https://www.youtube.com/watch?v=2OgxO4W8oJk)
 
 # jam
 
@@ -102,11 +100,14 @@ A first quick jam. Drums are a chopped up sample with some euclidean triggers an
 
 `r html_tag_audio("rhodes_m8.mp3", type = "wav")`
 
+I was impressed with how much variation in the drums I could achieve with the following setup.
 
+![](images/m8_drums.png)
 
+C-1 is triggering a sample that I sliced up into 16 parts. The STA command allows the starting point (slice in the sample) to vary every bar. The RNL command randomizes the value send to starting slice (it should start anywhere from slice 1 - F...16 in hexadeximal). 
 
+I had previously programmed all of the E tables to contain euclidean rhythms. So, E3 has 3 of 16 possible triggers, E4 has 4 of 16 possible triggers, etc.
 
-
-
+As a result, the sample triggered by C-1 is retriggered following the euclidean triggers in the table, in this case E6 (6 beats our of 16). But, in addition, the RND command allows a random value between 0 and 3 to be added to the 6 value above, which means that euclidean table is sampled from between E6 and E9 every bar. All of that adds up to some decent "generative" variation for the drum part. 
 
 

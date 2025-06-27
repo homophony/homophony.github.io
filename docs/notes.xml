@@ -74,6 +74,11 @@
 <h1>jam</h1>
 <p>A first quick jam. Drums are a chopped up sample with some euclidean triggers and a bit of randomization, same with the pads and bass, all m8. Then a rhodes jam over top.</p>
 <p><audio controls=""> <source src="rhodes_m8.mp3" type="audio/wav"> </audio></p>
+<p>I was impressed with how much variation in the drums I could achieve with the following setup.</p>
+<p><a href="images/m8_drums.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="https://homophony.quest/blog/63_6_27_25_headless_m8/images/m8_drums.png" class="img-fluid"></a></p>
+<p>C-1 is triggering a sample that I sliced up into 16 parts. The STA command allows the starting point (slice in the sample) to vary every bar. The RNL command randomizes the value send to starting slice (it should start anywhere from slice 1 - F…16 in hexadeximal).</p>
+<p>I had previously programmed all of the E tables to contain euclidean rhythms. So, E3 has 3 of 16 possible triggers, E4 has 4 of 16 possible triggers, etc.</p>
+<p>As a result, the sample triggered by C-1 is retriggered following the euclidean triggers in the table, in this case E6 (6 beats our of 16). But, in addition, the RND command allows a random value between 0 and 3 to be added to the 6 value above, which means that euclidean table is sampled from between E6 and E9 every bar. All of that adds up to some decent “generative” variation for the drum part.</p>
 
 
 </section>
