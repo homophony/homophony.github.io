@@ -1,0 +1,112 @@
+---
+title: "Headless dirtywave m8"
+author: "Matt Crump"
+date: 6/27/25
+description: "So much fun"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - tracker
+  - m8
+execute: 
+  echo: true
+  message: false
+  warning: false
+  eval: false
+format:
+  html:
+    code-fold: true
+lightbox: 
+  match: auto
+  desc-position: right
+  loop: true
+---
+
+```{r}
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+m8 dirtywave manual
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+
+Haven't posted here in way to long.
+
+Recently got turned onto the [dirtywave m8 tracker](https://dirtywave.com), and it's blowing me away. Amazing software and device.
+
+Just collecting random bits and pieces on the m8 here for my own reference. If I get round to it, I may post some tricks as I explore this thing. 
+
+# m8
+
+Still waiting to buy a real m8 (mark II)...they're all sold out. 
+
+Amazingly, the software is free and can be loaded onto a teensy, so I did all of that in advance of getting in an m8 pre-order. 
+
+# lsdj + anbernic
+
+A week or two ago I got started with lsdj, which m8 is based on. 
+
+Steps:
+
+1. Bought an [anbernic game-boy](https://anbernic.com/products/rg-40xxv) RG 40XXV. Had I known at that time that I would be running a teensy with this, I would have got one of the ones with two usb-c ports (one for charging. oh well)
+
+2. Installed [lsdj](https://www.littlesounddj.com/lsd/index.php) 
+
+3. Had loads of fun 
+
+So many helpful youtube videos out there to get started, and starting with lsdj made the switch to m8 nearly seamless
+
+# headless m8 with teensy
+
+Not sure I can remember all the steps, but followed the directions on github, <https://github.com/Dirtywave/M8HeadlessFirmware>.
+
+1. Bought a teensy, two micro sd cards, and a short cable
+
+2. Installed knulli on the anbernic <https://github.com/jamesMcMeex/m8c-rg35xx-knulli>
+
+3. followed this [advice from Auodafe on youtube](https://www.youtube.com/watch?v=79USMsdRxhw).
+
+# m8 links
+
+- [awesome m8](https://github.com/v3rm0n/awesome-m8?tab=readme-ov-file)
+- [ideas for programming euclidean triggers](https://www.youtube.com/watch?v=-0QVcb4YwG8)
+- [chords using the fm synth and tables](https://bit-101.com/blog/posts/2025-04-22/fm-synth-chords-on-m8/)
+- [good intro to tables on m8](https://www.youtube.com/watch?v=2OgxO4W8oJk)
+
+
+# jam
+
+A first quick jam. Drums are a chopped up sample with some euclidean triggers and a bit of randomization, same with the pads and bass, all m8. Then a rhodes jam over top.
+
+`r html_tag_audio("rhodes_m8.mp3", type = "wav")`
+
+
+
+
+
+
+
+
+
