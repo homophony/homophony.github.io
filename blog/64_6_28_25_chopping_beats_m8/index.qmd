@@ -98,3 +98,15 @@ Got it working.
 -   And some randomness to those starting points.
 
 -   Pitching C-4 up or down does change the pitch, but not the tempo, nice
+
+# Playing random notes from a select pool of notes using tables
+
+Quick experiment. Challenge was to change a note value and replace it with a randomly chosen note from a specified pool of notes.
+
+It's possible to do something like the above by setting a scale, but scales don't appear to work with tables.
+
+This table begins with a hop command to jump to row 4. Rows 4 to 7 have retriggers programmed for 2nd, major 3rd, 4th, and 5th. The RNL command randomly adds 0-3 (I think it's 0-3 and not 1-3?) to the hop, and the KIL command prevent the table from incrementing.
+
+The basic result is achieved and every time the note plays in the phrase, it is randomly transposed by one of these four values. This little trick will come in handy later for other stuff where I want some variation, but also want to limit the variation to specific notes or, in the case of chopping beats, specific slices or starting points or whatever.
+
+![](images/table_sample.png)
