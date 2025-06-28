@@ -1,0 +1,100 @@
+---
+title: "Notes on chopping beats with the dirtywave m8 (headless)"
+author: "Matt Crump"
+date: 6/27/25
+description: "notes to self"
+image: "cover.jpg"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - tracker
+  - m8
+execute: 
+  echo: true
+  message: false
+  warning: false
+  eval: false
+format:
+  html:
+    code-fold: true
+lightbox: 
+  match: auto
+  desc-position: right
+  loop: true
+---
+
+```{r}
+
+```
+
+![](cover.jpg){width="50%" fig-align="left"}
+
+::: column-margin
+m8 dirtywave manual
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+This is unlikely to be an organized post...notes to self about chopping beats on the m8, which seems to work mostly as I expect, but with several things I don't expect. Plus, I need to practice.
+
+# chopping with repitch
+
+![](images/repitch%20chopper.png)
+
+1.  Chop the sample so it is a known number of bars. This one was 4 bars.
+
+2.  Slice the sample (this one had 32 slices)
+
+3.  Choose the number of slices in the instrument panel (32)
+
+4.  Set play to repitch. This will cause each slice to loop. Set the "Steps" to the number of bars in the sample (4 bars)
+
+5.  Use an AHD envelope, set the hold to the slice length (in this case it is two steps)
+
+The first slice would be C-1 in the phrase window. To faithfully recreate the beat, enter incrementing notes from C-1 every other step.
+
+I did that, then highlighted the notes and experimented with transposing them to find something I liked. Then added a few extra triggers, and set the notes to random (+8) for a little bit of variation. Copied this phrase a few times in the chain menu, made the last one have even more random stuff for a fill.
+
+`r html_tag_audio("repitch_chop.mp3", type = "wav")`
+
+# try time stretching
+
+-   [M8 Sample Time Stretching Deep Dive](https://www.youtube.com/watch?v=keOTVDfgPtU)
+
+-   [m8 - Old School Time Stretching Technique](https://www.youtube.com/watch?v=Bfa6XMT3MW0)
+
+Got it working.
+
+![](images/timestretch chopper.png)
+
+-   Crop the sample to X known bars.
+
+-   Set play to FWDLOOP
+
+-   Use an LFO with destination Loop ST. Ramp up, retrig. Set the freq to the length of the sample (in this case 10 is one bar, and the sample is one bar). This causes the loop start position to increase linearly as the lfo rises from 0 to 100%
+
+-   In the instrument screen I fiddled with LENGTH and that helped smooth out artifacts. That's basically it, adjust tempo and it seems to be working
+
+-   C-4 was the base note. This triggers the sample.
+
+-   Use STA to change where the sample starts to play
+
+-   And some randomness to those starting points.
+
+-   Pitching C-4 up or down does change the pitch, but not the tempo, nice
