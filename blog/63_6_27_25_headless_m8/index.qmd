@@ -51,7 +51,7 @@ html_tag_audio <- function(file, type = c("wav")) {
 
 ```
 
-Haven't posted here in way to long.
+Haven't posted here in way too long.
 
 Recently got turned onto the [dirtywave m8 tracker](https://dirtywave.com), and it's blowing me away. Amazing software and device.
 
