@@ -15,7 +15,48 @@
 <link>https://homophony.quest/notes.html</link>
 </image>
 <generator>quarto-1.5.57</generator>
-<lastBuildDate>Fri, 27 Jun 2025 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sat, 06 Sep 2025 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>Ableton 12 stem separation, Ramsey Lewis, satur(day tripper), M8</title>
+  <dc:creator>Matt Crump</dc:creator>
+  <link>https://homophony.quest/blog/65_9_6_25_RL2_m8/</link>
+  <description><![CDATA[ 
+
+
+
+
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><a href="cover.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="https://homophony.quest/blog/65_9_6_25_RL2_m8/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></a></p>
+</figure>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Ramsey Lewis album cover</p>
+</div></div><p>Some notes from a Saturday Jam.</p>
+<ol type="1">
+<li><p>Decided to try out Ableton 12’s stem separation feature. Nice to have this in Ableton. Decent enough for my purposes.</p></li>
+<li><p>Grabbed a bunch of Ramsey Lewis tunes, split out the drums</p></li>
+<li><p>Loaded a sample of drums from Lewis’s Day Tripper track into the m8</p></li>
+<li><p>Messed around on the piano recording various parts</p></li>
+</ol>
+<p>Really enjoying the M8 for “note taking”, and recording samples while playing over some beats.</p>
+<p>The example here features the drum section mentioned above and a 20 bar track with a piano bass line that repeats. The third track (on the m8) is a very long jam track. Here, I used the m8 sampler to play over the 20 bar chord changes, something like 19 times. It’s just a single wav file, but it’s easy to slice it up into 20 bar units, which provides similar functionality to take lanes (say in Ableton).</p>
+<p>A neat feature of the m8 is that it is also fairly straightforward to replay the whole thing, and randomly set the slice that gets played for any 20 bar phrase (endless jazzzzzz). I didn’t do that here, but I did choose a few of the 19 takes to render (just three or four).</p>
+<p>Lot’s of roughness around the edges. Will likely use stuff here as a base of inspiration for something else…starting with playing the whole bass line so it is more responsive to the other parts.</p>
+<p><audio controls=""> <source src="RL2_01.mp3" type="audio/wav"> </audio></p>
+
+
+
+ ]]></description>
+  <category>tracker</category>
+  <category>m8</category>
+  <category>ableton</category>
+  <category>composition</category>
+  <guid>https://homophony.quest/blog/65_9_6_25_RL2_m8/</guid>
+  <pubDate>Sat, 06 Sep 2025 04:00:00 GMT</pubDate>
+  <media:content url="https://homophony.quest/blog/65_9_6_25_RL2_m8/cover.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Headless dirtywave m8</title>
   <dc:creator>Matt Crump</dc:creator>
@@ -13933,224 +13974,6 @@ font-style: inherit;">"bluesy_C.mid"</span>)</span></code></pre></div>
   <guid>https://homophony.quest/blog/46_2_12_24_dplyr_midi/</guid>
   <pubDate>Mon, 12 Feb 2024 05:00:00 GMT</pubDate>
   <media:content url="https://homophony.quest/blog/46_2_12_24_dplyr_midi/cover.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Eurorack notes to self</title>
-  <dc:creator>Matt Crump</dc:creator>
-  <link>https://homophony.quest/blog/45_2_11_24_eurorack/</link>
-  <description><![CDATA[ 
-
-
-
-
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> DiffusionPipeline</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> transformers <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> set_seed</span>
-<span id="cb1-3"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">from</span> PIL <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> Image</span>
-<span id="cb1-4"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> torch</span>
-<span id="cb1-5"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> random</span>
-<span id="cb1-6"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> ssl</span>
-<span id="cb1-7"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> os</span>
-<span id="cb1-8">ssl._create_default_https_context <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> ssl._create_unverified_context</span>
-<span id="cb1-9"></span>
-<span id="cb1-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#locate library</span></span>
-<span id="cb1-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#model_id = "./stable-diffusion-v1-5"</span></span>
-<span id="cb1-12">model_id <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"dreamshaper-xl-turbo"</span></span>
-<span id="cb1-13"></span>
-<span id="cb1-14">pipeline <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> DiffusionPipeline.from_pretrained(</span>
-<span id="cb1-15">    pretrained_model_name_or_path <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../../../../bigFiles/huggingface/dreamshaper-xl-turbo/"</span></span>
-<span id="cb1-16">)</span>
-<span id="cb1-17"></span>
-<span id="cb1-18">pipeline <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pipeline.to(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"mps"</span>)</span>
-<span id="cb1-19"></span>
-<span id="cb1-20"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Recommended if your computer has &lt; 64 GB of RAM</span></span>
-<span id="cb1-21">pipeline.enable_attention_slicing(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"max"</span>)</span>
-<span id="cb1-22"></span>
-<span id="cb1-23">prompt <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Massive modular synthesizer. Eurorack modular synthesizer. Huge synthesizer room, full or modular synthesizers with patch cords connecting everywer. 80s cartoon. Linocut."</span></span>
-<span id="cb1-24"></span>
-<span id="cb1-25"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> s <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">range</span>(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">30</span>):</span>
-<span id="cb1-26">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> n <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> [<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">5</span>,<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">10</span>]:</span>
-<span id="cb1-27">    seed <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> s<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">21</span></span>
-<span id="cb1-28">    num_steps <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> n<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span>
-<span id="cb1-29">    set_seed(seed)</span>
-<span id="cb1-30">    </span>
-<span id="cb1-31">    image <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> pipeline(prompt,height <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1024</span>,width <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1024</span>,num_images_per_prompt <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>,num_inference_steps<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>num_steps)</span>
-<span id="cb1-32">    </span>
-<span id="cb1-33">    image_name <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"images/synth_</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">_</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">.jpeg"</span></span>
-<span id="cb1-34">    </span>
-<span id="cb1-35">    image_save <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
-</details>
-</div>
-<div class="quarto-figure quarto-figure-left">
-<figure class="figure">
-<p><img src="https://homophony.quest/blog/45_2_11_24_eurorack/cover.jpg" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:50.0%"></p>
-</figure>
-</div>
-
-<div class="no-row-height column-margin column-container"><div class="">
-<p>Massive modular synthesizer. Eurorack modular synthesizer. Huge synthesizer room, full or modular synthesizers with patch cords connecting everywer. 80s cartoon. Linocut. - dreamshaper</p>
-</div></div><p>Notes to self about eurorack stuff.</p>
-<section id="programmable-eurorack-modules" class="level2">
-<h2 class="anchored" data-anchor-id="programmable-eurorack-modules">Programmable Eurorack Modules</h2>
-<p>I very briefly <a href="https://www.crumplab.com/blog/older_9999_7_28_20_OC/">tried to program ornaments and crime one time</a>. But that’s about it. I could see becoming interested in putting ideas from {midiblender}, and other ideas, into eurorack in different ways.</p>
-<ul>
-<li><p>older post on mod wiggler about open source programmable eurorack modules <a href="https://modwiggler.com/forum/viewtopic.php?t=220061" class="uri">https://modwiggler.com/forum/viewtopic.php?t=220061</a></p></li>
-<li><p>a useful list of programmable audio platforms <a href="https://blog.macieksypniewski.com/2019/07/08/programmable-audio-platforms/" class="uri">https://blog.macieksypniewski.com/2019/07/08/programmable-audio-platforms/</a></p></li>
-<li><p>Bela pepper <a href="https://shop.bela.io/collections/modular/products/pepper" class="uri">https://shop.bela.io/collections/modular/products/pepper</a></p></li>
-<li><p><a href="https://monome.org/docs/">Monome</a> has some interesting stuff</p></li>
-<li><p><a href="https://allensynthesis.co.uk/modules/europi.html">EuroPi</a> Based on raspberry pi pico I think</p></li>
-<li><p><a href="https://www.expert-sleepers.co.uk/es8.html">Es8</a> or <a href="https://www.expert-sleepers.co.uk/es9.html">ES-9</a> USB-audio interface…I could use one of these in general I think…hmm.</p></li>
-</ul>
-</section>
-<section id="eurorack-composition-ideas" class="level2">
-<h2 class="anchored" data-anchor-id="eurorack-composition-ideas">Eurorack composition ideas</h2>
-<p>I don’t really want to mess with my computer while messing with eurorack at the same time, as a general rule.</p>
-<section id="easy-can-do-right-now" class="level3">
-<h3 class="anchored" data-anchor-id="easy-can-do-right-now">Easy can do right now</h3>
-<ol type="1">
-<li>Use {midiblender} to compose MIDI files with some things I want, play them through hermod. This gives me 8-voices. Probably the easiest thing I can do right now. Benefits are that the midi files are pre-packaged, and I shouldn’t have to worry about any latency or anything like that.</li>
-</ol>
-<ul>
-<li>I like this pattern for a bunch of reasons. I focus on some compositional ideas outside of eurorack. Generate all the midi based on the compositional ideas…which basically acts as CV and gate sources. Hook it all up to voices on, and wreck the whole thing as much as possible by turning knobs during playback. Sounds fun. Feels a little bit locked in to the compositional direction from the midi files, but I guess that’s the whole point of composing something.</li>
-</ul>
-<ol start="2" type="1">
-<li>This is somewhere in the middle, but I wonder about a way to rapidly scroll through a bunch of midi files, while they are playing, kind of like how one might scroll through a wavetable and hear all of the notes. If I had banks of possible midi files to play, and could easily scroll them, that would be fun. hmmmm.</li>
-</ol>
-</section>
-<section id="longer-term-cant-do-right-now" class="level3">
-<h3 class="anchored" data-anchor-id="longer-term-cant-do-right-now">longer term can’t do right now</h3>
-<ol start="2" type="1">
-<li>Have a module (or computer program) that can accumulate CV or midi from a live performance, crunch the probabilities at various levels (e.g., into various markov chain ideas, or other weird stuff), and do interesting generative sequencing based off of the live performance statistics.</li>
-</ol>
-
-
-</section>
-</section>
-
- ]]></description>
-  <category>midiblender</category>
-  <category>eurorack</category>
-  <category>programmable eurorack</category>
-  <category>composition</category>
-  <guid>https://homophony.quest/blog/45_2_11_24_eurorack/</guid>
-  <pubDate>Sun, 11 Feb 2024 05:00:00 GMT</pubDate>
-  <media:content url="https://homophony.quest/blog/45_2_11_24_eurorack/cover.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
