@@ -57,7 +57,7 @@ Notes on working another riff.
 
 1. Sampled "Do What You Wanna" from the Ramsey Lewis Trio's Another Voyage, used Ableton's stem extraction to get this beat:
 
-`r html_tag_audio("RL_DWYW_115.wav", type = "wav")`
+`r html_tag_audio("RL_DWYW_1115.wav", type = "wav")`
 
 2. Used the m8 to slice the beat and shuffle it up a bit, used this version as the base to jam over.
 
