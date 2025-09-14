@@ -75,3 +75,23 @@ I didn't get that far. Instead, after establishing some backing tracks for the m
 
 
 `r html_tag_audio("RL3_take_2.mp3", type = "wav")`
+
+----------------
+
+9/14/25
+
+Some edits were made.
+
+1. Got rid of several of the repetitive loop aspects
+
+2. Added new piano chords and bass line throughout the middle section
+
+3. Added some op-xy finger drumming throughout, mixed this in and out of the sampled beat. Some heavier FX on the drums to bring it together
+
+4. Added a guitar part over some of the melody
+
+5. Took more time to attempt to balance volume levels throughout and then get a final mix that sounds decent across headphone/speaker variations. This always takes forever. Something is probably too loud or not loud enough.
+
+When adding new parts, used ableton take a lanes a whole lot, worked incrementally through 4 to 8 bar sections. 
+
+`r html_tag_audio("RL3_take_5.mp3", type = "wav")`
