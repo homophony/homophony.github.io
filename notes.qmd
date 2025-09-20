@@ -8,7 +8,7 @@ listing:
   contents: blog
   id: blog_list
   sort: "date desc"
-  type: default
+  type: table
   categories: true
   image-align: 'right'
   image-height: '100%'

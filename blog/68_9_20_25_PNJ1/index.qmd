@@ -1,0 +1,64 @@
+---
+title: "Experimental composition PNJ1"
+author: "Matt Crump"
+date: 9/20/25
+description: "notes to self"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - piano
+  - Ableton
+  - experimental 
+  - composition
+execute: 
+  echo: true
+  message: false
+  warning: false
+  eval: false
+format:
+  html:
+    code-fold: true
+lightbox: 
+  match: auto
+  desc-position: right
+  loop: true
+---
+
+```{r}
+
+```
+
+
+```{r}
+#| echo: false
+#| eval: true
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+Played dissonant free form piano.
+
+Went over the first two minutes one phrase at a time and added a voice part, which was an attempt to minimally summarize what was going on in the phrase.
+
+Went over again adding a bass part one phrase at a time.
+
+Popped everything into Ableton. Converted the piano tracks to midi. Mixed the piano parts together with a few synth sounds from the Artemis.
+
+Experimental PNJ1:
+
+`r html_tag_audio("PNJ1.mp3", type = "wav")`
+
+
+
+

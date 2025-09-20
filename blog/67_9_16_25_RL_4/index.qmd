@@ -1,0 +1,80 @@
+---
+title: "RL4"
+author: "Matt Crump"
+date: 9/16/25
+description: "notes to self"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - tracker
+  - m8
+  - ableton
+  - composition
+execute: 
+  echo: true
+  message: false
+  warning: false
+  eval: false
+format:
+  html:
+    code-fold: true
+lightbox: 
+  match: auto
+  desc-position: right
+  loop: true
+---
+
+```{r}
+
+```
+
+
+```{r}
+#| echo: false
+#| eval: true
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+The weekend:
+
+Working off of this drum beat, courtesy of Ramsey Lewis. 
+
+`r html_tag_audio("RL_IYGI931.wav", type = "wav")`
+
+Added a bass line and rhodes chords. Jammed over them with rhodes, guitar, osmose and artemis. Ended up with lots of material there. Cut it down to a simple back and forth between guitar and rhodes, plus a few tidbits.
+
+`r html_tag_audio("RL4_take_1.mp3", type = "wav")`
+
+----------------
+
+Monday:
+
+Used the above as a backing track, added lots of piano leads over top. 
+
+----------------
+
+Tuesday morning:
+
+Try stitching something together.
+
+----------------
+
+It's saturday now, did a bunch of stuff on this one, the third take is:
+
+`r html_tag_audio("RL4_take_3.mp3", type = "wav")`
+
+
+
+
