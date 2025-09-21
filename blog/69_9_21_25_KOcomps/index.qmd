@@ -1,0 +1,57 @@
+---
+title: "Ep-133 trial runs"
+author: "Matt Crump"
+date: 9/21/25
+description: "notes to self"
+comments:
+  giscus: 
+    repo: CrumpLab/crumplab_comments
+categories: 
+  - ep-133
+execute: 
+  echo: true
+  message: false
+  warning: false
+  eval: false
+format:
+  html:
+    code-fold: true
+lightbox: 
+  match: auto
+  desc-position: right
+  loop: true
+---
+
+```{r}
+
+```
+
+
+```{r}
+#| echo: false
+#| eval: true
+
+html_tag_audio <- function(file, type = c("wav")) {
+  type <- match.arg(type)
+  htmltools::tags$audio(
+    controls = "",
+    htmltools::tags$source(
+      src = file,
+      type = glue::glue("audio/{type}", type = type)
+    )
+  )
+}
+
+```
+
+Putting some time into the EP-133. Really fun for immediate finger drumming. It's been a while since I picked up the EP-133, and I forgot all of the details for programming it. I doubt I will ever remember those details, le grand sigh. That's an understatement about my doubt, which is more like certainty.
+
+It is really fun to use though, and short snappy beats can fall out of it fairly easily. I don't trust my ears and headphones to set levels etc. for mastering, so will probably start recording into the m8 during the creation process to keep everything separate before final mixing.
+
+`r html_tag_audio("KOCOMP1.mp3", type = "wav")`
+
+`r html_tag_audio("KOCOMP2.mp3", type = "wav")`
+
+
+
+
