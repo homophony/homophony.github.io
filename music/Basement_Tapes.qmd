@@ -1,7 +1,7 @@
 ---
 title: "Basement Tapes 1"
 image: imgs/BT_cover.jpg
-description: "**NEW RELEASE 2024**: Synth explorations"
+description: "Synth explorations"
 about:
   template: trestles
   image: imgs/BT_cover.jpg

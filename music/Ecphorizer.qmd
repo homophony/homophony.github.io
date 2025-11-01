@@ -1,0 +1,33 @@
+---
+title: "Ecphorizer"
+image: imgs/Ecphorizer.jpg
+description: "**NEW RELEASE 2025: mixture of synths, piano, bass, guitar, drum machines, and samples, and other things."
+about:
+  template: trestles
+  image: imgs/Ecphorizer.jpg
+  links:
+    - icon: apple
+      text: Streaming on Apple Music soon
+      href: https://distrokid.com/hyperfollow/homophony/ecphorizer
+    - icon: spotify
+      text: Streaming on Spotify soon
+      href: https://distrokid.com/hyperfollow/homophony/ecphorizer
+    - icon: globe
+      text: Streaming a bunch of other places soon
+      href: https://distrokid.com/hyperfollow/homophony/ecphorizer
+
+order: 1
+---
+
+## Pre-Release
+
+<https://distrokid.com/hyperfollow/homophony/ecphorizer>
+
+## Concept
+
+Jamming out long explorations on a piano, then stitching pieces of them together and adding some other bits.
+
+## Production Notes
+
+Released 11/1/2025
+
