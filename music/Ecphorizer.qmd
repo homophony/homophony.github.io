@@ -10,8 +10,8 @@ about:
       text: Streaming on Apple Music soon
       href: https://distrokid.com/hyperfollow/homophony/ecphorizer
     - icon: spotify
-      text: Streaming on Spotify soon
-      href: https://distrokid.com/hyperfollow/homophony/ecphorizer
+      text: Streaming on Spotify
+      href: https://open.spotify.com/album/06UZTxxyOHaKSM8IBzM6rf?si=-KBvb9L9Q4mrtRLUdA92WA
     - icon: globe
       text: Streaming a bunch of other places soon
       href: https://distrokid.com/hyperfollow/homophony/ecphorizer
@@ -19,9 +19,9 @@ about:
 order: 1
 ---
 
-## Pre-Release
+## Spotify player
 
-<https://distrokid.com/hyperfollow/homophony/ecphorizer>
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/06UZTxxyOHaKSM8IBzM6rf?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 
 ## Concept
 
