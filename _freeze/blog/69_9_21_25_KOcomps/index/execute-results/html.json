@@ -1,0 +1,15 @@
+{
+  "hash": "b1942b4bcf2aadb2bc54fffb106a8a8f",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Ep-133 trial runs\"\nauthor: \"Matt Crump\"\ndate: 9/21/25\ndescription: \"notes to self\"\ncomments:\n  giscus: \n    repo: CrumpLab/crumplab_comments\ncategories: \n  - ep-133\nexecute: \n  echo: true\n  message: false\n  warning: false\n  eval: false\nformat:\n  html:\n    code-fold: true\nlightbox: \n  match: auto\n  desc-position: right\n  loop: true\n---\n\n\n::: {.cell}\n\n:::\n\n\n\n\n::: {.cell}\n\n:::\n\n\nPutting some time into the EP-133. Really fun for immediate finger drumming. It's been a while since I picked up the EP-133, and I forgot all of the details for programming it. I doubt I will ever remember those details, le grand sigh. That's an understatement about my doubt, which is more like certainty.\n\nIt is really fun to use though, and short snappy beats can fall out of it fairly easily. I don't trust my ears and headphones to set levels etc. for mastering, so will probably start recording into the m8 during the creation process to keep everything separate before final mixing.\n\n`<audio controls=\"\">\n<source src=\"KOCOMP1.mp3\" type=\"audio/wav\"/>\n</audio>`{=html}\n\n`<audio controls=\"\">\n<source src=\"KOCOMP2.mp3\" type=\"audio/wav\"/>\n</audio>`{=html}\n\n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

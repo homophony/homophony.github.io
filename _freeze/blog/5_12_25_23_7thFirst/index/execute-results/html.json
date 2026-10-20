@@ -1,0 +1,15 @@
+{
+  "hash": "fe64d0497df4bea07cd900bdee1db386",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"7th first II-V-I\"\nauthor: \"Matt Crump\"\ndate: 12/25/23\ndescription: \"A piano exercise\"\nimage: \"levine.png\"\naliases: \n  - https://homophony.quest/notes.html#th-first-ii-v-i\ncomments:\n  giscus: \n    repo: CrumpLab/crumplab_comments\ncategories: \n  - practice\nexecute: \n  echo: false\n---\n\n\n::: {.cell}\n\n:::\n\n\n\n![](cover.jpg){width=50% fig-align=\"left\"}\n\n\n::: {.cell}\n\n:::\n\n\n\nI've been taking practice inspiration from Mark Levine's [Jazz Theory Book](https://www.amazon.com/Jazz-Theory-Book-Mark-Levine/dp/1883217040). This exercise wasn't in there specifically, but it's in the spirit of root-bias deprogramming.\n\n::: column-margin\n![](levine.png)\n:::\n\nLevine has these fun quips throughout that I'm trying to follow through on:\n\n> Remember, practice all scales and patterns both ascending and descending; on the major, melodic minor, diminished, and whole-tone scales and in all keys\n\n> You've now learned about all four of the scales you'll need under your fingers to play over chord changes. The next question is how to practice them. And you don't just want to practice them, but to internalize them to the point where they become an **available pool of notes**, on which to improvise.\n\n> ...the goal is to deprogram yourself from years of root-bias conditioning\n\nI learned piano in the classical music tradition and practiced all my scales and chords in a massively root-biased way when I was a kid. So, one of my goals right now is to think about chords from non-root perspectives.\n\nFor example, in this exercise my goal is to practice leading with the 7th note. This is related to the exercise from yesterday, but I did few things differently. Here's the idea:\n\n![](7thfirst-01.jpg)\n\n1.  Play II-V-I chords through the circle of fifths\n2.  For each chord, lead with the 7th note, then bounce between the 7th note and each inversion of the 7th chord.\n\nIn the first bar I have a D-7 chord in the key of C major. The minor 7th note is a C, and instead of thinking C = C major, I'm trying to also think C = D-7 . And, by doing this around the circle of fifths, you end up practicing every kind of 7th chord (maj, dom, min) for every key.\n\nThis exercise implies some related ones that I'll get to some other day, such as leading with the 5th, or leading with the 3rd...and then leading with the weirder stuff (sus, b5, b9, #11).\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

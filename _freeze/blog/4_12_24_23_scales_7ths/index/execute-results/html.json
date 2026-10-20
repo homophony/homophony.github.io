@@ -1,0 +1,15 @@
+{
+  "hash": "f76d59ae14bfe9be2c44f44894dd171c",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Scales in 7th chords\"\nauthor: \"Matt Crump\"\ndate: 12/24/23\ndescription: \"A piano exercise\"\nimage: \"cover.jpg\"\naliases: \n  - https://homophony.quest/notes.html#scales-in-7th-chords\ncomments:\n  giscus: \n    repo: CrumpLab/crumplab_comments\ncategories: \n  - practice\nexecute: \n  echo: false\n---\n\n\n::: {.cell}\n\n:::\n\n\n\n![](cover.jpg){width=50% fig-align=\"left\"}\n\n\n::: column-margin\n\"An armadillo piano player practicing playing piano in the middle of a desert with a bright blue sky\" - LCM_Dreamshaper_v7\n:::\n\n\n::: {.cell}\n\n:::\n\n\n`<audio controls=\"\">\n<source src=\"scake_maj7ths.mp3\" type=\"audio/wav\"/>\n</audio>`{=html}\n\nThis exercise has two parts. Practice around the circle of fifths.\n\n1.  Play the major scale up and down using 7th chords.\n\nI^∆7^ II^-7^ III^-7^ IV^∆7^ V^7^ VI^-7^ VII^-Dim7^\n\n2.  Play each chord as an arpeggio, but start on the 7th and play down to the root.\n\nNotes: very easy to burn through this in C without thinking. G and F are decent, everything else is slow. Need to keep practicing the hard ones.\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

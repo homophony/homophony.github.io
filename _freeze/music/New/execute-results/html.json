@@ -1,0 +1,15 @@
+{
+  "hash": "f9a0ee36f3a30b9f6adf4160446f7a49",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Possibly some new stuff\"\nimage: imgs/Untitled Generative 1.jpeg\ndescription: \"Sometimes sharing newer things here\"\nabout:\n  template: trestles\n  image: imgs/Untitled Generative 1.jpeg\norder: 4\n---\n\n\n::: {.cell}\n\n:::\n\n\n| title                  | track                                                                             |\n|------------------------------------|------------------------------------|\n| 240217 - [midiblender comp 2](../blog/50_2_16_24_comps/index.html) | `<audio controls=\"\">\n<source src=\"../blog/50_2_16_24_comps/Ep-133_E_song.mp3\" type=\"audio/wav\"/>\n</audio>`{=html} |\n| 240108 - [Screaming Modems](../blog/12_1_8_24_screaming_modems/index.html) | `<audio controls=\"\">\n<source src=\"../blog/12_1_8_24_screaming_modems/screaming_modems.mp3\" type=\"audio/wav\"/>\n</audio>`{=html} |\n| 231230 - [Quantum Freeloader](../blog/10_12_30_23_Quantum_Freeloader/index.html) | `<audio controls=\"\">\n<source src=\"../blog/10_12_30_23_Quantum_Freeloader/Quantum_freeloader_take_1_01.mp3\" type=\"audio/wav\"/>\n</audio>`{=html} |\n| 231809 - [Dolphin Dance](../notes.html#dolphin-dance) | `<audio controls=\"\">\n<source src=\"../music/new/DolphinDanceFull_render 2_01.mp3\" type=\"audio/wav\"/>\n</audio>`{=html} |\n| 231209 - Ambient droney drums reverb crush | `<audio controls=\"\">\n<source src=\"../music/new/231209_0001_2-MIX_01_01.mp3\" type=\"audio/wav\"/>\n</audio>`{=html} |\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

@@ -1,8 +1,0 @@
-project:
-  output-dir: _preview/synth
-
-format:
-  html:
-    theme:
-      - darkly
-      - themes/synth.scss

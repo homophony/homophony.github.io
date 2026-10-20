@@ -1,0 +1,15 @@
+{
+  "hash": "69cdb26456efe0688b3273bf9f8c426f",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Turtle TRS-80 variations\"\nauthor: \"Matt Crump\"\ndate: 1/9/24\ndescription: \"Messing around with the EP-133 and Dreamshaper to make a series of cartoons with turtles and TRS-80 computers\"\nimage: \"cover.jpg\"\ncomments:\n  giscus: \n    repo: CrumpLab/crumplab_comments\ncategories: \n  - track\nexecute: \n  echo: false\n---\n\n\n::: {.cell}\n\n:::\n\n\n\n![](cover.jpg){width=50% fig-align=\"left\"}\n\n\n::: column-margin\n\"Can't remember exactly. TRS computers, turtle connecting to the universe with a modem. Thundercats. woodcut cartoon vibes.\" - dreamshaper-xl-turbo\n:::\n\n\n::: {.cell}\n\n:::\n\n\n\n{{< video https://www.youtube.com/embed/oEqS-yKuJQ8?si=vsCeNk1WKdqAGTIQ >}}\n\nI did my piano practice in A major today following the 7th chord themes from previous posts. \n\nThen I accidentally spent too much time generating turtle cartoons with dreamshaper. So, I made a beat with the EP-133 and set them to music. \n\nSo many variations of the same thing.\n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

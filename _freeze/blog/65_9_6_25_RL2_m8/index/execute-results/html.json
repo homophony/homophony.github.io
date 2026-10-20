@@ -1,0 +1,15 @@
+{
+  "hash": "ac3c626667cfe705492913ed801acada",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Ableton 12 stem separation, Ramsey Lewis, satur(day tripper), M8\"\nauthor: \"Matt Crump\"\ndate: 9/6/25\ndescription: \"notes to self\"\nimage: \"cover.jpg\"\ncomments:\n  giscus: \n    repo: CrumpLab/crumplab_comments\ncategories: \n  - tracker\n  - m8\n  - ableton\n  - composition\nexecute: \n  echo: true\n  message: false\n  warning: false\n  eval: false\nformat:\n  html:\n    code-fold: true\nlightbox: \n  match: auto\n  desc-position: right\n  loop: true\n---\n\n\n::: {.cell}\n\n:::\n\n\n![](cover.jpg){width=\"50%\" fig-align=\"left\"}\n\n::: column-margin\nRamsey Lewis album cover\n:::\n\n\n::: {.cell}\n\n:::\n\n\nSome notes from a Saturday Jam.\n\n1.  Decided to try out Ableton 12's stem separation feature. Nice to have this in Ableton. Decent enough for my purposes.\n\n2.  Grabbed a bunch of Ramsey Lewis tunes, split out the drums\n\n3.  Loaded a sample of drums from Lewis's Day Tripper track into the m8\n\n4.  Messed around on the piano recording various parts\n\nReally enjoying the M8 for \"note taking\", and recording samples while playing over some beats.\n\nThe example here features the drum section mentioned above and a 20 bar track with a piano bass line that repeats. The third track (on the m8) is a very long jam track. Here, I used the m8 sampler to play over the 20 bar chord changes, something like 19 times. It's just a single wav file, but it's easy to slice it up into 20 bar units, which provides similar functionality to take lanes (say in Ableton).\n\nA neat feature of the m8 is that it is also fairly straightforward to replay the whole thing, and randomly set the slice that gets played for any 20 bar phrase (endless jazzzzzz). I didn't do that here, but I did choose a few of the 19 takes to render (just three or four).\n\nLot's of roughness around the edges. Will likely use stuff here as a base of inspiration for something else...starting with playing the whole bass line so it is more responsive to the other parts.\n\n`<audio controls=\"\">\n<source src=\"RL2_01.mp3\" type=\"audio/wav\"/>\n</audio>`{=html}\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "hash": "a2b2de4768f574963bdd5e951b35b112",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Screaming modems\"\nauthor: \"Matt Crump\"\ndate: 1/8/24\ndescription: \"Chill vibe and pointless melody gets interrupted by dueling screaming modem solo battle that goes on for too long.\"\nimage: \"cover.jpg\"\ncomments:\n  giscus: \n    repo: CrumpLab/crumplab_comments\ncategories: \n  - track\nexecute: \n  echo: false\n---\n\n\n::: {.cell}\n\n:::\n\n\n\n![](cover.jpg){width=50% fig-align=\"left\"}\n\n\n::: column-margin\n\"massive synthesizer, dueling guitar playing giant robots. guitar looks like an old fashioned modem. speakers. stereo. modular synth. eurorack. cartoon, thundercats, woodcut, linocut.\" - dreamshaper-xl-turbo\n:::\n\n\n::: {.cell}\n\n:::\n\n\n`<audio controls=\"\">\n<source src=\"screaming_modems.mp3\" type=\"audio/wav\"/>\n</audio>`{=html}\n\nSometimes I'll just give up and go with screaming modems dueling in stereo sonic nonsense...that is unnecessarily too long...courtesy of the OB-6. Not much else to say really. \n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "hash": "3d50cb1a16e2e9918eab92e5b6a0a0b0",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"D major practice\"\nauthor: \"Matt Crump\"\ndate: 1/8/24\ndescription: \"practice notes\"\nimage: \"cover.jpg\"\ncomments:\n  giscus: \n    repo: CrumpLab/crumplab_comments\ncategories: \n  - practice\nexecute: \n  echo: false\n---\n\n\n::: {.cell}\n\n:::\n\n\n\n![](cover.jpg){width=50% fig-align=\"left\"}\n\n\n::: column-margin\n\"D major scale. Piano. Circle of fifths. D major 7th chords played on an infinite universe piano. synthesizer keyboard universe.\" - dreamshaper-xl-turbo\n:::\n\n\n::: {.cell}\n\n:::\n\n\nContinuing from yesterday's G major practice I moved onto D major.\n\nPlayed the D major scale up and down using 7th chords. Did this multiple times with each inversion.\n\nNoted that I liked the sound of the 3rd inversion the best. Ran up and down enough times that I could play fairly fluently, almost into melody territory. Will likely continue this sort of practice across other keys.\n\n---------------\n\nAside...I've been messing around with huggingface models as a possible way to generate visual stimuli for some experiments this semester. The class of latent consistency models can generate decent images fairly quickly. This morning I downloaded the \"dreamshaper-xl-turbo\" model to test it out. Today's blog picture was generated from this model. \n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

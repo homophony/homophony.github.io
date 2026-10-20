@@ -1,0 +1,15 @@
+{
+  "hash": "0ecd9da9292054912b49a677c696936f",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Experimental composition PNJ1\"\nauthor: \"Matt Crump\"\ndate: 9/20/25\ndescription: \"notes to self\"\ncomments:\n  giscus: \n    repo: CrumpLab/crumplab_comments\ncategories: \n  - piano\n  - Ableton\n  - experimental \n  - composition\nexecute: \n  echo: true\n  message: false\n  warning: false\n  eval: false\nformat:\n  html:\n    code-fold: true\nlightbox: \n  match: auto\n  desc-position: right\n  loop: true\n---\n\n\n::: {.cell}\n\n:::\n\n\n\n\n::: {.cell}\n\n:::\n\n\nPlayed dissonant free form piano.\n\nWent over the first two minutes one phrase at a time and added a voice part, which was an attempt to minimally summarize what was going on in the phrase.\n\nWent over again adding a bass part one phrase at a time.\n\nPopped everything into Ableton. Converted the piano tracks to midi. Mixed the piano parts together with a few synth sounds from the Artemis.\n\nExperimental PNJ1:\n\n`<audio controls=\"\">\n<source src=\"PNJ1.mp3\" type=\"audio/wav\"/>\n</audio>`{=html}\n\n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

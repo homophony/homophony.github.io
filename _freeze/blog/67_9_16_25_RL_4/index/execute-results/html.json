@@ -1,0 +1,15 @@
+{
+  "hash": "0c0468ae5c2330d6d768bc58a20fc3ba",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"RL4\"\nauthor: \"Matt Crump\"\ndate: 9/16/25\ndescription: \"notes to self\"\ncomments:\n  giscus: \n    repo: CrumpLab/crumplab_comments\ncategories: \n  - tracker\n  - m8\n  - ableton\n  - composition\nexecute: \n  echo: true\n  message: false\n  warning: false\n  eval: false\nformat:\n  html:\n    code-fold: true\nlightbox: \n  match: auto\n  desc-position: right\n  loop: true\n---\n\n\n::: {.cell}\n\n:::\n\n\n\n\n::: {.cell}\n\n:::\n\n\nThe weekend:\n\nWorking off of this drum beat, courtesy of Ramsey Lewis. \n\n`<audio controls=\"\">\n<source src=\"RL_IYGI931.wav\" type=\"audio/wav\"/>\n</audio>`{=html}\n\nAdded a bass line and rhodes chords. Jammed over them with rhodes, guitar, osmose and artemis. Ended up with lots of material there. Cut it down to a simple back and forth between guitar and rhodes, plus a few tidbits.\n\n`<audio controls=\"\">\n<source src=\"RL4_take_1.mp3\" type=\"audio/wav\"/>\n</audio>`{=html}\n\n----------------\n\nMonday:\n\nUsed the above as a backing track, added lots of piano leads over top. \n\n----------------\n\nTuesday morning:\n\nTry stitching something together.\n\n----------------\n\nIt's saturday now, did a bunch of stuff on this one, the third take is:\n\n`<audio controls=\"\">\n<source src=\"RL4_take_3.mp3\" type=\"audio/wav\"/>\n</audio>`{=html}\n\n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

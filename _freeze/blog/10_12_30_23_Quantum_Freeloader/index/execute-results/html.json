@@ -1,0 +1,15 @@
+{
+  "hash": "738e4c2faacb027d7da205857c6f708f",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Quantum Freeloader\"\nauthor: \"Matt Crump\"\ndate: 12/30/23\ndescription: \"Quantic/Miles Davis inspired Freddie Freeloader reversion\"\nimage: \"cover.jpg\"\naliases: \n  - https://homophony.quest/notes.html\ncomments:\n  giscus: \n    repo: CrumpLab/crumplab_comments\ncategories: \n  - practice\nexecute: \n  echo: false\n---\n\n\n::: {.cell}\n\n:::\n\n\n\n![](cover.jpg){width=50% fig-align=\"left\"}\n\n\n::: column-margin\nTape cassette robot shooting lasers of music at a concert with massive speakers and a universe in the sky. - LCM_Dreamshaper_v7\n:::\n\n\n::: {.cell}\n\n:::\n\n\n`<audio controls=\"\">\n<source src=\"Quantum_freeloader_take_1_01.mp3\" type=\"audio/wav\"/>\n</audio>`{=html}\n\nThis is a mash-up of a few things I've been working on and covered in previous posts. \n\n1. I spent some time learning solo parts from Wynton Kelly's piano solo on Miles Davis' Freddie Freeloader\n\n2. I did some beat recreation from Quantic's Life in the Rain. This ended up as a midi track with lots of added notes and modified note probabilities to make the beat have more natural and interesting variation.\n\nThe track is in the style of Freddie Freeloader. The chords and melody are different, but they are still variations of the general idea. \n\n\n\n\n\n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

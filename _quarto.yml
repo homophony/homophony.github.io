@@ -1,7 +1,3 @@
-profile:
-  # Theme previews: quarto render --profile boardwalk|synth|liner
-  default: boardwalk
-
 project:
   type: website
   output-dir: docs
@@ -43,7 +39,14 @@ website:
         href: about.qmd
       - text: "Published with Quarto"
         href: https://quarto.org
+execute:
+  # Re-run a post's R/Python only when its source changes; results live in _freeze/
+  freeze: auto
+
 format:
   html:
+    theme:
+      - darkly
+      - themes/synth.scss
     css: themes/layout.css
     toc: true

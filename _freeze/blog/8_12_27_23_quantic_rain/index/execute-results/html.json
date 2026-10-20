@@ -1,0 +1,15 @@
+{
+  "hash": "ecf8cd4c1a8119d545de05c71590b81a",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Recreating a beat from Quantic's Life in the Rain\"\nauthor: \"Matt Crump\"\ndate: 12/28/23\ndescription: \"An exercise in beat recreation.\"\nimage: \"cover.jpg\"\ncomments:\n  giscus: \n    repo: CrumpLab/crumplab_comments\ncategories: \n  - practice\nexecute: \n  echo: false\n---\n\n\n::: {.cell}\n\n:::\n\n\n\n![](cover.jpg){width=50% fig-align=\"left\"}\n\n\n::: column-margin\nAlbum cover - The 5th Exotic by Quantic\n:::\n\n\n::: {.cell}\n\n:::\n\n\n1. Record this thing into Ableton and grab the beat.\n\nSidenote. Attempting this on a new mac. I was going to record from Apple Music into Ableton, but I wasn't setup for that. I used to use soundflower to route audio, and now I'm going to try [loopback](https://rogueamoeba.com/loopback/).\n\nReally annoying to install on my new mac because of the process of allowing kernel extensions. ugh. Will it work? OK, it worked. \n\n2. Here's 8 bars from Quantic. The first 4 are a bit of cymabals, and the beat comes in on the last 4. It's the last 4 that I'm interested. \n\n`<audio controls=\"\">\n<source src=\"main_beat.mp3\" type=\"audio/wav\"/>\n</audio>`{=html}\n\n3. Set up some drums in Ableton and MIDIfy this beat.\n  - This took a little while. Not a huge fan of penciling in midi markers on my computer to make beats.\n  - Set up a basic drum rack, found some close enough sounds\n  - Used the EP-133 as a midi controller to pound in the beats, that was more fun\n  - Nudged things around etc.\n  - got close\n  \n  \nI ended up with this version of the main beat:\n\n`<audio controls=\"\">\n<source src=\"midi_100.mp3\" type=\"audio/wav\"/>\n</audio>`{=html}\n\nThen, what's fun with having everything as a midi note is to play around with note probability, and with adding hits that weren't there, but now have a small probability of being there. Here's an example of setting most of the sounds to a 50% probability.\n\n`<audio controls=\"\">\n<source src=\"midi_50.mp3\" type=\"audio/wav\"/>\n</audio>`{=html}\n\nIt's more airy, but still carries the groove.\n\nPractice notes: More or less accomplished the goal for this drum recreation exercise. Did not mix the drum voices to taste.\n\nTo Do:\n\n- [] Use this somehow.\n- [] Learn a little bit more about saving midi clips/audio etc. in ableton so that it is easy for me to re-use this later.\n- [] See about programming this beat into the Varigate 8+, and or Hermod, so I have a modular version\n  \n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

@@ -1,8 +1,0 @@
-project:
-  output-dir: _preview/boardwalk
-
-format:
-  html:
-    theme:
-      - cosmo
-      - themes/boardwalk.scss

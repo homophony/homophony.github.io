@@ -1,8 +1,0 @@
-project:
-  output-dir: _preview/liner
-
-format:
-  html:
-    theme:
-      - cosmo
-      - themes/liner.scss
