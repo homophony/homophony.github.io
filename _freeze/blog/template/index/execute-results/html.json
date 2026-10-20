@@ -1,0 +1,15 @@
+{
+  "hash": "38488f06c89c002614488df1bd059e18",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"blog template\"\nauthor: \"Matt Crump\"\ndate: 12/19/23\ndescription: \"template files\"\nimage: \"cover.jpg\"\naliases: \n  - https://homophony.quest/notes.html\ncomments:\n  giscus: \n    repo: CrumpLab/crumplab_comments\ncategories: \n  - practice\nexecute: \n  echo: false\n---\n\n\n::: {.cell}\n\n:::\n\n\n\n![](cover.jpg){width=50% fig-align=\"left\"}\n\n\n::: column-margin\n\"fragments of a dream woven together with little puzzle pieces showing a universe of possibility\" - LCM_Dreamshaper_v7\n:::\n\n\n::: {.cell}\n\n:::\n\n\n`<audio controls=\"\">\n<source src=\"file.mp3\" type=\"audio/wav\"/>\n</audio>`{=html}\n\nNothing to see here. This is the template file I use to start posts.\n\nPost goes here.\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

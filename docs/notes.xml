@@ -14,7 +14,7 @@
 <title>Homophony</title>
 <link>https://homophony.quest/notes.html</link>
 </image>
-<generator>quarto-1.5.57</generator>
+<generator>quarto-1.10.18</generator>
 <lastBuildDate>Sun, 21 Sep 2025 04:00:00 GMT</lastBuildDate>
 <item>
   <title>Ep-133 trial runs</title>
@@ -351,7 +351,7 @@
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
 background-color: null;
@@ -499,7 +499,7 @@ font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD00
 background-color: null;
 font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div></div>
 </details>
 </div>
 <div class="quarto-figure quarto-figure-left">
@@ -574,7 +574,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
 background-color: null;
@@ -722,7 +722,7 @@ font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD00
 background-color: null;
 font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div></div>
 </details>
 </div>
 <div class="quarto-figure quarto-figure-left">
@@ -814,7 +814,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
 background-color: null;
@@ -962,7 +962,7 @@ font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD00
 background-color: null;
 font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div></div>
 </details>
 </div>
 <div class="quarto-figure quarto-figure-left">
@@ -1078,7 +1078,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
 background-color: null;
@@ -1226,7 +1226,7 @@ font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD00
 background-color: null;
 font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div></div>
 </details>
 </div>
 <div class="quarto-figure quarto-figure-left">
@@ -1342,7 +1342,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
 background-color: null;
@@ -1490,7 +1490,7 @@ font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD00
 background-color: null;
 font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div></div>
 </details>
 </div>
 <div class="quarto-figure quarto-figure-left">
@@ -1536,7 +1536,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
 background-color: null;
@@ -1684,7 +1684,7 @@ font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD00
 background-color: null;
 font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div></div>
 </details>
 </div>
 <div class="quarto-figure quarto-figure-left">
@@ -1701,11 +1701,11 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <h2 class="anchored" data-anchor-id="sine-wave-formula">Sine wave formula</h2>
 <p>a = amplitude (multiplier of -1 to 1) f = frequency (1/30 would do one cycle in a 30 sec comp) y = value of sine wave over time</p>
 <p>value of some effect to assign</p>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">a = 617;</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1">a = 617;</span>
 <span id="cb2-2">f = 1/30;</span>
 <span id="cb2-3">y = Math.sin(time*2*Math.PI*f)*a;</span>
 <span id="cb2-4"></span>
-<span id="cb2-5">effect("Transform")("Skew Axis").value = y;</span></code></pre></div>
+<span id="cb2-5">effect("Transform")("Skew Axis").value = y;</span></code></pre></div></div>
 
 
 </section>
@@ -1729,7 +1729,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
 background-color: null;
@@ -1877,7 +1877,7 @@ font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD00
 background-color: null;
 font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div></div>
 </details>
 </div>
 <div class="quarto-figure quarto-figure-left">
@@ -1897,15 +1897,12 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <h2 class="anchored" data-anchor-id="animation-details">Animation details</h2>
 <p>I put in this prompt, “Space station universe situation. Synthesizer universe. Neon. 80s Cartoon. Thundercats. Command station.” to dreamshaper-turbo-xl.</p>
 <p>This time I have a plan for what I want to do in adobe after effects. Most likely I will pick one of these pictures. Then, I’ll load it into AE. The vision is a series of circles, rotating in alternating directions, potentially bouncing a little bit to the beat. I’ll fill the circles with the picture. It will start with the picture as normal, then the picture, which will be composed of a series of lined up concentric circles, will rotate away from itself as the circles spin around, and then back to it’s starting position. Or something like that.</p>
-<div>
-
-</div>
 <div class="quarto-layout-panel" data-layout-ncol="4">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_21_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="my-gallery" title="synth_21_11.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_21_11.jpeg" class="img-fluid figure-img" alt="synth_21_11.jpeg"></a></p>
+<p><a href="images/synth_21_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_21_11.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_21_11.jpeg" class="img-fluid figure-img" alt="synth_21_11.jpeg"></a></p>
 <figcaption>synth_21_11.jpeg</figcaption>
 </figure>
 </div>
@@ -1913,7 +1910,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_21_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="my-gallery" title="synth_21_6.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_21_6.jpeg" class="img-fluid figure-img" alt="synth_21_6.jpeg"></a></p>
+<p><a href="images/synth_21_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_21_6.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_21_6.jpeg" class="img-fluid figure-img" alt="synth_21_6.jpeg"></a></p>
 <figcaption>synth_21_6.jpeg</figcaption>
 </figure>
 </div>
@@ -1921,7 +1918,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_22_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="my-gallery" title="synth_22_11.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_22_11.jpeg" class="img-fluid figure-img" alt="synth_22_11.jpeg"></a></p>
+<p><a href="images/synth_22_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_22_11.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_22_11.jpeg" class="img-fluid figure-img" alt="synth_22_11.jpeg"></a></p>
 <figcaption>synth_22_11.jpeg</figcaption>
 </figure>
 </div>
@@ -1929,7 +1926,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_22_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="my-gallery" title="synth_22_6.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_22_6.jpeg" class="img-fluid figure-img" alt="synth_22_6.jpeg"></a></p>
+<p><a href="images/synth_22_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_22_6.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_22_6.jpeg" class="img-fluid figure-img" alt="synth_22_6.jpeg"></a></p>
 <figcaption>synth_22_6.jpeg</figcaption>
 </figure>
 </div>
@@ -1939,7 +1936,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_23_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="my-gallery" title="synth_23_11.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_23_11.jpeg" class="img-fluid figure-img" alt="synth_23_11.jpeg"></a></p>
+<p><a href="images/synth_23_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_23_11.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_23_11.jpeg" class="img-fluid figure-img" alt="synth_23_11.jpeg"></a></p>
 <figcaption>synth_23_11.jpeg</figcaption>
 </figure>
 </div>
@@ -1947,7 +1944,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_23_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="my-gallery" title="synth_23_6.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_23_6.jpeg" class="img-fluid figure-img" alt="synth_23_6.jpeg"></a></p>
+<p><a href="images/synth_23_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_23_6.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_23_6.jpeg" class="img-fluid figure-img" alt="synth_23_6.jpeg"></a></p>
 <figcaption>synth_23_6.jpeg</figcaption>
 </figure>
 </div>
@@ -1955,7 +1952,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_24_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="my-gallery" title="synth_24_11.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_24_11.jpeg" class="img-fluid figure-img" alt="synth_24_11.jpeg"></a></p>
+<p><a href="images/synth_24_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_24_11.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_24_11.jpeg" class="img-fluid figure-img" alt="synth_24_11.jpeg"></a></p>
 <figcaption>synth_24_11.jpeg</figcaption>
 </figure>
 </div>
@@ -1963,7 +1960,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_24_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-9" data-gallery="my-gallery" title="synth_24_6.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_24_6.jpeg" class="img-fluid figure-img" alt="synth_24_6.jpeg"></a></p>
+<p><a href="images/synth_24_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_24_6.jpeg"><img src="https://homophony.quest/blog/56_2_23_24_every_station/images/synth_24_6.jpeg" class="img-fluid figure-img" alt="synth_24_6.jpeg"></a></p>
 <figcaption>synth_24_6.jpeg</figcaption>
 </figure>
 </div>
@@ -1976,7 +1973,6 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <p>A couple spinning circles inside a command station.</p>
 <iframe width="315" height="560" src="https://www.youtube.com/embed/XF3RGcqwaF8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="">
 </iframe>
-
 
 
 </section>
@@ -2002,7 +1998,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
 background-color: null;
@@ -2150,7 +2146,7 @@ font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD00
 background-color: null;
 font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div></div>
 </details>
 </div>
 <div class="quarto-figure quarto-figure-left">
@@ -2171,15 +2167,12 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <p>Feeding this prompt to dreamshaper-xl-turbo:</p>
 <p>“Record player. White background. Robot Transformer record player. 3d. Linocut. Neon. Lasers. Awesomeness”</p>
 <p>Then, do something with one or another of these.</p>
-<div>
-
-</div>
 <div class="quarto-layout-panel" data-layout-ncol="4">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_21_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="my-gallery" title="synth_21_11.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_21_11.jpeg" class="img-fluid figure-img" alt="synth_21_11.jpeg"></a></p>
+<p><a href="images/synth_21_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_21_11.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_21_11.jpeg" class="img-fluid figure-img" alt="synth_21_11.jpeg"></a></p>
 <figcaption>synth_21_11.jpeg</figcaption>
 </figure>
 </div>
@@ -2187,7 +2180,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_21_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="my-gallery" title="synth_21_6.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_21_6.jpeg" class="img-fluid figure-img" alt="synth_21_6.jpeg"></a></p>
+<p><a href="images/synth_21_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_21_6.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_21_6.jpeg" class="img-fluid figure-img" alt="synth_21_6.jpeg"></a></p>
 <figcaption>synth_21_6.jpeg</figcaption>
 </figure>
 </div>
@@ -2195,7 +2188,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_22_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="my-gallery" title="synth_22_11.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_22_11.jpeg" class="img-fluid figure-img" alt="synth_22_11.jpeg"></a></p>
+<p><a href="images/synth_22_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_22_11.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_22_11.jpeg" class="img-fluid figure-img" alt="synth_22_11.jpeg"></a></p>
 <figcaption>synth_22_11.jpeg</figcaption>
 </figure>
 </div>
@@ -2203,7 +2196,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_22_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="my-gallery" title="synth_22_6.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_22_6.jpeg" class="img-fluid figure-img" alt="synth_22_6.jpeg"></a></p>
+<p><a href="images/synth_22_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_22_6.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_22_6.jpeg" class="img-fluid figure-img" alt="synth_22_6.jpeg"></a></p>
 <figcaption>synth_22_6.jpeg</figcaption>
 </figure>
 </div>
@@ -2213,7 +2206,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_23_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="my-gallery" title="synth_23_11.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_23_11.jpeg" class="img-fluid figure-img" alt="synth_23_11.jpeg"></a></p>
+<p><a href="images/synth_23_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_23_11.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_23_11.jpeg" class="img-fluid figure-img" alt="synth_23_11.jpeg"></a></p>
 <figcaption>synth_23_11.jpeg</figcaption>
 </figure>
 </div>
@@ -2221,7 +2214,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_23_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="my-gallery" title="synth_23_6.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_23_6.jpeg" class="img-fluid figure-img" alt="synth_23_6.jpeg"></a></p>
+<p><a href="images/synth_23_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_23_6.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_23_6.jpeg" class="img-fluid figure-img" alt="synth_23_6.jpeg"></a></p>
 <figcaption>synth_23_6.jpeg</figcaption>
 </figure>
 </div>
@@ -2229,7 +2222,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_24_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="my-gallery" title="synth_24_11.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_24_11.jpeg" class="img-fluid figure-img" alt="synth_24_11.jpeg"></a></p>
+<p><a href="images/synth_24_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_24_11.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_24_11.jpeg" class="img-fluid figure-img" alt="synth_24_11.jpeg"></a></p>
 <figcaption>synth_24_11.jpeg</figcaption>
 </figure>
 </div>
@@ -2237,7 +2230,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_24_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-9" data-gallery="my-gallery" title="synth_24_6.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_24_6.jpeg" class="img-fluid figure-img" alt="synth_24_6.jpeg"></a></p>
+<p><a href="images/synth_24_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_24_6.jpeg"><img src="https://homophony.quest/blog/55_2_22_24_slow_down/images/synth_24_6.jpeg" class="img-fluid figure-img" alt="synth_24_6.jpeg"></a></p>
 <figcaption>synth_24_6.jpeg</figcaption>
 </figure>
 </div>
@@ -2250,7 +2243,6 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <p>Some digitally noised up transformer djs.</p>
 <iframe width="315" height="560" src="https://www.youtube.com/embed/DYjPAHZ5sBc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="">
 </iframe>
-
 
 
 </section>
@@ -2276,7 +2268,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
 background-color: null;
@@ -2424,7 +2416,7 @@ font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD00
 background-color: null;
 font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div></div>
 </details>
 </div>
 <div class="quarto-figure quarto-figure-left">
@@ -2452,15 +2444,12 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <p>Feeding this prompt to dreamshaper-xl-turbo:</p>
 <p>“R2D2 robots setting a country on fire. R2D2 everwhere. City scape. cartoon. neon bright sunset. 80s. linocut.”</p>
 <p>Then, the plan is to mangle these in Adobe after effects…let’s see what happens.</p>
-<div>
-
-</div>
 <div class="quarto-layout-panel" data-layout-ncol="4">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_21_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="my-gallery" title="synth_21_11.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_21_11.jpeg" class="img-fluid figure-img" alt="synth_21_11.jpeg"></a></p>
+<p><a href="images/synth_21_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_21_11.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_21_11.jpeg" class="img-fluid figure-img" alt="synth_21_11.jpeg"></a></p>
 <figcaption>synth_21_11.jpeg</figcaption>
 </figure>
 </div>
@@ -2468,7 +2457,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_21_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="my-gallery" title="synth_21_6.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_21_6.jpeg" class="img-fluid figure-img" alt="synth_21_6.jpeg"></a></p>
+<p><a href="images/synth_21_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_21_6.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_21_6.jpeg" class="img-fluid figure-img" alt="synth_21_6.jpeg"></a></p>
 <figcaption>synth_21_6.jpeg</figcaption>
 </figure>
 </div>
@@ -2476,7 +2465,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_22_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="my-gallery" title="synth_22_11.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_22_11.jpeg" class="img-fluid figure-img" alt="synth_22_11.jpeg"></a></p>
+<p><a href="images/synth_22_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_22_11.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_22_11.jpeg" class="img-fluid figure-img" alt="synth_22_11.jpeg"></a></p>
 <figcaption>synth_22_11.jpeg</figcaption>
 </figure>
 </div>
@@ -2484,7 +2473,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_22_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="my-gallery" title="synth_22_6.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_22_6.jpeg" class="img-fluid figure-img" alt="synth_22_6.jpeg"></a></p>
+<p><a href="images/synth_22_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_22_6.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_22_6.jpeg" class="img-fluid figure-img" alt="synth_22_6.jpeg"></a></p>
 <figcaption>synth_22_6.jpeg</figcaption>
 </figure>
 </div>
@@ -2494,7 +2483,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_23_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="my-gallery" title="synth_23_11.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_23_11.jpeg" class="img-fluid figure-img" alt="synth_23_11.jpeg"></a></p>
+<p><a href="images/synth_23_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_23_11.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_23_11.jpeg" class="img-fluid figure-img" alt="synth_23_11.jpeg"></a></p>
 <figcaption>synth_23_11.jpeg</figcaption>
 </figure>
 </div>
@@ -2502,7 +2491,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_23_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="my-gallery" title="synth_23_6.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_23_6.jpeg" class="img-fluid figure-img" alt="synth_23_6.jpeg"></a></p>
+<p><a href="images/synth_23_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_23_6.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_23_6.jpeg" class="img-fluid figure-img" alt="synth_23_6.jpeg"></a></p>
 <figcaption>synth_23_6.jpeg</figcaption>
 </figure>
 </div>
@@ -2510,7 +2499,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_24_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="my-gallery" title="synth_24_11.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_24_11.jpeg" class="img-fluid figure-img" alt="synth_24_11.jpeg"></a></p>
+<p><a href="images/synth_24_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_24_11.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_24_11.jpeg" class="img-fluid figure-img" alt="synth_24_11.jpeg"></a></p>
 <figcaption>synth_24_11.jpeg</figcaption>
 </figure>
 </div>
@@ -2518,7 +2507,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_24_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-9" data-gallery="my-gallery" title="synth_24_6.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_24_6.jpeg" class="img-fluid figure-img" alt="synth_24_6.jpeg"></a></p>
+<p><a href="images/synth_24_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_24_6.jpeg"><img src="https://homophony.quest/blog/54_2_22_24_country_fire/images/synth_24_6.jpeg" class="img-fluid figure-img" alt="synth_24_6.jpeg"></a></p>
 <figcaption>synth_24_6.jpeg</figcaption>
 </figure>
 </div>
@@ -2531,7 +2520,6 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <p>Very noisy and pixely! I blended through the above images and used the audio to bounce some of the vfx. R2D2s wreching havoc everywhere.</p>
 <iframe width="315" height="560" src="https://www.youtube.com/embed/4BJtonQywoU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="">
 </iframe>
-
 
 
 </section>
@@ -2555,7 +2543,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
 background-color: null;
@@ -2703,7 +2691,7 @@ font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD00
 background-color: null;
 font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div></div>
 </details>
 </div>
 <div class="quarto-figure quarto-figure-left">
@@ -2773,15 +2761,12 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <p>I have had some interest in programmatically generating images for a long time, and have done all sorts of weird computer image stuff. The cover art for VO and RS was generated by a very early latent image space model. I like the in-between weird images.</p>
 <p>When I was bouncing tracks for this album midjourney had started to become available. I think this was my first and only time trying to do anything on discord. Anyway, I generated these images using prompts for describing what I heard in the music.</p>
 <p>I still have the prompts, but I doubt any of this is reproducible, so I have no idea how to attribute any of this.</p>
-<div>
-
-</div>
 <div class="quarto-layout-panel" data-layout-ncol="4">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="album_imgs/Tape_1_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="my-gallery" title="Tape 1"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_1_midjourney.jpg" class="img-fluid figure-img" alt="Tape 1"></a></p>
+<p><a href="album_imgs/Tape_1_midjourney.jpg" class="lightbox" data-gallery="my-gallery" title="Tape 1"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_1_midjourney.jpg" class="img-fluid figure-img" alt="Tape 1"></a></p>
 <figcaption>Tape 1</figcaption>
 </figure>
 </div>
@@ -2789,7 +2774,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="album_imgs/Tape_2_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="my-gallery" title="Tape 2"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_2_midjourney.jpg" class="img-fluid figure-img" alt="Tape 2"></a></p>
+<p><a href="album_imgs/Tape_2_midjourney.jpg" class="lightbox" data-gallery="my-gallery" title="Tape 2"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_2_midjourney.jpg" class="img-fluid figure-img" alt="Tape 2"></a></p>
 <figcaption>Tape 2</figcaption>
 </figure>
 </div>
@@ -2797,7 +2782,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="album_imgs/Tape_3_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="my-gallery" title="Tape 3"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_3_midjourney.jpg" class="img-fluid figure-img" alt="Tape 3"></a></p>
+<p><a href="album_imgs/Tape_3_midjourney.jpg" class="lightbox" data-gallery="my-gallery" title="Tape 3"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_3_midjourney.jpg" class="img-fluid figure-img" alt="Tape 3"></a></p>
 <figcaption>Tape 3</figcaption>
 </figure>
 </div>
@@ -2805,7 +2790,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="album_imgs/Tape_4_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="my-gallery" title="Tape 4"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_4_midjourney.jpg" class="img-fluid figure-img" alt="Tape 4"></a></p>
+<p><a href="album_imgs/Tape_4_midjourney.jpg" class="lightbox" data-gallery="my-gallery" title="Tape 4"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_4_midjourney.jpg" class="img-fluid figure-img" alt="Tape 4"></a></p>
 <figcaption>Tape 4</figcaption>
 </figure>
 </div>
@@ -2815,7 +2800,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="album_imgs/Tape_5_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="my-gallery" title="Tape 5"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_5_midjourney.jpg" class="img-fluid figure-img" alt="Tape 5"></a></p>
+<p><a href="album_imgs/Tape_5_midjourney.jpg" class="lightbox" data-gallery="my-gallery" title="Tape 5"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_5_midjourney.jpg" class="img-fluid figure-img" alt="Tape 5"></a></p>
 <figcaption>Tape 5</figcaption>
 </figure>
 </div>
@@ -2823,7 +2808,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="album_imgs/Tape_6_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="my-gallery" title="Tape 6"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_6_midjourney.jpg" class="img-fluid figure-img" alt="Tape 6"></a></p>
+<p><a href="album_imgs/Tape_6_midjourney.jpg" class="lightbox" data-gallery="my-gallery" title="Tape 6"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_6_midjourney.jpg" class="img-fluid figure-img" alt="Tape 6"></a></p>
 <figcaption>Tape 6</figcaption>
 </figure>
 </div>
@@ -2831,7 +2816,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="album_imgs/Tape_7_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="my-gallery" title="Tape 7"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_7_midjourney.jpg" class="img-fluid figure-img" alt="Tape 7"></a></p>
+<p><a href="album_imgs/Tape_7_midjourney.jpg" class="lightbox" data-gallery="my-gallery" title="Tape 7"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_7_midjourney.jpg" class="img-fluid figure-img" alt="Tape 7"></a></p>
 <figcaption>Tape 7</figcaption>
 </figure>
 </div>
@@ -2839,7 +2824,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="album_imgs/Tape_8_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-9" data-gallery="my-gallery" title="Tape 8"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_8_midjourney.jpg" class="img-fluid figure-img" alt="Tape 8"></a></p>
+<p><a href="album_imgs/Tape_8_midjourney.jpg" class="lightbox" data-gallery="my-gallery" title="Tape 8"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_8_midjourney.jpg" class="img-fluid figure-img" alt="Tape 8"></a></p>
 <figcaption>Tape 8</figcaption>
 </figure>
 </div>
@@ -2849,7 +2834,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="album_imgs/Tape_10_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-10" data-gallery="my-gallery" title="Tape 10"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_10_midjourney.jpg" class="img-fluid figure-img" alt="Tape 10"></a></p>
+<p><a href="album_imgs/Tape_10_midjourney.jpg" class="lightbox" data-gallery="my-gallery" title="Tape 10"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_10_midjourney.jpg" class="img-fluid figure-img" alt="Tape 10"></a></p>
 <figcaption>Tape 10</figcaption>
 </figure>
 </div>
@@ -2857,7 +2842,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="album_imgs/Tape_11_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-11" data-gallery="my-gallery" title="Tape 11"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_11_midjourney.jpg" class="img-fluid figure-img" alt="Tape 11"></a></p>
+<p><a href="album_imgs/Tape_11_midjourney.jpg" class="lightbox" data-gallery="my-gallery" title="Tape 11"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_11_midjourney.jpg" class="img-fluid figure-img" alt="Tape 11"></a></p>
 <figcaption>Tape 11</figcaption>
 </figure>
 </div>
@@ -2865,7 +2850,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="album_imgs/Tape_13_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-12" data-gallery="my-gallery" title="Tape 13"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_13_midjourney.jpg" class="img-fluid figure-img" alt="Tape 13"></a></p>
+<p><a href="album_imgs/Tape_13_midjourney.jpg" class="lightbox" data-gallery="my-gallery" title="Tape 13"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Tape_13_midjourney.jpg" class="img-fluid figure-img" alt="Tape 13"></a></p>
 <figcaption>Tape 13</figcaption>
 </figure>
 </div>
@@ -2873,7 +2858,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="album_imgs/Track_14_midjourney.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-13" data-gallery="my-gallery" title="Tape 14"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Track_14_midjourney.jpg" class="img-fluid figure-img" alt="Tape 14"></a></p>
+<p><a href="album_imgs/Track_14_midjourney.jpg" class="lightbox" data-gallery="my-gallery" title="Tape 14"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/album_imgs/Track_14_midjourney.jpg" class="img-fluid figure-img" alt="Tape 14"></a></p>
 <figcaption>Tape 14</figcaption>
 </figure>
 </div>
@@ -2888,7 +2873,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <p>Ideally there would be a way to at least attribute the construction of these images to their sources, as well as pay for it, perhaps like a streaming service.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_27_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-14" data-gallery="my-gallery-2" title="synth_27_11"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/images/synth_27_11.jpeg" class="img-fluid figure-img" alt="synth_27_11"></a></p>
+<p><a href="images/synth_27_11.jpeg" class="lightbox" data-gallery="my-gallery-2" title="synth_27_11"><img src="https://homophony.quest/blog/52_2_19_24_bt_album/images/synth_27_11.jpeg" class="img-fluid figure-img" alt="synth_27_11"></a></p>
 <figcaption>synth_27_11</figcaption>
 </figure>
 </div>
@@ -2997,7 +2982,6 @@ View this post on Instagram
 <p>Nuisance factor: although distrokid did make a youtube channel for me, and I do have control over it, the music does not show up as an option to pair with youtube shorts. Not sure why.</p>
 
 
-
 </section>
 
  ]]></description>
@@ -3020,7 +3004,7 @@ View this post on Instagram
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
 background-color: null;
@@ -3168,7 +3152,7 @@ font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD00
 background-color: null;
 font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div></div>
 </details>
 </div>
 <div class="quarto-figure quarto-figure-left">
@@ -3191,15 +3175,12 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <h2 class="anchored" data-anchor-id="basic-animation-idea">Basic animation idea</h2>
 <p>I used the python code at the top of this post to generate some images from <a href="https://huggingface.co/Lykon/dreamshaper-xl-turbo">Dreamshaper-xl-turbo</a>. I have a local copy of dreamshaper and I sometimes use it to make pictures with synthesizers in it.</p>
 <p>The prompt for these was: “synthesizer beach. beach view. Sunset. looking out onto the beach. 80s cartoon. linocut. synthesizer music”. The file name for each has info about the random seed used. I only made 8 of them, but it would go on forever making variations of things that look like this.</p>
-<div>
-
-</div>
 <div class="quarto-layout-panel" data-layout-ncol="4">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_21_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="my-gallery" title="synth_21_11.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_21_11.jpeg" class="img-fluid figure-img" alt="synth_21_11.jpeg"></a></p>
+<p><a href="images/synth_21_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_21_11.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_21_11.jpeg" class="img-fluid figure-img" alt="synth_21_11.jpeg"></a></p>
 <figcaption>synth_21_11.jpeg</figcaption>
 </figure>
 </div>
@@ -3207,7 +3188,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_21_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-3" data-gallery="my-gallery" title="synth_21_6.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_21_6.jpeg" class="img-fluid figure-img" alt="synth_21_6.jpeg"></a></p>
+<p><a href="images/synth_21_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_21_6.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_21_6.jpeg" class="img-fluid figure-img" alt="synth_21_6.jpeg"></a></p>
 <figcaption>synth_21_6.jpeg</figcaption>
 </figure>
 </div>
@@ -3215,7 +3196,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_22_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-4" data-gallery="my-gallery" title="synth_22_11.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_22_11.jpeg" class="img-fluid figure-img" alt="synth_22_11.jpeg"></a></p>
+<p><a href="images/synth_22_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_22_11.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_22_11.jpeg" class="img-fluid figure-img" alt="synth_22_11.jpeg"></a></p>
 <figcaption>synth_22_11.jpeg</figcaption>
 </figure>
 </div>
@@ -3223,7 +3204,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_22_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-5" data-gallery="my-gallery" title="synth_22_6.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_22_6.jpeg" class="img-fluid figure-img" alt="synth_22_6.jpeg"></a></p>
+<p><a href="images/synth_22_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_22_6.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_22_6.jpeg" class="img-fluid figure-img" alt="synth_22_6.jpeg"></a></p>
 <figcaption>synth_22_6.jpeg</figcaption>
 </figure>
 </div>
@@ -3233,7 +3214,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_23_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-6" data-gallery="my-gallery" title="synth_23_11.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_23_11.jpeg" class="img-fluid figure-img" alt="synth_23_11.jpeg"></a></p>
+<p><a href="images/synth_23_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_23_11.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_23_11.jpeg" class="img-fluid figure-img" alt="synth_23_11.jpeg"></a></p>
 <figcaption>synth_23_11.jpeg</figcaption>
 </figure>
 </div>
@@ -3241,7 +3222,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_23_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-7" data-gallery="my-gallery" title="synth_23_6.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_23_6.jpeg" class="img-fluid figure-img" alt="synth_23_6.jpeg"></a></p>
+<p><a href="images/synth_23_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_23_6.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_23_6.jpeg" class="img-fluid figure-img" alt="synth_23_6.jpeg"></a></p>
 <figcaption>synth_23_6.jpeg</figcaption>
 </figure>
 </div>
@@ -3249,7 +3230,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_24_11.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-8" data-gallery="my-gallery" title="synth_24_11.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_24_11.jpeg" class="img-fluid figure-img" alt="synth_24_11.jpeg"></a></p>
+<p><a href="images/synth_24_11.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_24_11.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_24_11.jpeg" class="img-fluid figure-img" alt="synth_24_11.jpeg"></a></p>
 <figcaption>synth_24_11.jpeg</figcaption>
 </figure>
 </div>
@@ -3257,7 +3238,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="quarto-layout-cell" style="flex-basis: 25.0%;justify-content: flex-start;">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><a href="images/synth_24_6.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-9" data-gallery="my-gallery" title="synth_24_6.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_24_6.jpeg" class="img-fluid figure-img" alt="synth_24_6.jpeg"></a></p>
+<p><a href="images/synth_24_6.jpeg" class="lightbox" data-gallery="my-gallery" title="synth_24_6.jpeg"><img src="https://homophony.quest/blog/53_2_20_24_beach/images/synth_24_6.jpeg" class="img-fluid figure-img" alt="synth_24_6.jpeg"></a></p>
 <figcaption>synth_24_6.jpeg</figcaption>
 </figure>
 </div>
@@ -3350,20 +3331,9 @@ View this post on Instagram
 <div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div></div></section>
+</div>
+</div>
+</section>
 
  ]]></description>
   <category>VO</category>
@@ -3384,7 +3354,7 @@ View this post on Instagram
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
 background-color: null;
@@ -3532,7 +3502,7 @@ font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD00
 background-color: null;
 font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div></div>
 </details>
 </div>
 <div class="quarto-figure quarto-figure-left">
@@ -3571,7 +3541,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> diffusers <span class="im" style="color: #00769E;
 background-color: null;
@@ -3719,7 +3689,7 @@ font-style: inherit;">=</span> image.images[<span class="dv" style="color: #AD00
 background-color: null;
 font-style: inherit;">0</span>].save(image_name.<span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
+font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div></div>
 </details>
 </div>
 <div class="quarto-figure quarto-figure-left">
@@ -3739,7 +3709,7 @@ font-style: inherit;">format</span>(seed,num_steps))</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(midiblender)</span>
 <span id="cb2-2"><span class="fu" style="color: #4758AB;
@@ -4994,7 +4964,7 @@ font-style: inherit;">"~/Library/Audio/Sounds/Banks/TE-EP-133-A.sf2"</span>,</sp
 background-color: null;
 font-style: inherit;">output =</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"TE-EP-133-D.mp3"</span>)</span></code></pre></div>
+font-style: inherit;">"TE-EP-133-D.mp3"</span>)</span></code></pre></div></div>
 </details>
 </div>
 <p><audio controls=""> <source src="TE-EP-133-D.mp3" type="audio/wav"> </audio></p>
@@ -5008,7 +4978,7 @@ font-style: inherit;">"TE-EP-133-D.mp3"</span>)</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(midiblender)</span>
 <span id="cb3-2"><span class="fu" style="color: #4758AB;
@@ -5019,13 +4989,13 @@ background-color: null;
 font-style: inherit;">library</span>(pyramidi)</span>
 <span id="cb3-4"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">library</span>(fluidsynth)</span></code></pre></div>
+font-style: inherit;">library</span>(fluidsynth)</span></code></pre></div></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">all_tracks <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">all_tracks <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -6310,13 +6280,13 @@ font-style: inherit;">'synth.gain'</span> <span class="ot" style="color: #003B4F
 background-color: null;
 font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">2</span>))</span></code></pre></div>
+font-style: inherit;">2</span>))</span></code></pre></div></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#bounce</span></span>
 <span id="cb5-2">fluidsynth<span class="sc" style="color: #5E5E5E;
@@ -6348,7 +6318,7 @@ font-style: inherit;">'synth.gain'</span> <span class="ot" style="color: #003B4F
 background-color: null;
 font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">2</span>))</span></code></pre></div>
+font-style: inherit;">2</span>))</span></code></pre></div></div>
 </details>
 </div>
 <p>This ended up being fun. I bounced a couple 24 bar drum tracks to ableton generated from this script. And, a simple synth track. Then used that source material to get this going.</p>
@@ -6364,7 +6334,7 @@ font-style: inherit;">2</span>))</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(midiblender)</span>
 <span id="cb6-2"><span class="fu" style="color: #4758AB;
@@ -6375,13 +6345,13 @@ background-color: null;
 font-style: inherit;">library</span>(pyramidi)</span>
 <span id="cb6-4"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">library</span>(fluidsynth)</span></code></pre></div>
+font-style: inherit;">library</span>(fluidsynth)</span></code></pre></div></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">all_tracks <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">all_tracks <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -7639,13 +7609,13 @@ font-style: inherit;">'synth.gain'</span> <span class="ot" style="color: #003B4F
 background-color: null;
 font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">2</span>))</span></code></pre></div>
+font-style: inherit;">2</span>))</span></code></pre></div></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#bounce</span></span>
 <span id="cb8-2">fluidsynth<span class="sc" style="color: #5E5E5E;
@@ -7677,7 +7647,7 @@ font-style: inherit;">'synth.gain'</span> <span class="ot" style="color: #003B4F
 background-color: null;
 font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">2</span>))</span></code></pre></div>
+font-style: inherit;">2</span>))</span></code></pre></div></div>
 </details>
 </div>
 <p>Fun was had.</p>
@@ -7690,7 +7660,7 @@ font-style: inherit;">2</span>))</span></code></pre></div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(midiblender)</span>
 <span id="cb9-2"><span class="fu" style="color: #4758AB;
@@ -7701,13 +7671,13 @@ background-color: null;
 font-style: inherit;">library</span>(pyramidi)</span>
 <span id="cb9-4"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">library</span>(fluidsynth)</span></code></pre></div>
+font-style: inherit;">library</span>(fluidsynth)</span></code></pre></div></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">all_tracks <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">all_tracks <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -8965,13 +8935,13 @@ font-style: inherit;">'synth.gain'</span> <span class="ot" style="color: #003B4F
 background-color: null;
 font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">2</span>))</span></code></pre></div>
+font-style: inherit;">2</span>))</span></code></pre></div></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#bounce</span></span>
 <span id="cb11-2">fluidsynth<span class="sc" style="color: #5E5E5E;
@@ -9003,7 +8973,7 @@ font-style: inherit;">'synth.gain'</span> <span class="ot" style="color: #003B4F
 background-color: null;
 font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">2</span>))</span></code></pre></div>
+font-style: inherit;">2</span>))</span></code></pre></div></div>
 </details>
 </div>
 <p>Fun was had.</p>

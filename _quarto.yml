@@ -20,12 +20,6 @@ website:
     right:
       - icon: rss
         href: notes.xml
-      - icon: bluesky
-        href: https://bsky.app/profile/mattcrumplab.bsky.social
-        aria-label: Bluesky
-      - icon: mastodon
-        href: https://fosstodon.org/@MattCrumpLab
-        aria-label: Mastodon
       - icon: youtube
         href: https://www.youtube.com/channel/UCmzAb7gmWJBQ0zX3spqxrNQ
         aria-label: Youtube
