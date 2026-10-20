@@ -13,6 +13,8 @@ listing:
   image-align: 'right'
   image-height: '100%'
   feed: true
+  exclude:
+    title: "blog template"
 ---
 
 ::: {#blog_list}

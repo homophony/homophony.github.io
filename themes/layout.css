@@ -1,0 +1,97 @@
+/* Structural rules shared by every theme. Colors and fonts live in themes/*.scss. */
+
+/* ---------- Home hero ---------- */
+.hp-hero {
+  margin: 1.5rem 0 3rem;
+}
+
+.hp-hero .hp-banner,
+.hp-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--hp-radius, 0);
+}
+
+.hp-hero .quarto-figure,
+.hp-hero figure,
+.hp-hero p {
+  margin: 0;
+  max-width: none;
+}
+
+.hp-tagline {
+  margin-top: 1.25rem;
+  font-size: 1.2rem;
+  max-width: 60ch;
+}
+
+/* ---------- Home sections ---------- */
+.hp-section {
+  margin-bottom: 4rem;
+}
+
+.hp-section h2.hp-heading {
+  border-bottom: none;
+  margin-bottom: 1.25rem;
+}
+
+.hp-more {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ---------- Album grid: square covers ---------- */
+.quarto-grid-item .card-img-top {
+  padding: 0;
+}
+
+.quarto-grid-item .card-img-top img,
+.quarto-grid-item img.thumbnail-image {
+  width: 100%;
+  height: auto !important;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.quarto-grid-item .card-body {
+  padding: 0.9rem 0.1rem 0.25rem;
+}
+
+.quarto-grid-item .listing-description {
+  font-size: 0.95rem;
+}
+
+/* ---------- Post list (latest notes) ---------- */
+.quarto-post .thumbnail img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- Video ---------- */
+.hp-section .quarto-video {
+  border-radius: var(--hp-radius, 0);
+  overflow: hidden;
+}
+
+/* ---------- Reading width ---------- */
+main p,
+main li,
+.description {
+  max-width: 72ch;
+}
+
+@media (max-width: 575.98px) {
+  .hp-tagline { font-size: 1.05rem; }
+  .hp-section { margin-bottom: 3rem; }
+}
+
+/* Home page shows the banner instead of a title */
+.hp-home #title-block-header { display: none; }
+.hp-home #quarto-document-content {
+  grid-column: page-start / page-end !important;
+}

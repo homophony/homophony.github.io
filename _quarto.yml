@@ -1,3 +1,7 @@
+profile:
+  # Theme previews: quarto render --profile boardwalk|synth|liner
+  default: boardwalk
+
 project:
   type: website
   output-dir: docs
@@ -20,8 +24,12 @@ website:
     right:
       - icon: rss
         href: notes.xml
+      - icon: bluesky
+        href: https://bsky.app/profile/mattcrumplab.bsky.social
+        aria-label: Bluesky
       - icon: mastodon
         href: https://fosstodon.org/@MattCrumpLab
+        aria-label: Mastodon
       - icon: youtube
         href: https://www.youtube.com/channel/UCmzAb7gmWJBQ0zX3spqxrNQ
         aria-label: Youtube
@@ -31,12 +39,11 @@ website:
         href: https://music.apple.com/us/artist/homophony/1531902633
   page-footer:
     center:
-      - text: "Brought to you by Homophony, 2023"
+      - text: "Homophony, 2020–2026"
         href: about.qmd
       - text: "Published with Quarto"
         href: https://quarto.org
 format:
   html:
-    theme: cosmo
-    css: css/styles.css
+    css: themes/layout.css
     toc: true

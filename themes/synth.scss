@@ -1,0 +1,162 @@
+/*-- scss:defaults --*/
+// Option B: "Synth Night". Dark, neon accents from the avatar's glowing eyes, mono labels.
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap');
+
+$void:    #0d0a13;
+$panel:   #17121f;
+$line:    #2a2236;
+$text:    #ece6f5;
+$muted:   #9d93ad;
+$pink:    #ff5fc8;
+$cyan:    #4fe3e3;
+
+$body-bg: $void;
+$body-color: $text;
+$body-secondary-color: $muted;
+$primary: $pink;
+$secondary: $cyan;
+$link-color: $cyan;
+$link-hover-color: $pink;
+$text-muted: $muted;
+
+$font-family-sans-serif: "Inter", system-ui, -apple-system, sans-serif;
+$font-family-monospace: "JetBrains Mono", ui-monospace, monospace;
+$headings-font-family: "Space Grotesk", "Inter", sans-serif;
+$headings-font-weight: 700;
+$headings-color: $text;
+
+$navbar-bg: rgba($void, 0.85);
+$navbar-fg: $muted;
+$navbar-hl: $pink;
+$footer-bg: $void;
+$footer-fg: $muted;
+
+$border-color: $line;
+$border-radius: 6px;
+$card-bg: $panel;
+$card-border-color: $line;
+$table-color: $text;
+$input-bg: $panel;
+$code-bg: $panel;
+
+/*-- scss:rules --*/
+
+:root { --hp-radius: 8px; }
+
+body {
+  background:
+    radial-gradient(1200px 500px at 85% -10%, rgba($pink, 0.10), transparent 60%),
+    radial-gradient(900px 400px at -10% 10%, rgba($cyan, 0.08), transparent 60%),
+    $void;
+  background-attachment: fixed;
+}
+
+.navbar {
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid $line;
+
+  .navbar-title {
+    font-family: $font-family-monospace;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: $text;
+  }
+  .nav-link {
+    font-family: $font-family-monospace;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+}
+
+.hp-hero .hp-banner {
+  border: 1px solid $line;
+  box-shadow: 0 0 0 1px rgba($pink, 0.2), 0 20px 80px -20px rgba($pink, 0.45);
+}
+
+.hp-tagline { color: $muted; }
+
+.hp-section h2.hp-heading {
+  font-family: $font-family-monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: $cyan;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid $line;
+
+  &::before { content: "// "; color: $pink; }
+  a { color: $cyan; }
+}
+
+.quarto-grid-item.card {
+  background: $panel;
+  border: 1px solid $line;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+
+  &:hover {
+    border-color: rgba($pink, 0.6);
+    box-shadow: 0 0 40px -10px rgba($pink, 0.6);
+    transform: translateY(-3px);
+  }
+  .card-body { padding: 1rem 1.1rem 1.1rem; }
+  .card-title { font-family: $headings-font-family; color: $text; font-size: 1.25rem; }
+  .listing-description { color: $muted; }
+}
+
+.quarto-post {
+  border-bottom: 1px solid $line;
+  .listing-title { font-family: $headings-font-family; color: $text; }
+  .listing-date { font-family: $font-family-monospace; font-size: 0.8rem; color: $pink; }
+  .listing-description { color: $muted; }
+  .thumbnail img { border-radius: 6px; }
+}
+
+.quarto-listing-table {
+  color: $text;
+  thead th {
+    font-family: $font-family-monospace;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: $cyan;
+  }
+  td, th { border-color: $line !important; background: transparent !important; color: $text; }
+  tbody tr:hover td { background: $panel !important; }
+  .listing-date { font-family: $font-family-monospace; color: $muted; }
+}
+
+.listing-category, .quarto-category {
+  font-family: $font-family-monospace;
+  border-color: $line !important;
+  color: $muted;
+}
+
+.quarto-title-banner { background: $panel; }
+
+.about-entity .about-image {
+  box-shadow: 0 0 60px -10px rgba($pink, 0.6);
+}
+
+.about-link {
+  font-family: $font-family-monospace;
+  border-color: $line !important;
+  color: $text !important;
+  &:hover { border-color: $pink !important; color: $pink !important; }
+}
+
+.nav-footer {
+  border-top: 1px solid $line;
+  font-family: $font-family-monospace;
+  font-size: 0.8rem;
+}
+
+.hp-more { font-family: $font-family-monospace; color: $pink; }
+
+// Spotify embed sits nicer on dark
+iframe { border-radius: 10px; }

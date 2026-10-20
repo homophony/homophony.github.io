@@ -1,0 +1,142 @@
+/*-- scss:defaults --*/
+// Option A: "Boardwalk". Warm and light, with colors pulled from the banner.
+
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:ital,wght@0,400;0,600;1,400&display=swap');
+
+$cream:   #fff8ee;
+$sand:    #f6e8d2;
+$ink:     #2b1b17;
+$coral:   #e2553f;
+$mustard: #f2b33d;
+$mint:    #4fb487;
+$sky:     #6ccbe0;
+
+$body-bg: $cream;
+$body-color: $ink;
+$primary: $coral;
+$secondary: $mint;
+$link-color: $coral;
+$link-hover-color: darken($coral, 12%);
+
+$font-family-sans-serif: "Figtree", system-ui, -apple-system, sans-serif;
+$headings-font-family: "Bricolage Grotesque", "Figtree", sans-serif;
+$headings-font-weight: 800;
+$font-size-root: 17px;
+
+$navbar-bg: $cream;
+$navbar-fg: $ink;
+$navbar-hl: $coral;
+$footer-bg: $ink;
+$footer-fg: $sand;
+
+$border-radius: 14px;
+$card-border-color: transparent;
+$card-bg: transparent;
+
+/*-- scss:rules --*/
+
+:root { --hp-radius: 18px; }
+
+.navbar {
+  border-bottom: 3px solid $ink;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+
+  .navbar-title {
+    font-family: $headings-font-family;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    font-size: 1.4rem;
+  }
+  .nav-link { font-weight: 600; }
+}
+
+// Striped "beach towel" rule under the navbar
+#quarto-header::after {
+  content: "";
+  display: block;
+  height: 6px;
+  background: linear-gradient(90deg,
+    $coral 0 25%, $mustard 25% 50%, $mint 50% 75%, $sky 75% 100%);
+}
+
+h1, h2, h3, .title { letter-spacing: -0.01em; }
+
+.hp-hero .hp-banner {
+  border: 3px solid $ink;
+  box-shadow: 8px 8px 0 $ink;
+}
+
+.hp-tagline {
+  font-family: $headings-font-family;
+  font-weight: 500;
+  font-size: 1.35rem;
+}
+
+.hp-section h2.hp-heading {
+  display: inline-block;
+  font-size: 2rem;
+  background: $mustard;
+  color: $ink;
+  padding: 0.1em 0.45em;
+  border-radius: 10px;
+  transform: rotate(-1deg);
+
+  a { color: $ink; text-decoration: underline; text-decoration-thickness: 3px; }
+}
+
+// Album cards: chunky, tactile, a little bounce on hover
+.quarto-grid-item.card {
+  border: none;
+
+  .card-img-top img {
+    border-radius: var(--hp-radius);
+    border: 3px solid $ink;
+    box-shadow: 6px 6px 0 $ink;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  &:hover .card-img-top img {
+    transform: translate(-3px, -3px) rotate(-0.5deg);
+    box-shadow: 10px 10px 0 $coral;
+  }
+  .card-title {
+    font-family: $headings-font-family;
+    font-weight: 800;
+    font-size: 1.35rem;
+    margin-top: 0.4rem;
+  }
+}
+
+.quarto-post {
+  border-bottom: 2px dashed rgba($ink, 0.25);
+  .listing-title { font-family: $headings-font-family; font-weight: 700; }
+  .thumbnail img { border-radius: 12px; border: 2px solid $ink; }
+  .listing-date { color: $coral; font-weight: 600; }
+}
+
+.quarto-listing-table {
+  thead th { font-family: $headings-font-family; border-bottom: 3px solid $ink !important; }
+  td { border-color: rgba($ink, 0.15) !important; }
+  tbody tr:hover { background: $sand; }
+}
+
+.quarto-title-banner { background: $sand; }
+
+.about-entity .about-image {
+  border: 3px solid $ink;
+  box-shadow: 6px 6px 0 $mustard;
+}
+
+.about-link {
+  border-radius: 999px !important;
+  border: 2px solid $ink !important;
+  color: $ink !important;
+  &:hover { background: $mustard; }
+}
+
+.nav-footer {
+  border-top: none;
+  a { color: $mustard; }
+}
+
+.hp-more { color: $coral; }

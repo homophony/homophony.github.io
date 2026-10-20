@@ -1,0 +1,160 @@
+/*-- scss:defaults --*/
+// Option C: "Liner Notes". Quiet editorial layout, like a small record label's catalog.
+
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+$paper:  #f6f4ef;
+$ink:    #141414;
+$grey:   #6f6b64;
+$rule:   #d9d4ca;
+$red:    #c8341e;
+
+$body-bg: $paper;
+$body-color: $ink;
+$primary: $ink;
+$link-color: $ink;
+$link-hover-color: $red;
+$link-decoration: underline;
+$text-muted: $grey;
+
+$font-family-sans-serif: "Inter", system-ui, -apple-system, sans-serif;
+$font-family-monospace: "IBM Plex Mono", ui-monospace, monospace;
+$headings-font-family: "Instrument Serif", Georgia, serif;
+$headings-font-weight: 400;
+$h1-font-size: 3.25rem;
+$h2-font-size: 2.25rem;
+
+$navbar-bg: $paper;
+$navbar-fg: $ink;
+$navbar-hl: $red;
+$footer-bg: $paper;
+$footer-fg: $grey;
+
+$border-color: $rule;
+$border-radius: 0;
+$card-bg: transparent;
+$card-border-color: transparent;
+
+/*-- scss:rules --*/
+
+:root { --hp-radius: 0; }
+
+a { text-underline-offset: 3px; text-decoration-thickness: 1px; }
+
+.navbar {
+  border-bottom: 1px solid $ink;
+
+  .navbar-title {
+    font-family: $headings-font-family;
+    font-size: 1.75rem;
+    font-style: italic;
+  }
+  .nav-link {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 500;
+  }
+}
+
+h1, h2, h3, .title { line-height: 1.05; }
+
+.hp-hero { margin-top: 2.5rem; }
+
+.hp-hero .hp-banner {
+  filter: saturate(0.9);
+}
+
+.hp-tagline {
+  font-family: $headings-font-family;
+  font-size: 2rem;
+  line-height: 1.15;
+  max-width: 30ch;
+}
+
+.hp-section h2.hp-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  font-size: 2.5rem;
+  border-top: 1px solid $ink;
+  padding-top: 0.75rem;
+
+  a { color: $ink; text-decoration-thickness: 1px; }
+  a:hover { color: $red; }
+}
+
+.quarto-grid-item.card {
+  border: none;
+
+  .card-img-top img { transition: filter .25s ease; }
+  &:hover .card-img-top img { filter: contrast(1.05) saturate(1.1); }
+  &:hover .card-title { color: $red; }
+
+  .card-title {
+    font-family: $headings-font-family;
+    font-size: 1.6rem;
+    margin: 0.5rem 0 0.2rem;
+  }
+  .listing-description {
+    font-size: 0.85rem;
+    color: $grey;
+  }
+}
+
+// Catalog numbers on album cards: LP-01, LP-02 ...
+.list.grid { counter-reset: lp; }
+.quarto-grid-item .card-body::before {
+  counter-increment: lp;
+  content: "HMP-0" counter(lp);
+  display: block;
+  font-family: $font-family-monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: $grey;
+  border-top: 1px solid $rule;
+  padding-top: 0.5rem;
+}
+
+.quarto-post {
+  border-bottom: 1px solid $rule;
+  .listing-title { font-family: $headings-font-family; font-size: 1.6rem; font-weight: 400; }
+  .listing-date { font-family: $font-family-monospace; font-size: 0.75rem; color: $grey; }
+  .thumbnail img { filter: grayscale(0.2); }
+}
+
+.quarto-listing-table {
+  thead th {
+    font-family: $font-family-monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 500;
+    border-bottom: 1px solid $ink !important;
+  }
+  td { border-color: $rule !important; }
+  .listing-date { font-family: $font-family-monospace; font-size: 0.8rem; color: $grey; }
+}
+
+.listing-category, .quarto-category {
+  font-family: $font-family-monospace;
+  font-size: 0.7rem !important;
+  text-transform: uppercase;
+  border-radius: 0 !important;
+}
+
+.quarto-title-banner { background: $paper; border-bottom: 1px solid $ink; }
+
+.about-link {
+  border-radius: 0 !important;
+  border-color: $ink !important;
+  color: $ink !important;
+  &:hover { background: $ink; color: $paper !important; }
+}
+
+.nav-footer {
+  border-top: 1px solid $ink;
+  font-size: 0.8rem;
+}
+
+.hp-more { color: $red; font-family: $font-family-monospace; font-size: 0.85rem; font-weight: 500; }

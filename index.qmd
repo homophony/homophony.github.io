@@ -1,35 +1,54 @@
 ---
 title: "Homophony"
+pagetitle: "Homophony"
+body-classes: hp-home
+page-layout: full
+toc: false
 listing:
-  contents: music
-  id: music_list
-  sort: "order"
-  type: grid
-  categories: false
-  image-align: 'right'
-  image-height: '100%'
-format:
-  html: 
-    css: css/home.css
-    linkcolor: black
+  - id: albums
+    contents: music
+    sort: "order"
+    type: grid
+    grid-columns: 3
+    categories: false
+    fields: [image, title, description]
+  - id: latest-notes
+    contents: blog
+    sort: "date desc"
+    type: default
+    max-items: 4
+    categories: false
+    fields: [date, title, description]
+    exclude:
+      title: "blog template"
 ---
 
-```{=html}
-<img src="imgs/homophony_banner_short.jpg" alt="HOMOPHONY" width="100%">
-<br>
-<br>
-```
+::: {.hp-hero}
+![](imgs/homophony_banner_short.jpg){.hp-banner fig-alt="HOMOPHONY"}
 
-### Blog: [Wall of notes](notes.qmd)
-
-### Albums
-
-::: {#music_list}
+::: {.hp-tagline}
+Music and notes by Matt Crump. Synths, piano, drum machines, samples, and other things.
+:::
 :::
 
-### Videos
+::: {.hp-section}
+## Albums {.hp-heading}
+
+::: {#albums}
+:::
+:::
+
+::: {.hp-section}
+## Latest from the [Wall of Notes](notes.qmd) {.hp-heading}
+
+::: {#latest-notes}
+:::
+
+[All notes →](notes.qmd){.hp-more}
+:::
+
+::: {.hp-section}
+## Videos {.hp-heading}
 
 {{< video https://www.youtube.com/watch?v=qzE-E7dHNSI >}}
-
-
-
+:::

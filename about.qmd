@@ -9,7 +9,7 @@ about:
     - icon: globe
       text: lab website
       href: https://crumplab.com
-    - icon: butterfly
+    - icon: bluesky
       text: bluesky
       href: https://bsky.app/profile/mattcrumplab.bsky.social
     - icon: github
